@@ -98,13 +98,6 @@ class _LoginForm extends StatelessWidget {
               disabledColor: Colors.grey,
               elevation: 0,
               color: Colors.deepPurple,
-              child: Container(
-                  padding:
-                      const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
-                  child: Text(
-                    loginForm.isLoading ? 'Espere' : 'Ingresar',
-                    style: const TextStyle(color: Colors.white),
-                  )),
               onPressed: loginForm.isLoading
                   ? null
                   : () async {
@@ -128,7 +121,14 @@ class _LoginForm extends StatelessWidget {
                         NotificationsService.showSnackbar(errorMessage);
                         loginForm.isLoading = false;
                       }
-                    })
+                    },
+              child: Container(
+                  padding:
+                      const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
+                  child: Text(
+                    loginForm.isLoading ? 'Espere' : 'Ingresar',
+                    style: const TextStyle(color: Colors.white),
+                  )))
         ],
       ),
     );

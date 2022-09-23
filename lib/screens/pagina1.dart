@@ -22,7 +22,7 @@ class Pagina1 extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Text(
-                '¡(nombre), Elige un momento!',
+                '\n¡(nombre), elige un momento!',
                 style: titulosTxt,
                 textAlign: TextAlign.center,
               ),
@@ -36,16 +36,35 @@ class Pagina1 extends StatelessWidget {
                 ),
               ),*/
               Text(
-                'Selecciona cualquiera de las tarjetas y da clic en el botón de abajo, para para comenzar el momento deseado.',
+                '\nSelecciona alguna de las tarjetas, dando clic en el título que hay debajo, para comenzar...\n',
                 style: parrafosTxt,
                 textAlign: TextAlign.center,
               ),
               DataTable(
                 sortColumnIndex: 1,
                 sortAscending: false,
+                headingRowColor: MaterialStateColor.resolveWith(
+                    (states) => Colors.red.shade200),
+                dataRowColor: MaterialStateColor.resolveWith(
+                    (states) => Colors.deepOrange.shade50),
+                /*border: TableBorder.all(width: 5.0, color: Colors.red.shade200),*/
+                //border: TableBorder.all(borderRadius: BorderRadius.zero),
+                //showBottomBorder: true,
+                //dividerThickness: 5,
+                /*decoration: BoxDecoration(
+                  border: Border(
+                      right: Divider.createBorderSide(context, width: 5.0),
+                      left: Divider.createBorderSide(context, width: 5.0)),
+                  color: Colors.red.shade200,
+                  
+                ),*/
                 columns: const [
-                  DataColumn(label: Text("Elije un")),
-                  DataColumn(label: Text("momento")),
+                  DataColumn(
+                      label: Text("Elije tu \nfortaleza",
+                          textAlign: TextAlign.center)),
+                  DataColumn(
+                      label: Text("y adquiere \npoder.",
+                          textAlign: TextAlign.center)),
                 ],
                 rows: [
                   DataRow(selected: true, cells: [

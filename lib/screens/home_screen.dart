@@ -32,9 +32,9 @@ class _HomeScreen extends State<HomeScreen> {
         elevation: 8.0,
       ),
       backgroundColor: Colors.lightBlue.shade100,
-      body: Center(
+      body: SingleChildScrollView(
         //TODO incluir en el registro el ávatar del usr
-        child: SingleChildScrollView(
+        child: Center(
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
@@ -79,17 +79,21 @@ class _HomeScreen extends State<HomeScreen> {
                 shrinkWrap: true,
               ),*/
               Text(
+                '',
+                style: subtitulosTxt,
+              ),
+              Text(
                 '¡Te damos la bienvenida, (nombre-ávatar)!',
                 style: titulosTxt,
                 textAlign: TextAlign.center,
               ),
               Text(
-                'Este espacio muestra el contenido de tu almacén, aquí se verán reflejadas, todas las frutas, verduras y animalitos que tienes hasta el momento, con estos elementos puedes divertirte dentro de la comunidad en DiverZión para ponerlos en juego a través de momentos divertidísimos. Posteriormente, puedes solicitar tu despensa, una ves completado el promer desafío.',
+                '\nEste espacio muestra el contenido de tu almacén, aquí se verán reflejadas, todas las víveres que tienes hasta el momento, con estos elementos puedes divertirte dentro de la comunidad en DiverZión para ponerlos en juego a través de momentos divertidísimos. Posteriormente, puedes solicitar tu despensa a domicilio, a partir de tu primer desafío.\n',
                 style: parrafosTxt,
                 textAlign: TextAlign.center,
               ),
               Text(
-                'Actualmente tu almacén cuenta con:',
+                'Almacén actual:',
                 style: subtitulosTxt,
               ),
               DataTable(
@@ -108,28 +112,28 @@ class _HomeScreen extends State<HomeScreen> {
                   ]),
                   DataRow(cells: [
                     DataCell(Text("1")),
-                    DataCell(Text("Dona")),
+                    DataCell(Text("Dátil")),
                     DataCell(Text("2"))
                   ]),
                   DataRow(selected: true, cells: [
                     DataCell(Text("1"), showEditIcon: true),
-                    DataCell(Text("Pez")),
-                    DataCell(Text("1"))
+                    DataCell(Text("Tina")),
+                    DataCell(Text("3"))
                   ]),
                   DataRow(cells: [
                     DataCell(Text("1")),
-                    DataCell(Text("Dona")),
-                    DataCell(Text("2"))
+                    DataCell(Text("Cachorro")),
+                    DataCell(Text("4"))
                   ]),
                   DataRow(selected: true, cells: [
                     DataCell(Text("1"), showEditIcon: true),
-                    DataCell(Text("Pez")),
-                    DataCell(Text("1"))
+                    DataCell(Text("Cuchara")),
+                    DataCell(Text("5"))
                   ]),
                   DataRow(cells: [
                     DataCell(Text("1")),
-                    DataCell(Text("Dona")),
-                    DataCell(Text("2"))
+                    DataCell(Text("Serpiente")),
+                    DataCell(Text("6"))
                   ]),
                   /*DataRow(selected: true, cells: [
                     DataCell(Text("1"), showEditIcon: true),
@@ -180,8 +184,10 @@ class _HomeScreen extends State<HomeScreen> {
                   builder: (context) => AlertDialog(
                         backgroundColor: Colors.lightBlue.shade100,
                         title: const Text("Adquiere más elementos."),
-                        content: const Text(
-                            "Para realizar transferencia bancaria por medio del oxxo, brinda el siguiente número: xxxx-xxxx-xxxx-xxxx"),
+                        content: const SingleChildScrollView(
+                          child: Text(
+                              "¡Es muy fácil! Sólo acude al oxxo de tu preferencia y realiza tu aporte a la siguiente cuenta: xxxx-xxxx-xxxx-xxxx, es a banco Banregio. Guarda tu comprobante (ticket), compártelo vía whatsapp al número oficial de DiverZión.\n \n¡Y listo! Dentro de las próximas 2 horas, podrás adquirir víveres dentro de DiverZión para divertirte al máximo."),
+                        ),
                         actions: [
                           TextButton(
                               onPressed: () => Navigator.pop(context),

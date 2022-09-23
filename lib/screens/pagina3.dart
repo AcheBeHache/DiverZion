@@ -99,93 +99,97 @@ class _Pagina3State extends State<Pagina3> {
           elevation: 8.0,
         ),
         backgroundColor: Colors.amber.shade100,
-        body: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              (_counter > 0)
-                  ? const Text("")
-                  : const Text(
-                      "Listo!",
-                      style: TextStyle(
-                        color: Colors.green,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 48,
+        body: SingleChildScrollView(
+          child: Center(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                (_counter > 0)
+                    ? const Text("")
+                    : const Text(
+                        "Listo!",
+                        style: TextStyle(
+                          color: Colors.green,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 48,
+                        ),
+                      ),
+                Text(
+                  '$_counter',
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 48,
+                  ),
+                ),
+                Text(
+                  '\nMuestra fichas de usuarios.',
+                  style: titulosTxt,
+                  textAlign: TextAlign.center,
+                ),
+                Text(
+                  '\nPor favor elije tu tarjeta:',
+                  style: subtitulosTxt,
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const <Widget>[
+                    FlutterLogo(),
+                    SizedBox(width: 26),
+                    /*Text(
+                        "Flutter's hot reload helps you quickly and easily experiment, build UIs, add features, and fix bug faster. Experience sub-second reload times, without losing state, on emulators, simulators, and hardware for iOS and Android."),*/
+                    Icon(Icons.sentiment_very_satisfied),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    Text(
+                      '$j1ficha',
+                      style: numerosTxt,
+                    ),
+                    Text(
+                      "<->",
+                      style: numerosTxt,
+                    ),
+                    Text(
+                      "$j2ficha",
+                      style: numerosTxt,
+                    ),
+                  ],
+                ),
+                Row(
+                  textDirection: TextDirection.rtl,
+                  children: <Widget>[
+                    const FlutterLogo(),
+                    Expanded(
+                      child: Text(
+                        "\nMonto en juego: $montogame.\n\n $enviomsj",
+                        style: parrafosTxt,
+                        textAlign: TextAlign.center,
                       ),
                     ),
-              Text(
-                '$_counter',
-                style: const TextStyle(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 48,
-                ),
-              ),
-              Text(
-                'Muestra fichas de usuarios.',
-                style: titulosTxt,
-              ),
-              Text(
-                'Por favor elije tu tarjeta:',
-                style: subtitulosTxt,
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: const <Widget>[
-                  FlutterLogo(),
-                  SizedBox(width: 26),
-                  /*Text(
-                      "Flutter's hot reload helps you quickly and easily experiment, build UIs, add features, and fix bug faster. Experience sub-second reload times, without losing state, on emulators, simulators, and hardware for iOS and Android."),*/
-                  Icon(Icons.sentiment_very_satisfied),
-                ],
-              ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: <Widget>[
-                  Text(
-                    '$j1ficha',
-                    style: numerosTxt,
+                    const Icon(Icons.sentiment_very_satisfied),
+                  ],
+                ) /*,
+                StreamBuilder(
+                  builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
+                    return ListView.builder(
+                      itemBuilder: (_, i) {
+                        return const ListTile(
+                          title: Text('ABC'),
+                        );
+                      },
+                    );
+                  },
+                ),*/
+                /*Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.contain, // otherwise the logo will be tiny
+                    child: FlutterLogo(),
                   ),
-                  Text(
-                    "<->",
-                    style: numerosTxt,
-                  ),
-                  Text(
-                    "$j2ficha",
-                    style: numerosTxt,
-                  ),
-                ],
-              ),
-              Row(
-                textDirection: TextDirection.rtl,
-                children: <Widget>[
-                  const FlutterLogo(),
-                  Expanded(
-                    child: Text(
-                      "Monto en juego: $montogame.\n\n $enviomsj",
-                      style: parrafosTxt,
-                    ),
-                  ),
-                  const Icon(Icons.sentiment_very_satisfied),
-                ],
-              ) /*,
-              StreamBuilder(
-                builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
-                  return ListView.builder(
-                    itemBuilder: (_, i) {
-                      return const ListTile(
-                        title: Text('ABC'),
-                      );
-                    },
-                  );
-                },
-              ),*/
-              /*Expanded(
-                child: FittedBox(
-                  fit: BoxFit.contain, // otherwise the logo will be tiny
-                  child: FlutterLogo(),
-                ),
-              ),*/
-            ],
+                ),*/
+              ],
+            ),
           ),
         ),
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
