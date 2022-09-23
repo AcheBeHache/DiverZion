@@ -115,7 +115,7 @@ class _LoginForm extends StatelessWidget {
                         Navigator.pushReplacementNamed(context, 'ppt');
                       } else {
                         // TODO: mostrar error en pantalla
-                        print(errorMessage);
+                        //print(errorMessage);
                         loginForm.isLoading = false;
                       }
                     },

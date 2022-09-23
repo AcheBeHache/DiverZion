@@ -5,7 +5,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 
 //import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:app_game/bloc/peticionesppt_bloc.dart';
+//import 'package:app_game/bloc/peticionesppt_bloc.dart';
 
 class PPT extends StatefulWidget {
   const PPT({Key? key}) : super(key: key);
