@@ -115,9 +115,11 @@ class _LoginForm extends StatelessWidget {
 
                       if (errorMessage == null) {
                         Navigator.pushReplacementNamed(context, 'home');
+                        //print(loginForm.email);
                       } else {
                         // TODO: mostrar error en pantalla
                         // print( errorMessage );
+
                         NotificationsService.showSnackbar(errorMessage);
                         loginForm.isLoading = false;
                       }

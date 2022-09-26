@@ -28,6 +28,7 @@ class AuthService extends ChangeNotifier {
     if (decodedResp.containsKey('idToken')) {
       // Token hay que guardarlo en un lugar seguro
       await storage.write(key: 'token', value: decodedResp['idToken']);
+      await storage.write(key: 'usremail', value: decodedResp['email']);
       // decodedResp['idToken'];
       return null;
     } else {
@@ -51,9 +52,13 @@ class AuthService extends ChangeNotifier {
     if (decodedResp.containsKey('idToken')) {
       // Token hay que guardarlo en un lugar seguro
       // decodedResp['idToken'];
+      /*print("--------------");
+      print(decodedResp['email']);*/
       await storage.write(key: 'token', value: decodedResp['idToken']);
+      await storage.write(key: 'usremail', value: decodedResp['email']);
       return null;
     } else {
+      print(decodedResp);
       return decodedResp['error']['message'];
     }
   }
@@ -65,5 +70,12 @@ class AuthService extends ChangeNotifier {
 
   Future<String> readToken() async {
     return await storage.read(key: 'token') ?? '';
+  }
+
+  Future<String> readEmail() async {
+    return await storage.read(key: 'usremail') ?? '';
+    //print('---------');
+    //print(storage.read(key: 'usremail'));
+    //return decodedResp['token']['email'];
   }
 }

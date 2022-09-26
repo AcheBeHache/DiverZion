@@ -1,7 +1,11 @@
 //import 'dart:math';
 
 import 'package:app_game/screens/pagina1.dart';
+import 'package:app_game/services/services.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+//import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:provider/provider.dart';
 //ESTAimport 'package:paginas/pages/pagina1.dart';
 //import 'dart:async';
 
@@ -21,15 +25,32 @@ class _HomeScreen extends State<HomeScreen> {
     TextStyle subtitulosTxt = const TextStyle(fontSize: 22);
     //TextStyle numerosTxt = const TextStyle(fontSize: 25);
     TextStyle parrafosTxt = const TextStyle(fontSize: 17);
-    /*if (mounted) {
+    final authService = Provider.of<AuthService>(context,
+        listen:
+            false); /*if (mounted) {
       //String _noDataText;
         setState(() => _timer?.cancel()));
     }*/
+    const storage = FlutterSecureStorage();
+
     return Scaffold(
       //backgroundColor: Colors.amber,
       appBar: AppBar(
         title: const Text('DiverZión - Almacén'),
         elevation: 8.0,
+        //Para poner el icono de logout en la parte derecha, class254min1:19
+        /*actions: [IconButton(
+          onPressed: (){}), 
+          icon: const Icon(Icons.logout_rounded)),
+          ),]*/
+        leading: IconButton(
+            onPressed: () async {
+              String? value = await authService.storage.read(key: 'usremail');
+              print(value);
+              authService.logout();
+              Navigator.pushReplacementNamed(context, 'login');
+            },
+            icon: const Icon(Icons.logout_rounded)),
       ),
       backgroundColor: Colors.lightBlue.shade100,
       body: SingleChildScrollView(
@@ -79,7 +100,10 @@ class _HomeScreen extends State<HomeScreen> {
                 shrinkWrap: true,
               ),*/
               Text(
-                '',
+                //authService.readEmail().toString(),
+                //authService.storage.read(key: 'usremail').toString(),
+                //authService.readEmail().then((value) => 'usremail').toString(),
+                storage.read(key: 'usremail').toString(),
                 style: subtitulosTxt,
               ),
               Text(
@@ -88,7 +112,7 @@ class _HomeScreen extends State<HomeScreen> {
                 textAlign: TextAlign.center,
               ),
               Text(
-                '\nEste espacio muestra el contenido de tu almacén, aquí se verán reflejadas, todas las víveres que tienes hasta el momento, con estos elementos puedes divertirte dentro de la comunidad en DiverZión para ponerlos en juego a través de momentos divertidísimos. Posteriormente, puedes solicitar tu despensa a domicilio, a partir de tu primer desafío.\n',
+                '\nEste espacio muestra el contenido de tu almacén, aquí se verán reflejados, todos los víveres que tienes hasta el momento, con estos elementos puedes divertirte dentro de la comunidad en DiverZión para ponerlos en juego a través de momentos divertidísimos. Posteriormente, puedes solicitar tu despensa a domicilio, a partir de tu primer desafío.\n',
                 style: parrafosTxt,
                 textAlign: TextAlign.center,
               ),
@@ -186,7 +210,7 @@ class _HomeScreen extends State<HomeScreen> {
                         title: const Text("Adquiere más elementos."),
                         content: const SingleChildScrollView(
                           child: Text(
-                              "¡Es muy fácil! Sólo acude al oxxo de tu preferencia y realiza tu aporte a la siguiente cuenta: xxxx-xxxx-xxxx-xxxx, es a banco Banregio. Guarda tu comprobante (ticket), compártelo vía whatsapp al número oficial de DiverZión: \n(+52) 473-139-95-77.\n \n¡Y listo! Dentro de las próximas 2 horas, podrás adquirir víveres dentro de DiverZión para divertirte al máximo."),
+                              "¡Es muy fácil! Sólo acude al oxxo de tu preferencia y realiza el aporte a la siguiente cuenta: xxxx-xxxx-xxxx-xxxx, es a banco Banregio. Guarda tu comprobante (ticket), compártelo vía whatsapp al número oficial de DiverZión: \n(+52) 473-139-95-77.\n \n¡Y listo! Dentro de las próximas 2 horas, podrás adquirir víveres dentro de DiverZión para divertirte al máximo."),
                         ),
                         actions: [
                           TextButton(
@@ -237,7 +261,6 @@ class _HomeScreen extends State<HomeScreen> {
           //   position: Tween<Offset>(begin: Offset(0.0, -1.0), end: Offset.zero ).animate(curvedAnimation),
           //   child: child,
           // );
-
           return ScaleTransition(
               scale:
                   Tween<double>(begin: 0.0, end: 1.0).animate(curvedAnimation),

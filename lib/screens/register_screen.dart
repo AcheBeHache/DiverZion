@@ -112,10 +112,11 @@ class _LoginForm extends StatelessWidget {
                           loginForm.email, loginForm.password);
 
                       if (errorMessage == null) {
-                        Navigator.pushReplacementNamed(context, 'ppt');
+                        Navigator.pushReplacementNamed(context, 'home');
                       } else {
                         // TODO: mostrar error en pantalla
                         //print(errorMessage);
+                        NotificationsService.showSnackbar(errorMessage);
                         loginForm.isLoading = false;
                       }
                     },

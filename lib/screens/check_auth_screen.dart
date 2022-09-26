@@ -1,9 +1,5 @@
-//import 'package:app_game/screens/home_screen.dart';
-//import 'package:app_game/screens/login.dart';
-import 'package:app_game/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
 import 'package:app_game/screens/screens.dart';
 import 'package:app_game/services/services.dart';
 
@@ -11,14 +7,12 @@ class CheckAuthScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);
-
     return Scaffold(
       body: Center(
         child: FutureBuilder(
           future: authService.readToken(),
           builder: (BuildContext context, AsyncSnapshot<String> snapshot) {
             if (!snapshot.hasData) return const Text('');
-
             if (snapshot.data == '') {
               Future.microtask(() {
                 Navigator.pushReplacement(
@@ -36,7 +30,6 @@ class CheckAuthScreen extends StatelessWidget {
                         transitionDuration: const Duration(seconds: 0)));
               });
             }
-
             return Container();
           },
         ),
