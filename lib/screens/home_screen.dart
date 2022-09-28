@@ -19,6 +19,7 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreen extends State<HomeScreen> {
+  String enviomsj = '';
   @override
   Widget build(BuildContext context) {
     TextStyle titulosTxt = const TextStyle(fontSize: 27);
@@ -31,7 +32,17 @@ class _HomeScreen extends State<HomeScreen> {
       //String _noDataText;
         setState(() => _timer?.cancel()));
     }*/
-    const storage = FlutterSecureStorage();
+    String? mm = AuthService().storage.read(key: 'usremail').toString();
+    mostrarusr() async {
+      //String? rrvalue = await AuthService().readEmail();
+      //String? valor = await authService.storage.read(key: 'usremail');
+      String? rrvalue = await authService.storage.read(key: 'usremail');
+      enviomsj = rrvalue!;
+      setState(() {});
+      //print('Envíomsj: $enviomsj');
+    }
+    //print(_mostrarusr(context).toString());
+    //const storage = FlutterSecureStorage();
 
     return Scaffold(
       //backgroundColor: Colors.amber,
@@ -45,9 +56,12 @@ class _HomeScreen extends State<HomeScreen> {
           ),]*/
         leading: IconButton(
             onPressed: () async {
-              String? value = await authService.storage.read(key: 'usremail');
+              /*String? value = await authService.storage.read(key: 'usremail');
               print(value);
-              authService.logout();
+              String? xvalue = await AuthService().readEmail();
+              print('xvalue: ' + xvalue);
+              print(mostrarusr().toString());
+              authService.logout();*/
               Navigator.pushReplacementNamed(context, 'login');
             },
             icon: const Icon(Icons.logout_rounded)),
@@ -99,15 +113,60 @@ class _HomeScreen extends State<HomeScreen> {
                 physics: const NeverScrollableScrollPhysics(),
                 shrinkWrap: true,
               ),*/
+              RichText(
+                text: TextSpan(
+                  text: '\nTe damos la bienvenida: ',
+                  style: const TextStyle(fontSize: 27),
+                  children: <TextSpan>[
+                    TextSpan(
+                        text: enviomsj, style: const TextStyle(fontSize: 57)),
+                    const TextSpan(text: ' mundo!'),
+                  ],
+                ),
+              ),
+              /*FutureBuilder<String?>(
+                  future: authService.storage.read(key: 'usremail'),
+                  builder: (context, snapshot) {
+                    // Logica...
+                    Future<String> xvalue = AuthService().readEmail();
+                    print(xvalue);
+                    return Text(xvalue.toString());
+                    print(mm);
+                  }),*/
+              /*FutureBuilder(
+                  future: authService.readEmail(),
+                  builder:
+                      (BuildContext context, AsyncSnapshot<String> snapshot) {
+                    if (!snapshot.hasData) return const Text('msj1');
+                    if (snapshot.data == '') {
+                      print(AuthService().storage.read(key: 'usremail'));
+                      return const Text('msj2');
+                    } else {
+                      Future<String> xvalue = AuthService().readEmail();
+                      print('msj3: $xvalue');
+                      return Text(xvalue.toString());
+                      print(mm);
+                    }
+                  }),*/
               Text(
                 //authService.readEmail().toString(),
                 //authService.storage.read(key: 'usremail').toString(),
                 //authService.readEmail().then((value) => 'usremail').toString(),
-                storage.read(key: 'usremail').toString(),
+                //storage.read(key: 'usremail').toString(),
+                "\nUsrx: $enviomsj",
                 style: subtitulosTxt,
               ),
               Text(
-                '¡Te damos la bienvenida, (nombre-ávatar)!',
+                //authService.readEmail().toString(),
+                //authService.storage.read(key: 'usremail').toString(),
+                //authService.readEmail().then((value) => 'usremail').toString(),
+                //storage.read(key: 'usremail').toString(),
+                mostrarusr().toString(),
+                style: subtitulosTxt,
+              ),
+              Text('mm: $mm'),
+              Text(
+                '¡Te damos la bienvenida, $enviomsj!',
                 style: titulosTxt,
                 textAlign: TextAlign.center,
               ),

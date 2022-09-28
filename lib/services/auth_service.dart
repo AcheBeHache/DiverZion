@@ -74,6 +74,10 @@ class AuthService extends ChangeNotifier {
 
   Future<String> readEmail() async {
     return await storage.read(key: 'usremail') ?? '';
+    /*String? value = await storage.read(key: 'usremail') ?? '';
+    return value;*/
+    /*String value = await storage.read(key: 'usremail') ?? '';
+    return value; */
     //print('---------');
     //print(storage.read(key: 'usremail'));
     //return decodedResp['token']['email'];
