@@ -36,6 +36,13 @@ class AuthService extends ChangeNotifier {
     }
   }
 
+  //Getters del token de forma estática
+  static Future<String?> getEmail() async {
+    const storage = FlutterSecureStorage();
+    final email = await storage.read(key: 'usremail');
+    return email;
+  }
+
   Future<String?> login(String email, String password) async {
     final Map<String, dynamic> authData = {
       'email': email,
@@ -58,7 +65,7 @@ class AuthService extends ChangeNotifier {
       await storage.write(key: 'usremail', value: decodedResp['email']);
       return null;
     } else {
-      print(decodedResp);
+      //print(decodedResp);
       return decodedResp['error']['message'];
     }
   }

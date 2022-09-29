@@ -1,15 +1,52 @@
+import 'package:app_game/services/auth_service.dart';
 import 'package:flutter/material.dart';
 //import 'package:transicion_app/pages/pagina2_page.dart';
 import 'package:app_game/screens/ppt.dart';
 import 'package:app_game/screens/pagina3.dart';
+import 'package:provider/provider.dart';
 
-class Pagina1 extends StatelessWidget {
+class Pagina1 extends StatefulWidget {
+  @override
+  State<Pagina1> createState() => _Pagina1State();
+}
+
+class _Pagina1State extends State<Pagina1> {
+  String enviomsj = '';
+
+  //Para poner la primera letra en mayúscula de una palabra
+  String get inCaps => '$this[0].toUpperCase()$this.substring(1)';
+
   @override
   Widget build(BuildContext context) {
-    TextStyle titulosTxt = const TextStyle(fontSize: 27);
+    //TextStyle titulosTxt = const TextStyle(fontSize: 27);
     //TextStyle subtitulosTxt = const TextStyle(fontSize: 22);
     //TextStyle numerosTxt = const TextStyle(fontSize: 25);
     TextStyle parrafosTxt = const TextStyle(fontSize: 17);
+    //estilos para aplicar al nombre de usr
+    //aplicamos estilos al nombre de usr
+    final Shader linearGradient = const LinearGradient(
+      colors: <Color>[Color(0xffDA44bb), Color(0xff8921aa)],
+    ).createShader(const Rect.fromLTWH(0, 0, 200, 70));
+    //creamos una instancia para utilizar el localstorage
+    final authService = Provider.of<AuthService>(context, listen: false);
+    mostrarusr() async {
+      //String? rrvalue = await AuthService().readEmail();
+      //String? valor = await authService.storage.read(key: 'usremail');
+      String? rrvalue = await authService.storage.read(key: 'usremail');
+      /*obtenemos el nombre del usuario tomando como referencia su email, lo que va antes del @ con split:
+      ${rrvalue!.split('@')[0]}*/
+      /* Obtenemos la primera letra y la convertimos en mayúscula:
+        ${rrvalue![0].toUpperCase()}${rrvalue.substring(1)}
+      */
+      enviomsj =
+          '${rrvalue![0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}';
+      //print(enviomsj);
+      setState(() {});
+      return enviomsj;
+    }
+
+    //ejecutamos la función para mostrar usrname
+    mostrarusr();
     return Scaffold(
       appBar: AppBar(
         title: const Text('Regresa a tu almacén'),
@@ -21,10 +58,37 @@ class Pagina1 extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              Text(
-                '\n¡(nombre), elige un momento!',
-                style: titulosTxt,
+              RichText(
                 textAlign: TextAlign.center,
+                text: TextSpan(
+                  text: '\n',
+                  style: TextStyle(
+                    fontSize: 25,
+                    foreground: Paint()
+                      ..style = PaintingStyle.stroke
+                      ..strokeWidth = 1
+                      ..color = Colors.black87,
+                  ),
+                  children: <TextSpan>[
+                    TextSpan(
+                        text: enviomsj,
+                        //style: const TextStyle(fontSize: 27, color: Colors.black45),
+                        style: TextStyle(
+                            fontSize: 23,
+                            fontWeight: FontWeight.bold,
+                            foreground: Paint()..shader = linearGradient)),
+                    TextSpan(
+                        //establecemos variable para mostrar el msj del usr, mostrar usr 4de4
+                        text: ', \nelige un momento:',
+                        style: TextStyle(
+                          fontSize: 25,
+                          foreground: Paint()
+                            ..style = PaintingStyle.stroke
+                            ..strokeWidth = 1
+                            ..color = Colors.black87,
+                        )),
+                  ],
+                ),
               ),
               /*Image.asset("assets/images/piedra.png"),*/
               /*const Padding(

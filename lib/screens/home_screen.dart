@@ -3,7 +3,7 @@
 import 'package:app_game/screens/pagina1.dart';
 import 'package:app_game/services/services.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+//import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 //import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 //ESTAimport 'package:paginas/pages/pagina1.dart';
@@ -19,31 +19,56 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreen extends State<HomeScreen> {
+  //definimos la variable global para mostrar el msj del usuario, mostrar usr 0de4
   String enviomsj = '';
+  //Para poner la primera letra en mayúscula de una palabra
+  String get inCaps => '$this[0].toUpperCase()$this.substring(1)';
   @override
   Widget build(BuildContext context) {
-    TextStyle titulosTxt = const TextStyle(fontSize: 27);
-    TextStyle subtitulosTxt = const TextStyle(fontSize: 22);
+    //TextStyle titulosTxt = const TextStyle(fontSize: 27);
+    TextStyle subtitulosTxt = TextStyle(
+      fontSize: 22,
+      foreground: Paint()
+        ..style = PaintingStyle.stroke
+        ..strokeWidth = 1
+        ..color = Colors.deepPurple,
+    );
     //TextStyle numerosTxt = const TextStyle(fontSize: 25);
     TextStyle parrafosTxt = const TextStyle(fontSize: 17);
-    final authService = Provider.of<AuthService>(context,
-        listen:
-            false); /*if (mounted) {
+
+    //aplicamos estilos al nombre de usr
+    final Shader linearGradient = const LinearGradient(
+      colors: <Color>[Color(0xffDA44bb), Color(0xff8921aa)],
+    ).createShader(const Rect.fromLTWH(0, 0, 200, 70));
+
+    //creamos una instancia para utilizar el localstorage, mostrar usr 1de4
+    final authService = Provider.of<AuthService>(context, listen: false);
+
+    /*if (mounted) {
       //String _noDataText;
         setState(() => _timer?.cancel()));
     }*/
-    String? mm = AuthService().storage.read(key: 'usremail').toString();
+    //BorrarString? mm = AuthService().storage.read(key: 'usremail').toString();
+    //generamos la función, mostrar usr 2de4
     mostrarusr() async {
       //String? rrvalue = await AuthService().readEmail();
       //String? valor = await authService.storage.read(key: 'usremail');
       String? rrvalue = await authService.storage.read(key: 'usremail');
-      enviomsj = rrvalue!;
+      /*obtenemos el nombre del usuario tomando como referencia su email, lo que va antes del @ con split:
+      ${rrvalue!.split('@')[0]}*/
+      /* Obtenemos la primera letra y la convertimos en mayúscula:
+        ${rrvalue![0].toUpperCase()}${rrvalue.substring(1)}
+      */
+      enviomsj =
+          '\n${rrvalue![0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}';
+      //print(enviomsj);
       setState(() {});
-      //print('Envíomsj: $enviomsj');
+      return enviomsj;
     }
-    //print(_mostrarusr(context).toString());
-    //const storage = FlutterSecureStorage();
 
+    //ejecutamos la función para mostrar usrname, mostrar usr 3de4
+    mostrarusr();
+    //const storage = FlutterSecureStorage();
     return Scaffold(
       //backgroundColor: Colors.amber,
       appBar: AppBar(
@@ -114,13 +139,26 @@ class _HomeScreen extends State<HomeScreen> {
                 shrinkWrap: true,
               ),*/
               RichText(
+                textAlign: TextAlign.center,
                 text: TextSpan(
-                  text: '\nTe damos la bienvenida: ',
-                  style: const TextStyle(fontSize: 27),
+                  text: '\n¡Te damos la bienvenida, ',
+                  //style: const TextStyle(fontSize: 27, color: Colors.black45),
+                  style: TextStyle(
+                    fontSize: 25,
+                    foreground: Paint()
+                      ..style = PaintingStyle.stroke
+                      ..strokeWidth = 1
+                      ..color = Colors.blue[700]!,
+                  ),
                   children: <TextSpan>[
                     TextSpan(
-                        text: enviomsj, style: const TextStyle(fontSize: 57)),
-                    const TextSpan(text: ' mundo!'),
+                        //establecemos variable para mostrar el msj del usr, mostrar usr 4de4
+                        text: enviomsj,
+                        style: TextStyle(
+                            fontSize: 33,
+                            fontWeight: FontWeight.bold,
+                            foreground: Paint()..shader = linearGradient)),
+                    const TextSpan(text: ' !'),
                   ],
                 ),
               ),
@@ -148,28 +186,19 @@ class _HomeScreen extends State<HomeScreen> {
                       print(mm);
                     }
                   }),*/
-              Text(
-                //authService.readEmail().toString(),
-                //authService.storage.read(key: 'usremail').toString(),
-                //authService.readEmail().then((value) => 'usremail').toString(),
-                //storage.read(key: 'usremail').toString(),
-                "\nUsrx: $enviomsj",
-                style: subtitulosTxt,
-              ),
-              Text(
+              /*Text(
                 //authService.readEmail().toString(),
                 //authService.storage.read(key: 'usremail').toString(),
                 //authService.readEmail().then((value) => 'usremail').toString(),
                 //storage.read(key: 'usremail').toString(),
                 mostrarusr().toString(),
                 style: subtitulosTxt,
-              ),
-              Text('mm: $mm'),
-              Text(
+              ),*/
+              /*Text(
                 '¡Te damos la bienvenida, $enviomsj!',
                 style: titulosTxt,
                 textAlign: TextAlign.center,
-              ),
+              ),*/
               Text(
                 '\nEste espacio muestra el contenido de tu almacén, aquí se verán reflejados, todos los víveres que tienes hasta el momento, con estos elementos puedes divertirte dentro de la comunidad en DiverZión para ponerlos en juego a través de momentos divertidísimos. Posteriormente, puedes solicitar tu despensa a domicilio, a partir de tu primer desafío.\n',
                 style: parrafosTxt,
