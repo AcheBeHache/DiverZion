@@ -298,7 +298,7 @@ class _HomeScreen extends State<HomeScreen> {
                         title: const Text("Adquiere más elementos."),
                         content: const SingleChildScrollView(
                           child: Text(
-                              "¡Es muy fácil! Sólo acude al oxxo de tu preferencia y realiza el aporte a la siguiente cuenta: xxxx-xxxx-xxxx-xxxx, es a banco Banregio. Guarda tu comprobante (ticket), compártelo vía whatsapp al número oficial de DiverZión: \n(+52) 473-139-95-77.\n \n¡Y listo! Dentro de las próximas 2 horas, podrás adquirir víveres dentro de DiverZión para divertirte al máximo."),
+                              "¡Es muy fácil! Sólo acude al oxxo de tu preferencia y realiza el aporte (a partir de 10mxn) a la siguiente cuenta: xxxx-xxxx-xxxx-xxxx, es a banco Banregio. Guarda tu comprobante (ticket), compártelo vía whatsapp al número oficial de DiverZión: \n(+52) 473-139-95-77.\n \n¡Y listo! Dentro de las próximas 2 horas, podrás adquirir víveres dentro de DiverZión para divertirte al máximo."),
                         ),
                         actions: [
                           TextButton(

@@ -152,7 +152,7 @@ class _PPTState extends State<PPT> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
                     Text(
-                      '$j1ficha',
+                      '$j1ficha ',
                       style: numerosTxt,
                     ),
                     Text(
@@ -160,7 +160,8 @@ class _PPTState extends State<PPT> {
                       style: numerosTxt,
                     ),
                     Text(
-                      "$j2ficha",
+                      //"$j2ficha",
+                      " ?",
                       style: numerosTxt,
                     ),
                   ],

@@ -1,5 +1,6 @@
 //import 'package:app_game/services/notifications_service.dart';
 import 'package:app_game/screens/pagina3.dart';
+import 'package:app_game/screens/partidas_ppt.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 //import 'package:app_game/screens/ppt.dart';
@@ -34,6 +35,7 @@ class MyApp extends StatelessWidget {
         'checking': (_) => CheckAuthScreen(),
         'home': (_) => const HomeScreen(),
         'ppt': (_) => const PPT(),
+        'partidas_ppt': (_) => const PARTIDASPPT(),
         'login': (_) => const LoginScreen(),
         'register': (_) => RegisterScreen(),
         'pagina3': (_) => Pagina3(),

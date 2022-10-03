@@ -1,7 +1,8 @@
+import 'package:app_game/screens/partidas_ppt.dart';
 import 'package:app_game/services/auth_service.dart';
 import 'package:flutter/material.dart';
 //import 'package:transicion_app/pages/pagina2_page.dart';
-import 'package:app_game/screens/ppt.dart';
+//import 'package:app_game/screens/ppt.dart';
 import 'package:app_game/screens/pagina3.dart';
 import 'package:provider/provider.dart';
 
@@ -449,7 +450,7 @@ class _Pagina1State extends State<Pagina1> {
     return PageRouteBuilder(
         pageBuilder: (BuildContext context, Animation<double> animation,
                 Animation<double> secondaryAnimation) =>
-            const PPT(),
+            const PARTIDASPPT(),
         transitionDuration: const Duration(seconds: 1),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           final curvedAnimation =
