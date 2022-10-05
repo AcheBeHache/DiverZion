@@ -9,11 +9,20 @@ const partidasGrales = [
   'partida2_id',
   'partida3_id',
   'partida4_id',
-  'partida5_id',
-  'partida6_id'
+  'partida5_id'
 ];
 
 class PeticionesPPTBloc {
+  StreamController<int> _partidasContador = StreamController<int>();
+  Stream<int> get partidasContador => _partidasContador.stream;
+  //List<String> partidasList = [];
+  //constructor
+  PeticionesPPTBloc() {
+    //setState(() {});
+    this.getPartidas.listen(
+        (partidasList) => this._partidasContador.add(partidasList.length));
+  }
+
   Stream<List<String>> get getPartidas async* {
     final List<String> partidas = [];
     for (String partida in partidasGrales) {
@@ -21,14 +30,9 @@ class PeticionesPPTBloc {
       partidas.add(partida);
       yield partidas;
     }
-  }
-
-  StreamController<int> _partidasContador = StreamController<int>();
-  Stream<int> get partidasContador => _partidasContador.stream;
-
-  PeticionesPPTBloc() {
-    this.getPartidas.listen(
-        (partidasList) => this._partidasContador.add(partidasList.length));
+    //print(partidas);
+    partidas.add('Fin de la búsqueda.');
+    //print(partidas);
   }
 
   dispose() {
