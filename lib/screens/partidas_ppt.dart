@@ -1,13 +1,14 @@
-//import 'dart:html';
-
 //import 'dart:async';
+//import 'dart:html';
+//import 'package:app_game/bloc/peticionesppt_bloc.dart';
+//import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 import 'package:app_game/bloc/peticionesppt_bloc.dart';
-import 'package:app_game/screens/ppt.dart';
+//import 'package:app_game/screens/ppt.dart';
+import 'package:app_game/screens/screens.dart';
+import 'package:app_game/services/services.dart';
 import 'package:flutter/material.dart';
-
-//import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-//import 'package:app_game/bloc/peticionesppt_bloc.dart';
+import 'package:provider/provider.dart';
 
 class PARTIDASPPT extends StatefulWidget {
   const PARTIDASPPT({Key? key}) : super(key: key);
@@ -24,9 +25,15 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
   TextStyle parrafosTxt = const TextStyle(fontSize: 17);
   //Para iniciar la instancia del StreamBuilder, usando nuestro archivo bloc
   final peticionesBloc = PeticionesPPTBloc();
+  //prueba
 
   @override
   Widget build(BuildContext context) {
+    //llamamos las partidasServicio
+    final partidasService = Provider.of<PartidasServices>(context);
+    if (partidasService.isLoading) {
+      return LoadingScreen();
+    }
     //estilosTextos
     final Shader linearGradient = const LinearGradient(
       colors: <Color>[

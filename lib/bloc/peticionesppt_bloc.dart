@@ -2,7 +2,10 @@
 
 import 'dart:async';
 
+//import 'package:app_game/models/models.dart';
+
 //import 'package:app_game/screens/partidas_ppt.dart';
+//late final Ppt xpartida;
 
 const partidasGrales = [
   'partida1_id',
@@ -16,6 +19,7 @@ class PeticionesPPTBloc {
   StreamController<int> _partidasContador = StreamController<int>();
   Stream<int> get partidasContador => _partidasContador.stream;
   //List<String> partidasList = [];
+
   //constructor
   PeticionesPPTBloc() {
     //setState(() {});
@@ -32,6 +36,7 @@ class PeticionesPPTBloc {
     }
     //print(partidas);
     partidas.add('Fin de la búsqueda.');
+    //print(xpartida);
     //print(partidas);
   }
 
