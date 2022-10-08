@@ -41,10 +41,12 @@ class Ppt {
     required this.usridCreador,
     required this.usridnowin,
     required this.usridwin,
+    required this.img,
   });
 
   String? fechafin;
   String fechainicio;
+  String img;
   int id;
   String modojuego;
   int montototal;
@@ -70,6 +72,7 @@ class Ppt {
         usridCreador: json["usrid_creador"],
         usridnowin: json["usridnowin"],
         usridwin: json["usridwin"],
+        img: json["img"],
       );
 
   Map<String, dynamic> toMap() => {
@@ -83,5 +86,6 @@ class Ppt {
         "usrid_creador": usridCreador,
         "usridnowin": usridnowin,
         "usridwin": usridwin,
+        "img": img,
       };
 }

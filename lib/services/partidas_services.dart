@@ -7,6 +7,7 @@ import 'package:http/http.dart' as http;
 class PartidasServices extends ChangeNotifier {
   final String _baseUrl = 'pptgame-d06ee-default-rtdb.firebaseio.com';
   final List<Ppt> partidas = [];
+  late Ppt selectedPartidas;
   bool isLoading = true;
 
   PartidasServices() {
@@ -31,6 +32,11 @@ class PartidasServices extends ChangeNotifier {
 
     isLoading = false;
     notifyListeners();
+    /*print(partidasMap);
+    print(partidasMap.length);*/
+    print(partidas[1].toMap());
+    print('------');
+    print(partidas[1].id);
     return partidas;
 
 /*    print(partidasMap);

@@ -7,7 +7,6 @@
 import 'package:app_game/bloc/peticionesppt_bloc.dart';
 import 'package:app_game/screens/screens.dart';
 import 'package:app_game/services/services.dart';
-import 'package:app_game/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -67,16 +66,84 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
         backgroundColor: Colors.amber.shade100,
         body: RefreshIndicator(
           color: Colors.yellow.shade600,
-          child: ListView.builder(
-              //separatorBuilder: ((_, __) => const Divider()),
-              //return ListView.builder(
-              itemCount: partidasService.partidas.length,
-              itemBuilder: (BuildContext context, int index) => GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, 'ppt'),
-                    child: PartidasCard(
-                      partida: partidasService.partidas[index],
+          child: StreamBuilder(
+            stream: peticionesBloc.getPartidas,
+            builder: (context, AsyncSnapshot<List<String>> snapshot) {
+              final partidas = snapshot.data ?? [];
+              final monto = 10;
+              /*if (snapshot.connectionState == ConnectionState.done) {
+                return const Text("fin del stream");
+              }*/
+              //Puedo comentar las siguientes 2 líneas y descomentar la 3ra
+              return ListView.separated(
+                separatorBuilder: ((_, __) => const Divider()),
+                //return ListView.builder(
+                itemCount: partidas.length,
+                itemBuilder: (context, i) {
+                  return ListTile(
+                    //trailing: const Icon(Icons.arrow_forward_ios_rounded ),
+                    title: TextButton(
+                      style: ButtonStyle(
+                        foregroundColor:
+                            MaterialStateProperty.all<Color>(Colors.blue),
+                        overlayColor: MaterialStateProperty.resolveWith<Color?>(
+                          (Set<MaterialState> states) {
+                            if (states.contains(MaterialState.hovered)) {
+                              return Colors.blue.withOpacity(0.04);
+                            }
+                            if (states.contains(MaterialState.focused) ||
+                                states.contains(MaterialState.pressed)) {
+                              return Colors.blue.withOpacity(0.12);
+                            }
+                            return null; // Defer to the widget's default.
+                          },
+                        ),
+                      ),
+                      onPressed: () {
+                        final game = partidas[i];
+                        print(game);
+                        Navigator.push(context, _crearRuta1());
+                      },
+                      //child: Text('${partidas[i]} monto: \$$monto vs usrN.')),
+                      child: RichText(
+                        textAlign: TextAlign.center,
+                        text: TextSpan(
+                          text: '\n${partidas[i]}. ',
+                          //style: const TextStyle(fontSize: 27, color: Colors.black45),
+                          style: TextStyle(
+                            fontSize: 13,
+                            foreground: Paint()
+                              ..style = PaintingStyle.stroke
+                              ..strokeWidth = 1
+                              ..color = Colors.blue[300]!,
+                          ),
+                          children: <TextSpan>[
+                            TextSpan(
+                                //establecemos variable para mostrar el msj del usr, mostrar usr 4de4
+                                text: 'vs "usrN" -> ',
+                                style: TextStyle(
+                                    fontSize: 15,
+                                    fontWeight: FontWeight.bold,
+                                    foreground: Paint()
+                                      ..shader = linearGradient)),
+                            TextSpan(
+                                text: ' poder: \$$monto ',
+                                style: TextStyle(
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    foreground: Paint()
+                                      ..shader = xlinearGradient)),
+                          ],
+                        ),
+                      ),
                     ),
-                  )),
+                    trailing: const Icon(Icons.arrow_forward_ios_rounded,
+                        color: Colors.blue),
+                  );
+                },
+              );
+            },
+          ),
           onRefresh: () {
             return Future.delayed(Duration(seconds: 1), () {
               setState(() {});
