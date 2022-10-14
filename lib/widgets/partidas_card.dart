@@ -1,6 +1,6 @@
 //import 'package:app_game/bloc/peticionesppt_bloc.dart';
 import 'package:app_game/models/models.dart';
-import 'package:app_game/services/services.dart';
+//import 'package:app_game/services/services.dart';
 import 'package:flutter/material.dart';
 //import 'package:app_game/models/models.dart';
 
@@ -31,6 +31,7 @@ class _PartidasCardState extends State<PartidasCard> {
             _ProductDetails(
               finicio: widget.partida.fechainicio,
               ffin: widget.partida.fechafin,
+              creador: widget.partida.usridCreador,
             ),
 
             Positioned(
@@ -182,8 +183,10 @@ class _PriceTagState extends State<_PriceTag> {
 class _ProductDetails extends StatefulWidget {
   final String finicio;
   final String? ffin;
+  final String creador;
 
-  const _ProductDetails({required this.finicio, this.ffin});
+  const _ProductDetails(
+      {required this.finicio, this.ffin, required this.creador});
 
   @override
   State<_ProductDetails> createState() => _ProductDetailsState();
@@ -213,6 +216,10 @@ class _ProductDetailsState extends State<_ProductDetails> {
             ),
             Text(
               'Cierre: ${widget.ffin}',
+              style: const TextStyle(fontSize: 11, color: Colors.white),
+            ),
+            Text(
+              'vs granja de: ${widget.creador}',
               style: const TextStyle(fontSize: 11, color: Colors.white),
             ),
           ],

@@ -30,31 +30,31 @@ import 'dart:convert';
 }*/
 
 class Ppt {
-  Ppt({
-    this.fechafin,
-    required this.fechainicio,
-    required this.id,
-    required this.modojuego,
-    required this.montototal,
-    required this.oponentes,
-    required this.status,
-    required this.usridCreador,
-    required this.usridnowin,
-    required this.usridwin,
-    required this.img,
-  });
+  Ppt(
+      {this.fechafin,
+      required this.fechainicio,
+      this.id,
+      required this.modojuego,
+      required this.montototal,
+      this.oponentes,
+      required this.status,
+      required this.usridCreador,
+      required this.usridnowin,
+      required this.usridwin,
+      this.img,
+      this.idPrueba});
 
   String? fechafin;
   String fechainicio;
-  String img;
-  int id;
-  String modojuego;
+  String? img;
+  String? id;
+  bool modojuego;
   int montototal;
-  int oponentes;
+  int? oponentes;
   int status;
-  int usridCreador;
-  int usridnowin;
-  int usridwin;
+  String usridCreador;
+  String usridnowin;
+  String usridwin;
   String? idPrueba;
 
   factory Ppt.fromJson(String str) => Ppt.fromMap(json.decode(str));
@@ -88,4 +88,18 @@ class Ppt {
         "usridwin": usridwin,
         "img": img,
       };
+
+  Ppt copy() => Ppt(
+      fechainicio: fechainicio,
+      id: id,
+      idPrueba: idPrueba,
+      modojuego: modojuego,
+      montototal: montototal,
+      oponentes: oponentes,
+      status: status,
+      usridCreador: usridCreador,
+      usridnowin: usridnowin,
+      usridwin: usridwin,
+      img: img,
+      fechafin: fechafin);
 }

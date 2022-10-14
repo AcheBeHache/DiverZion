@@ -3,8 +3,9 @@
 //import 'package:app_game/bloc/peticionesppt_bloc.dart';
 //import 'package:app_game/screens/ppt.dart';
 //import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
+import 'package:date_format/date_format.dart';
 import 'package:app_game/bloc/peticionesppt_bloc.dart';
+import 'package:app_game/models/models.dart';
 import 'package:app_game/screens/screens.dart';
 import 'package:app_game/services/services.dart';
 import 'package:app_game/widgets/widgets.dart';
@@ -72,13 +73,27 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
               //return ListView.builder(
               itemCount: partidasService.partidas.length,
               itemBuilder: (BuildContext context, int index) => GestureDetector(
-                    onTap: () => Navigator.pushNamed(context, 'ppt'),
+                    onTap: () {
+                      //Aquí tenemos que cambiar la funcionalidad "total", pero dirigir con los datos a la ventana (PPT) para comenzar el juego
+                      partidasService.selectedPartidas =
+                          partidasService.partidas[index].copy();
+                      Navigator.pushNamed(context, 'partida');
+                    },
                     child: PartidasCard(
                       partida: partidasService.partidas[index],
                     ),
                   )),
           onRefresh: () {
-            return Future.delayed(Duration(seconds: 1), () {
+            /*print(formatDate(DateTime.now(), [H, ':', m, am]));
+            print('----');
+            print(formatDate(DateTime.now(), [d, '-', M, '-', yyyy]));
+            print('----');
+            print(formatDate(
+                DateTime.now(), [z, '->', M, '/', DD, '/', yy, '-', am]));
+            print('----');
+            print(formatDate(DateTime.now(),
+                [d, '/', mm, '/', yyyy, '->', H, ':', m, ':', am]));*/
+            return Future.delayed(const Duration(seconds: 1), () {
               setState(() {});
             });
           },
@@ -90,8 +105,23 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
           children: [
             FloatingActionButton(
               heroTag: "btnRecargar",
-              onPressed: () => {
-                showDialog(
+              onPressed: () {
+                partidasService.selectedPartidas = Ppt(
+                    fechainicio: formatDate(DateTime.now(),
+                        [d, '/', mm, '/', yyyy, ' ', H, ':', m, ':', am]),
+                    id: '',
+                    idPrueba: '',
+                    modojuego: true,
+                    montototal: 1,
+                    oponentes: 1,
+                    status: 1,
+                    //establecerle el dato del localstorage
+                    usridCreador: '',
+                    usridnowin: '',
+                    usridwin: '',
+                    fechafin: '');
+                Navigator.pushNamed(context, 'partida');
+                /*showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
                           backgroundColor: Colors.lightBlue.shade100,
@@ -105,7 +135,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                                 onPressed: () => Navigator.pop(context),
                                 child: const Text("Crear e invitar..."))
                           ],
-                        ))
+                        ))*/
               },
               tooltip: 'Refrescar',
               child: const Icon(Icons.add_outlined),
@@ -114,7 +144,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
               heroTag: "btnRefrescar",
               onPressed: () => {
                 //Navigator.push(context, _crearRuta1())
-                Future.delayed(Duration(seconds: 1), () {
+                Future.delayed(const Duration(seconds: 1), () {
                   setState(() {});
                 })
               },

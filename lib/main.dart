@@ -1,5 +1,6 @@
 //import 'package:app_game/services/notifications_service.dart';
 import 'package:app_game/screens/pagina3.dart';
+import 'package:app_game/screens/partida_screen.dart';
 import 'package:app_game/screens/partidas_ppt.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -39,6 +40,7 @@ class MyApp extends StatelessWidget {
         'login': (_) => const LoginScreen(),
         'register': (_) => RegisterScreen(),
         'pagina3': (_) => Pagina3(),
+        'partida': (_) => PartidaScreen(),
       },
       scaffoldMessengerKey: NotificationsService.messengerKey,
       theme: ThemeData.light().copyWith(
