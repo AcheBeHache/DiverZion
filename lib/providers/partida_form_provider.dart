@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:app_game/models/models.dart';
 
 class PartidaFormProvider extends ChangeNotifier {
+  String mensajito = '';
   GlobalKey<FormState> formKey = new GlobalKey<FormState>();
 
   Ppt partida;
@@ -11,6 +12,11 @@ class PartidaFormProvider extends ChangeNotifier {
   updateModojuego(dynamic value) {
     //print(value);
     partida.modojuego = value;
+    /*if (partida.modojuego == true) {
+      mensajito = 'automático';
+    } else {
+      mensajito = 'manual';
+    }*/
     notifyListeners();
   }
 

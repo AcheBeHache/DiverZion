@@ -39,8 +39,8 @@ class Ppt {
       this.oponentes,
       required this.status,
       required this.usridCreador,
-      required this.usridnowin,
-      required this.usridwin,
+      this.usridnowin,
+      this.usridwin,
       this.img,
       this.idPrueba});
 
@@ -53,8 +53,8 @@ class Ppt {
   int? oponentes;
   int status;
   String usridCreador;
-  String usridnowin;
-  String usridwin;
+  String? usridnowin;
+  String? usridwin;
   String? idPrueba;
 
   factory Ppt.fromJson(String str) => Ppt.fromMap(json.decode(str));

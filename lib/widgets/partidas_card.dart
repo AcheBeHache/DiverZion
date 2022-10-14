@@ -219,7 +219,8 @@ class _ProductDetailsState extends State<_ProductDetails> {
               style: const TextStyle(fontSize: 11, color: Colors.white),
             ),
             Text(
-              'vs granja de: ${widget.creador}',
+              'vs granja de: ${widget.creador[0].toUpperCase()}${widget.creador.substring(1).split('@')[0]}',
+              //${rrvalue![0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}
               style: const TextStyle(fontSize: 11, color: Colors.white),
             ),
           ],

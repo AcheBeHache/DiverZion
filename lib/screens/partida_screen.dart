@@ -11,7 +11,18 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-class PartidaScreen extends StatelessWidget {
+//color textos deshabilitados
+TextStyle deshabilitarTxts =
+    const TextStyle(fontSize: 13, color: Color.fromARGB(255, 228, 226, 226));
+//msjito del modo manual/automático
+String mensajito = 'manual';
+
+class PartidaScreen extends StatefulWidget {
+  @override
+  State<PartidaScreen> createState() => _PartidaScreenState();
+}
+
+class _PartidaScreenState extends State<PartidaScreen> {
   @override
   Widget build(BuildContext context) {
     final partidaService = Provider.of<PartidasServices>(context);
@@ -23,7 +34,7 @@ class PartidaScreen extends StatelessWidget {
   }
 }
 
-class _PartidaScreenBody extends StatelessWidget {
+class _PartidaScreenBody extends StatefulWidget {
   const _PartidaScreenBody({
     Key? key,
     required this.partidaService,
@@ -31,6 +42,11 @@ class _PartidaScreenBody extends StatelessWidget {
 
   final PartidasServices partidaService;
 
+  @override
+  State<_PartidaScreenBody> createState() => _PartidaScreenBodyState();
+}
+
+class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
   @override
   Widget build(BuildContext context) {
     final partidaForm = Provider.of<PartidaFormProvider>(context);
@@ -43,7 +59,7 @@ class _PartidaScreenBody extends StatelessWidget {
           children: [
             Stack(
               children: [
-                PartidaImage(url: partidaService.selectedPartidas.img),
+                PartidaImage(url: widget.partidaService.selectedPartidas.img),
                 Positioned(
                     top: 60,
                     left: 20,
@@ -68,7 +84,7 @@ class _PartidaScreenBody extends StatelessWidget {
                           return;
                         }
 
-                        partidaService
+                        widget.partidaService
                             .updateSelectedPartidaImage(pickedFile.path);
                       },
                       icon: const Icon(Icons.camera_alt_outlined,
@@ -83,22 +99,25 @@ class _PartidaScreenBody extends StatelessWidget {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
-        onPressed: partidaService.isSaving
+        onPressed: widget.partidaService.isSaving
             ? null
             : () async {
                 if (!partidaForm.isValidForm()) return;
 
-                final String? imageUrl = await partidaService.uploadImage();
+                final String? imageUrl =
+                    await widget.partidaService.uploadImage();
 
                 if (imageUrl != null) partidaForm.partida.img = imageUrl;
 
                 //print(imageUrl);
-                await partidaService.saveOrCreatePartida(partidaForm.partida);
+                await widget.partidaService
+                    .saveOrCreatePartida(partidaForm.partida);
+
                 //1de3-Para poner contexto para navegar entre rutas al editar las cards
                 /*await partidaService.saveOrCreatePartida(
                     context, partidaForm.partida);*/
               },
-        child: partidaService.isSaving
+        child: widget.partidaService.isSaving
             ? const CircularProgressIndicator(color: Colors.white)
             : const Icon(Icons.save_outlined),
       ),
@@ -106,7 +125,12 @@ class _PartidaScreenBody extends StatelessWidget {
   }
 }
 
-class _PartidaForm extends StatelessWidget {
+class _PartidaForm extends StatefulWidget {
+  @override
+  State<_PartidaForm> createState() => _PartidaFormState();
+}
+
+class _PartidaFormState extends State<_PartidaForm> {
   @override
   Widget build(BuildContext context) {
     final partidaForm = Provider.of<PartidaFormProvider>(context);
@@ -126,6 +150,7 @@ class _PartidaForm extends StatelessWidget {
               const SizedBox(height: 10),
               TextFormField(
                 enabled: false,
+                style: deshabilitarTxts,
                 initialValue: partida.fechainicio,
                 onChanged: (value) => partida.fechainicio = value,
                 validator: (value) {
@@ -141,6 +166,8 @@ class _PartidaForm extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               TextFormField(
+                enabled: false,
+                style: deshabilitarTxts,
                 initialValue: partida.fechafin,
                 onChanged: (value) => partida.fechafin = value,
                 /*validator: (value) {
@@ -171,6 +198,8 @@ class _PartidaForm extends StatelessWidget {
               ),*/
               const SizedBox(height: 10),
               TextFormField(
+                enabled: false,
+                style: deshabilitarTxts,
                 initialValue: '${partida.oponentes}',
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(
@@ -225,6 +254,8 @@ class _PartidaForm extends StatelessWidget {
               ),
               const SizedBox(height: 30),
               TextFormField(
+                enabled: false,
+                style: deshabilitarTxts,
                 initialValue: '${partida.status}',
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(
@@ -244,6 +275,8 @@ class _PartidaForm extends StatelessWidget {
               ),
               const SizedBox(height: 10),
               TextFormField(
+                enabled: false,
+                style: deshabilitarTxts,
                 initialValue: partida.usridCreador,
                 onChanged: (value) => partida.usridCreador = value,
                 validator: (value) {
@@ -255,46 +288,51 @@ class _PartidaForm extends StatelessWidget {
                   return null;
                 },
                 decoration: InputDecorations.authInputDecoration(
-                    hintText: 'usridDeFirebase', labelText: 'UsrIdCreador: '),
+                    hintText: 'usridDeFirebase', labelText: 'Creadora/or: '),
               ),
               const SizedBox(height: 10),
               TextFormField(
+                enabled: false,
+                style: deshabilitarTxts,
                 initialValue: partida.usridnowin,
                 onChanged: (value) => partida.usridnowin = value,
-                validator: (value) {
+                /*validator: (value) {
                   //if (value == null || value.length < 1) {
                   if (value == null || value.length < 1) {
                     return 'El usridnowin es obligatorio.';
                   }
                   //añadí el return null
                   return null;
-                },
+                },*/
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'usridnowinDeFirebase',
                     labelText: 'UsrIdNowin: '),
               ),
               const SizedBox(height: 10),
               TextFormField(
+                enabled: false,
+                style: deshabilitarTxts,
                 initialValue: partida.usridwin,
                 onChanged: (value) => partida.usridwin = value,
-                validator: (value) {
+                /*validator: (value) {
                   //if (value == null || value.length < 1) {
                   if (value == null || value.length < 1) {
                     return 'El usridwin es obligatorio.';
                   }
                   //añadí el return null
                   return null;
-                },
+                },*/
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'usridwinDeFirebase', labelText: 'UsrIdWin: '),
               ),
               const SizedBox(height: 30),
               SwitchListTile.adaptive(
                   value: partida.modojuego,
-                  title: const Text('Modo: '),
+                  //TODO: falta habilitar el timeReal del modo
+                  title: Text('Modo: $mensajito'),
                   activeColor: Colors.indigo,
                   onChanged: partidaForm.updateModojuego),
-              const SizedBox(height: 30)
+              const SizedBox(height: 30),
             ],
           ),
         ),

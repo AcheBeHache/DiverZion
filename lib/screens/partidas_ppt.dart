@@ -27,7 +27,8 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
   TextStyle parrafosTxt = const TextStyle(fontSize: 17);
   //Para iniciar la instancia del StreamBuilder, usando nuestro archivo bloc
   final peticionesBloc = PeticionesPPTBloc();
-  //prueba
+  //prueba usr
+  String usrcreador = '';
 
   @override
   Widget build(BuildContext context) {
@@ -36,6 +37,25 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
     if (partidasService.isLoading) {
       return LoadingScreen();
     }
+    //Obtenemos el usr - idToken
+    final authService = Provider.of<AuthService>(context, listen: false);
+    mostrarusr() async {
+      //String? rrvalue = await AuthService().readEmail();
+      //String? valor = await authService.storage.read(key: 'usremail');
+      String? rrvalue = await authService.storage.read(key: 'usremail');
+      /*obtenemos el nombre del usuario tomando como referencia su email, lo que va antes del @ con split:
+      ${rrvalue!.split('@')[0]}*/
+      /* Obtenemos la primera letra y la convertimos en mayúscula:
+        ${rrvalue![0].toUpperCase()}${rrvalue.substring(1)}
+      */
+      usrcreador = rrvalue!.toLowerCase();
+      //print(enviomsj);
+      setState(() {});
+      return usrcreador;
+    }
+
+    //ejecutamos la función para mostrar usrname
+    mostrarusr();
     //estilosTextos
     final Shader linearGradient = const LinearGradient(
       colors: <Color>[
@@ -109,14 +129,14 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                 partidasService.selectedPartidas = Ppt(
                     fechainicio: formatDate(DateTime.now(),
                         [d, '/', mm, '/', yyyy, ' ', H, ':', m, ':', am]),
-                    id: '',
-                    idPrueba: '',
-                    modojuego: true,
+                    id: '', //validar
+                    idPrueba: '', //validar
+                    modojuego: false,
                     montototal: 1,
                     oponentes: 1,
                     status: 1,
-                    //establecerle el dato del localstorage
-                    usridCreador: '',
+                    //TODO: establecerle el dato del localstorage
+                    usridCreador: usrcreador,
                     usridnowin: '',
                     usridwin: '',
                     fechafin: '');
