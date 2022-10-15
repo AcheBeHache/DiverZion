@@ -29,7 +29,8 @@ class PartidasServices extends ChangeNotifier {
 
     partidasMap.forEach((key, value) {
       final tempPartidas = Ppt.fromMap(value);
-      tempPartidas.idPrueba = key;
+      //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
+      tempPartidas.id = key;
       partidas.add(tempPartidas);
     });
 

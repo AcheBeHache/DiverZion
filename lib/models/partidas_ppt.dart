@@ -39,10 +39,43 @@ class Ppt {
       this.oponentes,
       required this.status,
       required this.usridCreador,
-      this.usridnowin,
+      this.usridoponente,
       this.usridwin,
       this.img,
-      this.idPrueba});
+      this.idPrueba,
+      this.usrversionapp,
+      this.respcreador,
+      this.respoponente,
+      this.notificar
+
+      /*Para usr poder 
+      this.usrrol,
+      this.usrbolsagral,
+      this.usrbolsahoy,
+      this.usrversionapp
+      */
+
+      /*Para granja
+      
+      this.modogranja,
+      this.elemento1,
+      this.elemento2,
+      this.elemento3,
+      this.elemento4,
+      this.elemento5,
+      this.elemento6,
+      this.elemento7,
+      this.elemento8,
+      this.servicio1,
+      this.servicio2,
+      this.servicio3,
+      this.servicio4,
+      this.servicio5,
+      this.servicio6,
+      this.servicio7,
+      this.servicio8,*/
+
+      });
 
   String? fechafin;
   String fechainicio;
@@ -53,27 +86,34 @@ class Ppt {
   int? oponentes;
   int status;
   String usridCreador;
-  String? usridnowin;
+  String? usridoponente;
   String? usridwin;
   String? idPrueba;
+  String? usrversionapp;
+  String? respcreador;
+  String? respoponente;
+  bool? notificar;
 
   factory Ppt.fromJson(String str) => Ppt.fromMap(json.decode(str));
 
   String toJson() => json.encode(toMap());
 
   factory Ppt.fromMap(Map<String, dynamic> json) => Ppt(
-        fechafin: json["fechafin"],
-        fechainicio: json["fechainicio"],
-        id: json["id"],
-        modojuego: json["modojuego"],
-        montototal: json["montototal"],
-        oponentes: json["oponentes"],
-        status: json["status"],
-        usridCreador: json["usrid_creador"],
-        usridnowin: json["usridnowin"],
-        usridwin: json["usridwin"],
-        img: json["img"],
-      );
+      fechafin: json["fechafin"],
+      fechainicio: json["fechainicio"],
+      id: json["id"],
+      modojuego: json["modojuego"],
+      montototal: json["montototal"],
+      oponentes: json["oponentes"],
+      status: json["status"],
+      usridCreador: json["usrid_creador"],
+      usridoponente: json["usridoponente"],
+      usridwin: json["usridwin"],
+      img: json["img"],
+      usrversionapp: json["usrversionapp"],
+      respcreador: json["respcreador"],
+      respoponente: json["respoponente"],
+      notificar: json["notificar"]);
 
   Map<String, dynamic> toMap() => {
         "fechafin": fechafin,
@@ -84,9 +124,13 @@ class Ppt {
         "oponentes": oponentes,
         "status": status,
         "usrid_creador": usridCreador,
-        "usridnowin": usridnowin,
+        "usridoponente": usridoponente,
         "usridwin": usridwin,
         "img": img,
+        "usrversionapp": usrversionapp,
+        "respcreador": respcreador,
+        "respoponente": respoponente,
+        "notificar": notificar
       };
 
   Ppt copy() => Ppt(
@@ -98,8 +142,12 @@ class Ppt {
       oponentes: oponentes,
       status: status,
       usridCreador: usridCreador,
-      usridnowin: usridnowin,
+      usridoponente: usridoponente,
       usridwin: usridwin,
       img: img,
-      fechafin: fechafin);
+      fechafin: fechafin,
+      usrversionapp: usrversionapp,
+      respcreador: respcreador,
+      respoponente: respoponente,
+      notificar: notificar);
 }

@@ -14,8 +14,10 @@ class PartidaFormProvider extends ChangeNotifier {
     partida.modojuego = value;
     /*if (partida.modojuego == true) {
       mensajito = 'automático';
+      print(mensajito);
     } else {
       mensajito = 'manual';
+      print(mensajito);
     }*/
     notifyListeners();
   }

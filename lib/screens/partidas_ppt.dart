@@ -137,9 +137,13 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                     status: 1,
                     //TODO: establecerle el dato del localstorage
                     usridCreador: usrcreador,
-                    usridnowin: '',
+                    usridoponente: '',
                     usridwin: '',
-                    fechafin: '');
+                    fechafin: '',
+                    usrversionapp: 'basica',
+                    respcreador: '',
+                    respoponente: '',
+                    notificar: false);
                 Navigator.pushNamed(context, 'partida');
                 /*showDialog(
                     context: context,

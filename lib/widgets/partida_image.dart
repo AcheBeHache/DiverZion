@@ -40,7 +40,9 @@ class PartidaImage extends StatelessWidget {
   Widget getImage(String? picture) {
     if (picture == null) {
       return const Image(
-        image: AssetImage('assets/images/no-image.png'),
+        //Aquí se cambia la img grande al crear una partida
+        //image: AssetImage('assets/images/no-image.png'),
+        image: AssetImage('assets/images/ppt2.JPG'),
         fit: BoxFit.cover,
       );
     }

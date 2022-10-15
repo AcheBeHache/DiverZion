@@ -15,7 +15,7 @@ import 'package:provider/provider.dart';
 TextStyle deshabilitarTxts =
     const TextStyle(fontSize: 13, color: Color.fromARGB(255, 228, 226, 226));
 //msjito del modo manual/automático
-String mensajito = 'manual';
+//String mensajito = 'manual';
 
 class PartidaScreen extends StatefulWidget {
   @override
@@ -51,7 +51,6 @@ class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
   Widget build(BuildContext context) {
     final partidaForm = Provider.of<PartidaFormProvider>(context);
     final partida = partidaForm.partida;
-
     return Scaffold(
       body: SingleChildScrollView(
         // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -68,6 +67,7 @@ class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
                       icon: const Icon(Icons.arrow_back_ios_new,
                           size: 40, color: Colors.white),
                     )),
+                /*Descomentar para permitir al usr cargar una fotografía
                 Positioned(
                     top: 60,
                     right: 20,
@@ -89,7 +89,7 @@ class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
                       },
                       icon: const Icon(Icons.camera_alt_outlined,
                           size: 40, color: Colors.white),
-                    ))
+                    ))*/
               ],
             ),
             _PartidaForm(),
@@ -99,6 +99,7 @@ class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
+        //ejemplo para comenzar a emparejar partida con otro oponente: select, update, etc...
         onPressed: widget.partidaService.isSaving
             ? null
             : () async {
@@ -162,25 +163,25 @@ class _PartidaFormState extends State<_PartidaForm> {
                   return null;
                 },
                 decoration: InputDecorations.authInputDecoration(
-                    hintText: 'YYYY/MM/DD', labelText: 'Fecha Inicio:'),
+                    hintText: 'YYYY/MM/DD', labelText: 'Creación:'),
               ),
-              const SizedBox(height: 10),
+              /*const SizedBox(height: 10),
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
                 initialValue: partida.fechafin,
                 onChanged: (value) => partida.fechafin = value,
-                /*validator: (value) {
+                validator: (value) {
                   //if (value == null || value.length < 1) {
                   if (value == null || value.isEmpty) {
-                    return 'La fecha de inicio es obligatoria.';
+                    return 'La fecha de fin es obligatoria.';
                   }
                   //añadí el return null
                   return null;
-                },*/
+                },
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'YYYY/MM/DD', labelText: 'Fecha Fin:'),
-              ),
+              ),*/
               /*const SizedBox(height: 10),
               TextFormField(
                 initialValue: partida.id,
@@ -196,7 +197,7 @@ class _PartidaFormState extends State<_PartidaForm> {
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'idDeFirebase', labelText: 'Id: '),
               ),*/
-              const SizedBox(height: 10),
+              /*const SizedBox(height: 10),
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
@@ -216,8 +217,8 @@ class _PartidaFormState extends State<_PartidaForm> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecorations.authInputDecoration(
                     hintText: '#', labelText: 'Oponentes: '),
-              ),
-              /*const SizedBox(height: 10),
+              ),*/
+              /*MUESTRA const SizedBox(height: 10),
               TextFormField(
                 initialValue: partida.modojuego,
                 onChanged: (value) => partida.modojuego = value,
@@ -250,9 +251,10 @@ class _PartidaFormState extends State<_PartidaForm> {
                 },
                 keyboardType: TextInputType.number,
                 decoration: InputDecorations.authInputDecoration(
-                    hintText: 'Rango del 1 al 99', labelText: 'Poder:'),
+                    hintText: 'Rango del 1 al 99',
+                    labelText: 'Poder en juego:'),
               ),
-              const SizedBox(height: 30),
+              /*const SizedBox(height: 30),
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
@@ -272,7 +274,7 @@ class _PartidaFormState extends State<_PartidaForm> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecorations.authInputDecoration(
                     hintText: '1', labelText: 'Status:'),
-              ),
+              ),*/
               const SizedBox(height: 10),
               TextFormField(
                 enabled: false,
@@ -294,8 +296,8 @@ class _PartidaFormState extends State<_PartidaForm> {
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
-                initialValue: partida.usridnowin,
-                onChanged: (value) => partida.usridnowin = value,
+                initialValue: partida.usridoponente,
+                onChanged: (value) => partida.usridoponente = value,
                 /*validator: (value) {
                   //if (value == null || value.length < 1) {
                   if (value == null || value.length < 1) {
@@ -305,8 +307,8 @@ class _PartidaFormState extends State<_PartidaForm> {
                   return null;
                 },*/
                 decoration: InputDecorations.authInputDecoration(
-                    hintText: 'usridnowinDeFirebase',
-                    labelText: 'UsrIdNowin: '),
+                    hintText: 'usridOponenteLocalStorage',
+                    labelText: 'Oponente: '),
               ),
               const SizedBox(height: 10),
               TextFormField(
@@ -323,13 +325,17 @@ class _PartidaFormState extends State<_PartidaForm> {
                   return null;
                 },*/
                 decoration: InputDecorations.authInputDecoration(
-                    hintText: 'usridwinDeFirebase', labelText: 'UsrIdWin: '),
+                    hintText: 'usridwinDeFirebase',
+                    labelText: 'Recibe poder: '),
               ),
               const SizedBox(height: 30),
               SwitchListTile.adaptive(
-                  value: partida.modojuego,
+                  //NO APLICA - enabled: false,
                   //TODO: falta habilitar el timeReal del modo
-                  title: Text('Modo: $mensajito'),
+                  value: partida.modojuego,
+                  //title: Text('Modo: ${partida.modojuego}'),
+                  title: const Text('Activar modo automático:'),
+                  subtitle: Text('${partida.modojuego}.'),
                   activeColor: Colors.indigo,
                   onChanged: partidaForm.updateModojuego),
               const SizedBox(height: 30),
