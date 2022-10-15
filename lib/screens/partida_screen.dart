@@ -79,8 +79,8 @@ class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
                             source: ImageSource.camera,
                             imageQuality: 100);
 
-                        if (pickedFile == null) {
-                          print('No seleccionó nada');
+                        if (pickedFile == null || pickedFile == '') {
+                          print('Archivo null o vacío.');
                           return;
                         }
 

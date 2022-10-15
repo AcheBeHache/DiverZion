@@ -254,7 +254,8 @@ class _BackgroundImageState extends State<_BackgroundImage> {
         height: 400,
         child: widget.url == null
             ? const Image(
-                image: AssetImage('assets/images/no-image.png'),
+                //image: AssetImage('assets/images/no-image.png'),
+                image: AssetImage('assets/images/ppt3.JPG'),
                 fit: BoxFit.cover)
             : FadeInImage(
                 placeholder: const AssetImage('assets/images/jar-loading.gif'),
