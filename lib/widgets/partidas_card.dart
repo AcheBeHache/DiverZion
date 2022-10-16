@@ -37,7 +37,7 @@ class _PartidasCardState extends State<PartidasCard> {
             Positioned(
                 top: 0,
                 right: 0,
-                child: _PriceTag(widget.partida.montototal.toDouble())),
+                child: _PriceTag(widget.partida.montototal.toInt())),
             //para no disponible, en partida actualmente.
             if (widget.partida.status == 2)
               Positioned(top: 0, left: 0, child: _NotAvailable()),
@@ -150,7 +150,7 @@ class _TerminoState extends State<_Termino> {
 }
 
 class _PriceTag extends StatefulWidget {
-  final double price;
+  final int price;
 
   const _PriceTag(this.price);
 
@@ -206,7 +206,7 @@ class _ProductDetailsState extends State<_ProductDetails> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Lanzamiento: ${widget.finicio}',
+              'Fijada el: ${widget.finicio}',
               style: const TextStyle(
                   fontSize: 15,
                   color: Colors.white,
@@ -215,7 +215,7 @@ class _ProductDetailsState extends State<_ProductDetails> {
               overflow: TextOverflow.ellipsis,
             ),
             Text(
-              'Cierre: ${widget.ffin}',
+              'Fecha de cierre: ${widget.ffin}',
               style: const TextStyle(fontSize: 11, color: Colors.white),
             ),
             Text(

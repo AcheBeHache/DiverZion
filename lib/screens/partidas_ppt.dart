@@ -93,15 +93,97 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
               //return ListView.builder(
               itemCount: partidasService.partidas.length,
               itemBuilder: (BuildContext context, int index) => GestureDetector(
-                    onTap: () {
-                      //Aquí tenemos que cambiar la funcionalidad "total", pero dirigir con los datos a la ventana (PPT) para comenzar el juego
-                      partidasService.selectedPartidas =
-                          partidasService.partidas[index].copy();
-                      Navigator.pushNamed(context, 'partida');
-                    },
-                    child: PartidasCard(
-                      partida: partidasService.partidas[index],
-                    ),
+                  onTap: () {
+                    //Aquí tenemos que cambiar la funcionalidad "total", pero dirigir con los datos a la ventana (PPT) para comenzar el juego
+                    //Me quedé aqui para hacer pruebas de visualizar y copiar únicamente las cards con status 1y2
+                    partidasService.selectedPartidas =
+                        partidasService.partidas[index].copy();
+                    //incluir evalúo de que tenga poder en su granja el usr, así como el monto al día permitido,
+                    //checar el tema de juego entre usrversionapp para poder mayor
+                    if (partidasService.partidas[index].usridCreador ==
+                            usrcreador &&
+                        partidasService.partidas[index].status == 1 &&
+                        (partidasService.partidas[index].usridoponente == '' ||
+                            partidasService.partidas[index].usridoponente ==
+                                null)) {
+                      NotificationsService.showSnackbar(
+                          "tú mismo la hicistesss, aún no hay oponente, recibirás una notificación!");
+                    }
+                    if (partidasService.partidas[index].usridCreador !=
+                            usrcreador &&
+                        partidasService.partidas[index].status == 1 &&
+                        (partidasService.partidas[index].usridoponente == '' ||
+                            partidasService.partidas[index].usridoponente ==
+                                null)) {
+                      NotificationsService.showSnackbar(
+                          "Otro la hizo, deseas ser el oponente?, envía la notificación al creador!");
+                    }
+                    if (partidasService.partidas[index].usridCreador ==
+                            usrcreador &&
+                        partidasService.partidas[index].status == 2 &&
+                        (partidasService.partidas[index].usridoponente != '' ||
+                            partidasService.partidas[index].usridoponente !=
+                                null)) {
+                      NotificationsService.showSnackbar(
+                          "Vientos! puedes entrar a retar, ya se tiene oponente!");
+                    }
+
+                    if (partidasService.partidas[index].usridCreador !=
+                            usrcreador &&
+                        partidasService.partidas[index].status == 2 &&
+                        partidasService.partidas[index].usridoponente !=
+                            usrcreador) {
+                      NotificationsService.showSnackbar(
+                          "Ya te la ganaron! no la creastess ni eres oponente. refresca y busca nueva partida. O crea una.");
+                    }
+
+                    if (partidasService.partidas[index].usridCreador !=
+                            usrcreador &&
+                        partidasService.partidas[index].status == 2 &&
+                        partidasService.partidas[index].usridoponente ==
+                            usrcreador) {
+                      NotificationsService.showSnackbar(
+                          "¡Eres oponente, qué esperas! Envía tu respuesta.");
+                    }
+
+                    if (partidasService.partidas[index].usridCreador ==
+                            usrcreador &&
+                        partidasService.partidas[index].status == 3 &&
+                        (partidasService.partidas[index].usridoponente != '' ||
+                            partidasService.partidas[index].usridoponente !=
+                                null)) {
+                      NotificationsService.showSnackbar(
+                          "Ya la llevaste a cabo, fuiste el creador! Realiza una nueva partida.");
+                    }
+
+                    if (partidasService.partidas[index].usridCreador !=
+                            usrcreador &&
+                        partidasService.partidas[index].status == 3 &&
+                        partidasService.partidas[index].usridoponente !=
+                            usrcreador) {
+                      NotificationsService.showSnackbar(
+                          "Chav@, Ya se llevó a cabo! No estás dentro de la partida. Intenta creando nueva partida.");
+                    }
+
+                    if (partidasService.partidas[index].usridCreador !=
+                            usrcreador &&
+                        partidasService.partidas[index].status == 3 &&
+                        partidasService.partidas[index].usridoponente ==
+                            usrcreador) {
+                      NotificationsService.showSnackbar(
+                          "Chav@, Ya se llevó a cabo! Fuiste el oponente en la partida. Intenta creando nueva partida.");
+                    }
+                  },
+                  child: PartidasCard(
+                    partida: partidasService.partidas[index],
+                  )
+                  /*Logra mostrar al usr únicamente cards disponibles y en status 'En partida' 
+                    partidasService.partidas[index].status == 1 ||
+                            partidasService.partidas[index].status == 2
+                        /? PartidasCard(
+                            partida: partidasService.partidas[index],
+                          )
+                        : const Text(""),*/
                   )),
           onRefresh: () {
             /*print(formatDate(DateTime.now(), [H, ':', m, am]));
