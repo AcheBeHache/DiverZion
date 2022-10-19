@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 
-class AuthBackground extends StatelessWidget {
+class AuthBackground extends StatefulWidget {
   final Widget child;
 
   const AuthBackground({Key? key, required this.child}) : super(key: key);
 
+  @override
+  State<AuthBackground> createState() => _AuthBackgroundState();
+}
+
+class _AuthBackgroundState extends State<AuthBackground> {
   @override
   Widget build(BuildContext context) {
     return SizedBox(
@@ -15,14 +20,19 @@ class AuthBackground extends StatelessWidget {
         children: [
           _AmberBox(),
           _HeaderIconLogin(),
-          child,
+          widget.child,
         ],
       ),
     );
   }
 }
 
-class _HeaderIconLogin extends StatelessWidget {
+class _HeaderIconLogin extends StatefulWidget {
+  @override
+  State<_HeaderIconLogin> createState() => _HeaderIconLoginState();
+}
+
+class _HeaderIconLoginState extends State<_HeaderIconLogin> {
   @override
   Widget build(BuildContext context) {
     return SafeArea(
@@ -35,7 +45,12 @@ class _HeaderIconLogin extends StatelessWidget {
   }
 }
 
-class _AmberBox extends StatelessWidget {
+class _AmberBox extends StatefulWidget {
+  @override
+  State<_AmberBox> createState() => _AmberBoxState();
+}
+
+class _AmberBoxState extends State<_AmberBox> {
   @override
   Widget build(BuildContext context) {
     final size = MediaQuery.of(context).size;
@@ -62,9 +77,13 @@ class _AmberBox extends StatelessWidget {
       ]));
 }
 
-class _Bubble extends StatelessWidget {
-  //const _Bubble({ Key? key }) : super(key: key);
+class _Bubble extends StatefulWidget {
+  @override
+  State<_Bubble> createState() => _BubbleState();
+}
 
+class _BubbleState extends State<_Bubble> {
+  //const _Bubble({ Key? key }) : super(key: key);
   @override
   Widget build(BuildContext context) {
     return Container(

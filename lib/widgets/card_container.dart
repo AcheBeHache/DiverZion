@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 
-class CardContainer extends StatelessWidget {
+class CardContainer extends StatefulWidget {
   const CardContainer({Key? key, required this.child}) : super(key: key);
   final Widget child;
 
+  @override
+  State<CardContainer> createState() => _CardContainerState();
+}
+
+class _CardContainerState extends State<CardContainer> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -12,7 +17,7 @@ class CardContainer extends StatelessWidget {
         width: double.infinity,
         padding: const EdgeInsets.all(20),
         decoration: _createCardShape(),
-        child: child,
+        child: widget.child,
       ),
     );
   }

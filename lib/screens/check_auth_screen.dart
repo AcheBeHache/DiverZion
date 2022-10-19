@@ -3,7 +3,12 @@ import 'package:provider/provider.dart';
 import 'package:app_game/screens/screens.dart';
 import 'package:app_game/services/services.dart';
 
-class CheckAuthScreen extends StatelessWidget {
+class CheckAuthScreen extends StatefulWidget {
+  @override
+  State<CheckAuthScreen> createState() => _CheckAuthScreenState();
+}
+
+class _CheckAuthScreenState extends State<CheckAuthScreen> {
   @override
   Widget build(BuildContext context) {
     final authService = Provider.of<AuthService>(context, listen: false);

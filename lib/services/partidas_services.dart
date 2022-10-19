@@ -12,9 +12,13 @@ class PartidasServices extends ChangeNotifier {
   bool isLoading = true;
   bool isSaving = false;
   File? newPictureFile;
+  //para tarjetas ppt
+  final List<Opcion> tarjetas = [];
+  late Opcion selectedTarjetas;
 
   PartidasServices() {
     loadPartidas();
+    //loadTarjetas();
   }
 
   //TODO: <List<Partidasppt>>
@@ -50,6 +54,43 @@ class PartidasServices extends ChangeNotifier {
     print('${partidas[1].id} ${partidas[1].fechainicio}');*/
   }
 
+  //para cargar tarjetas
+  /*Future loadTarjetas() async {
+    isLoading = true;
+    notifyListeners();
+
+    final url = Uri.https(_baseUrl, 'fichas_ppt.json');
+    final resp = await http.get(url);
+
+    final Map<String, dynamic> partidasMap = json.decode(resp.body);
+
+    partidasMap.forEach((key, value) {
+      final tempTarjetas = Opcion.fromMap(value);
+      //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
+
+      tempTarjetas.id = key;
+      tarjetas.add(tempTarjetas);
+      print(tarjetas[0].toMap());
+    });
+
+    isLoading = false;
+    notifyListeners();
+    return tarjetas;
+    /*print(partidasMap);
+    print(partidasMap.length);*/
+    /*print(partidas[1].toMap());
+    print('------');
+    print(partidas[1].id);
+    return partidas;*/
+
+/*    print(partidasMap);
+    print("---");
+    print('${partidas[0].id} ${partidas[0].fechainicio}');
+    print("---");
+    print('${partidas[1].id} ${partidas[1].fechainicio}');*/
+  }*/
+
+  //Future saveOrCreatePartida(Ppt partida, Opcion tarj) async {
   Future saveOrCreatePartida(Ppt partida) async {
     //2de3-Para poner contexto para navegar entre rutas al editar las cards
     //Future saveOrCreatePartida(context, Ppt partida) async {
@@ -65,6 +106,8 @@ class PartidasServices extends ChangeNotifier {
     } else {
       // Actualizar
       await updatePartida(partida);
+      //await updateTarjeta(partida, tarj);
+
       //Navigator.pushNamed(context, 'partidas_ppt');
       //Sprint('actualizará_Partida');
     }
@@ -79,6 +122,23 @@ class PartidasServices extends ChangeNotifier {
 
     partida.id = decodedData['name'];
     partidas.add(partida);
+
+    return partida.id!;
+  }
+
+  //actualizar tarjeta
+  //Future<String> updateTarjeta(Ppt partida, Opcion tarj) async {
+  Future<String> updateTarjeta(Ppt partida) async {
+    final url = Uri.https(_baseUrl, 'partidas_ppt/${partida.id}.json');
+    final resp = await http.put(url, body: partida.toJson());
+    final decodedData = json.decode(resp.body);
+    //selectedTarjetas = tarj;
+
+    //print('Tarj: $tarj');
+    //TODO: Actualizar el listado de productos
+    final index = partidas.indexWhere(
+        (element) => (element.id == partida.id && element.respcreador == ''));
+    partidas[index] = partida;
 
     return partida.id!;
   }

@@ -212,7 +212,7 @@ class _PPTState extends State<PPT> {
   }
 }
 
-class BotoneraInferior extends StatelessWidget {
+class BotoneraInferior extends StatefulWidget {
   final Function piedraFn;
   final Function papelFn;
   final Function tijeraFn;
@@ -227,6 +227,11 @@ class BotoneraInferior extends StatelessWidget {
   }) : super(key: key);
 
   @override
+  State<BotoneraInferior> createState() => _BotoneraInferiorState();
+}
+
+class _BotoneraInferiorState extends State<BotoneraInferior> {
+  @override
   Widget build(BuildContext context) {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
@@ -234,8 +239,8 @@ class BotoneraInferior extends StatelessWidget {
         FloatingActionButton(
           heroTag: "btnPiedra",
           child: const Icon(Icons.storm),
-          onPressed: () =>
-              piedraFn(), /*() {
+          onPressed: () => widget
+              .piedraFn(), /*() {
             j1ficha = 1;
             setState(() {});
           }
@@ -245,8 +250,8 @@ class BotoneraInferior extends StatelessWidget {
         FloatingActionButton(
           heroTag: "btnPapel",
           child: const Icon(Icons.filter_frames),
-          onPressed: () =>
-              papelFn(), /*() {
+          onPressed: () => widget
+              .papelFn(), /*() {
             j1ficha = 2;
             setState(() {});
           }
@@ -256,8 +261,8 @@ class BotoneraInferior extends StatelessWidget {
         FloatingActionButton(
           heroTag: "btnTijera",
           child: const Icon(Icons.switch_access_shortcut_sharp),
-          onPressed: () =>
-              tijeraFn(), /*() {
+          onPressed: () => widget
+              .tijeraFn(), /*() {
             j1ficha = 3;
             setState(() {});
           }
@@ -268,7 +273,7 @@ class BotoneraInferior extends StatelessWidget {
           heroTag: "btnEnvioMsj",
           child: const Icon(Icons.play_arrow),
           onPressed: () {
-            enviomsjFn(); //otra forma de definir la función
+            widget.enviomsjFn(); //otra forma de definir la función
           }, /*() {
             j1ficha++;
             setState(() {});

@@ -1,4 +1,5 @@
 //import 'package:app_game/services/notifications_service.dart';
+import 'package:app_game/providers/opcionesppt_provider.dart';
 import 'package:app_game/screens/pagina3.dart';
 import 'package:app_game/screens/partida_screen.dart';
 import 'package:app_game/screens/partidas_ppt.dart';
@@ -12,20 +13,31 @@ import 'package:app_game/services/services.dart';
 
 void main() => runApp(AppState());
 
-class AppState extends StatelessWidget {
+class AppState extends StatefulWidget {
+  @override
+  State<AppState> createState() => _AppStateState();
+}
+
+class _AppStateState extends State<AppState> {
   @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthService()),
         ChangeNotifierProvider(create: (_) => PartidasServices()),
+        ChangeNotifierProvider(create: (_) => OpcionesPPTProvider()),
       ],
       child: MyApp(),
     );
   }
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(

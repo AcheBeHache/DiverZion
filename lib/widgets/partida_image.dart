@@ -2,11 +2,16 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 
-class PartidaImage extends StatelessWidget {
+class PartidaImage extends StatefulWidget {
   final String? url;
 
   const PartidaImage({Key? key, this.url}) : super(key: key);
 
+  @override
+  State<PartidaImage> createState() => _PartidaImageState();
+}
+
+class _PartidaImageState extends State<PartidaImage> {
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -20,7 +25,7 @@ class PartidaImage extends StatelessWidget {
           child: ClipRRect(
               borderRadius: const BorderRadius.only(
                   topLeft: Radius.circular(45), topRight: Radius.circular(45)),
-              child: getImage(url)),
+              child: getImage(widget.url)),
         ),
       ),
     );
@@ -49,7 +54,7 @@ class PartidaImage extends StatelessWidget {
 
     if (picture.startsWith('http')) {
       return FadeInImage(
-        image: NetworkImage(url!),
+        image: NetworkImage(widget.url!),
         placeholder: const AssetImage('assets/images/jar-loading.gif'),
         fit: BoxFit.cover,
       );

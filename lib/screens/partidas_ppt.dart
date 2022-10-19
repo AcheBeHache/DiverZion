@@ -124,8 +124,9 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                         (partidasService.partidas[index].usridoponente != '' ||
                             partidasService.partidas[index].usridoponente !=
                                 null)) {
-                      NotificationsService.showSnackbar(
-                          "Vientos! puedes entrar a retar, ya se tiene oponente!");
+                      Navigator.pushNamed(context, 'partida');
+                      /*NotificationsService.showSnackbar(
+                          "Vientos! puedes entrar a retar, ya se tiene oponente!");*/
                     }
 
                     if (partidasService.partidas[index].usridCreador !=

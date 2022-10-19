@@ -6,9 +6,10 @@ class PartidaFormProvider extends ChangeNotifier {
   GlobalKey<FormState> formKey = new GlobalKey<FormState>();
 
   Ppt partida;
+  //Opcion tarj;
 
+  // PartidaFormProvider(this.partida, this.tarj);
   PartidaFormProvider(this.partida);
-
   updateModojuego(dynamic value) {
     //print(value);
     partida.modojuego = value;
