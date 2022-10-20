@@ -96,8 +96,11 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                   onTap: () {
                     //Aquí tenemos que cambiar la funcionalidad "total", pero dirigir con los datos a la ventana (PPT) para comenzar el juego
                     //Me quedé aqui para hacer pruebas de visualizar y copiar únicamente las cards con status 1y2
+                    /*partidasService.selectedPartidas =
+                        partidasService.partidas[index].copy();*/
+                    //TODO: Checar el copy
                     partidasService.selectedPartidas =
-                        partidasService.partidas[index].copy();
+                        partidasService.partidas[index];
                     //incluir evalúo de que tenga poder en su granja el usr, así como el monto al día permitido,
                     //checar el tema de juego entre usrversionapp para poder mayor
                     if (partidasService.partidas[index].usridCreador ==

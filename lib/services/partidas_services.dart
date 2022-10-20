@@ -91,7 +91,7 @@ class PartidasServices extends ChangeNotifier {
   }*/
 
   //Future saveOrCreatePartida(Ppt partida, Opcion tarj) async {
-  Future saveOrCreatePartida(Ppt partida) async {
+  Future saveOrCreatePartida(Ppt partida, Opcion tarjetas) async {
     //2de3-Para poner contexto para navegar entre rutas al editar las cards
     //Future saveOrCreatePartida(context, Ppt partida) async {
     isSaving = true;
@@ -99,14 +99,15 @@ class PartidasServices extends ChangeNotifier {
     //checar los id y idPrueba, la actualización ya está, falta la creación. Ojo: estoy pidiendo el id desde el formulario, que en teoría no debe ser null o si?
     if (partida.id == null || partida.id == '') {
       // Es necesario crear
+      print("entro al creador");
       await createPartida(partida);
       await updatePartida(partida);
       //3de3-Para poner contexto para navegar entre rutas al editar las cards
       //Navigator.pushNamed(context, 'partidas_ppt');
     } else {
       // Actualizar
-      await updatePartida(partida);
-      //await updateTarjeta(partida, tarj);
+      //await updatePartida(partida);
+      await updateTarjeta(partida, tarjetas);
 
       //Navigator.pushNamed(context, 'partidas_ppt');
       //Sprint('actualizará_Partida');
@@ -128,20 +129,6 @@ class PartidasServices extends ChangeNotifier {
 
   //actualizar tarjeta
   //Future<String> updateTarjeta(Ppt partida, Opcion tarj) async {
-  Future<String> updateTarjeta(Ppt partida) async {
-    final url = Uri.https(_baseUrl, 'partidas_ppt/${partida.id}.json');
-    final resp = await http.put(url, body: partida.toJson());
-    final decodedData = json.decode(resp.body);
-    //selectedTarjetas = tarj;
-
-    //print('Tarj: $tarj');
-    //TODO: Actualizar el listado de productos
-    final index = partidas.indexWhere(
-        (element) => (element.id == partida.id && element.respcreador == ''));
-    partidas[index] = partida;
-
-    return partida.id!;
-  }
 
   //actualizar partida
   Future<String> updatePartida(Ppt partida) async {
@@ -154,6 +141,24 @@ class PartidasServices extends ChangeNotifier {
     partidas[index] = partida;
 
     return partida.id!;
+  }
+
+  Future<String> updateTarjeta(Ppt partida, Opcion tarjetas) async {
+    final url = Uri.https(_baseUrl, 'partidas_ppt/${partida.id}.json');
+    final resp = await http.put(url, body: partida.toJson());
+    final decodedData = json.decode(resp.body);
+    final eleccioncreador = tarjetas.nombre;
+    //selectedTarjetas = tarj;
+
+    //print('Tarj: $tarj');
+    //TODO: Actualizar el listado de productos
+    final index = partidas.indexWhere((element) => (element.id == partida.id));
+
+    partidas[index] = partida;
+    partidas[index].respcreador = eleccioncreador;
+    partidas[index].respoponente = 'eleccionoponente';
+    //notifyListeners();
+    return tarjetas.id!;
   }
 
   void updateSelectedPartidaImage(String path) {

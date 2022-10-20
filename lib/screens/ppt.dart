@@ -2,7 +2,10 @@
 
 import 'dart:async';
 
+import 'package:app_game/models/models.dart';
+import 'package:app_game/providers/partida_form_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 //import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 //import 'package:app_game/bloc/peticionesppt_bloc.dart';
@@ -82,6 +85,12 @@ class _PPTState extends State<PPT> {
   //Termina funciones del cronómetro
   @override
   Widget build(BuildContext context) {
+    final Opcion resultado =
+        ModalRoute.of(context)!.settings.arguments as Opcion;
+    /*final partidaForm = Provider.of<PartidaFormProvider>(context);
+    final partida = partidaForm.partida;*/
+    final size = MediaQuery.of(context).size;
+    print(resultado.nombre);
     return WillPopScope(
       onWillPop: () async {
         //este if no permite salir al jugador cuando está en juego (recomendado)
@@ -134,10 +143,11 @@ class _PPTState extends State<PPT> {
                   style: titulosTxt,
                   textAlign: TextAlign.center,
                 ),
-                Text(
+                const Text('\n\n'),
+                /*Text(
                   '\nPor favor elije tu tarjeta:',
                   style: subtitulosTxt,
-                ),
+                ),*/
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: const <Widget>[
@@ -151,10 +161,32 @@ class _PPTState extends State<PPT> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: <Widget>[
-                    Text(
-                      '$j1ficha ',
+                    //cambiarlo por un gidget img y llamar la propiedad img
+                    //if (resultado.nombre == null || resultado.nombre == '')
+                    if (resultado.nombre == null || resultado.nombre == '')
+                      const SizedBox(
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    else
+                      SizedBox(
+                          //width: double.infinity,
+                          height: size.height * 0.1,
+                          child: FadeInImage(
+                            /*width: size.width * 0.6,
+                          height: size.height * 0.4,*/
+                            placeholder:
+                                const AssetImage('assets/images/no-image.png'),
+                            image: NetworkImage(resultado.img),
+                            //image: AssetImage('assets/images/no-image.png'),
+                            fit: BoxFit.cover,
+                          )),
+                    /*Text(
+                      //'$j1ficha ',
+                      resultado.nombre!,
                       style: numerosTxt,
-                    ),
+                    ),*/
                     Text(
                       "<->",
                       style: numerosTxt,
@@ -162,6 +194,27 @@ class _PPTState extends State<PPT> {
                     Text(
                       //"$j2ficha",
                       " ?",
+                      style: numerosTxt,
+                    ),
+                  ],
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: <Widget>[
+                    //cambiarlo por un gidget img y llamar la propiedad img
+                    //if (resultado.nombre == null || resultado.nombre == '')
+                    Text(
+                      //'$j1ficha ,
+                      'Tu resp: ${resultado.nombre!}',
+                      style: numerosTxt,
+                    ),
+                    Text(
+                      " /-/ ",
+                      style: numerosTxt,
+                    ),
+                    Text(
+                      //"$j2ficha",
+                      "Resp. Op.: ?",
                       style: numerosTxt,
                     ),
                   ],

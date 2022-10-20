@@ -5,7 +5,10 @@ import 'package:card_swiper/card_swiper.dart';
 import 'package:app_game/providers/partida_form_provider.dart';
 
 //import 'package:app_game/bloc/peticionesppt_bloc.dart';
-//import 'package:app_game/models/models.dart';
+import 'package:app_game/models/models.dart';
+import 'package:http/http.dart' as http;
+import 'dart:convert';
+import 'dart:io';
 //import 'package:app_game/screens/screens.dart';
 import 'package:app_game/services/services.dart';
 import 'package:app_game/ui/input_decorations.dart';
@@ -29,7 +32,8 @@ class _PartidaScreenState extends State<PartidaScreen> {
   @override
   Widget build(BuildContext context) {
     final partidaService = Provider.of<PartidasServices>(context);
-    final tarjetasProvider = Provider.of<OpcionesPPTProvider>(context);
+
+    //final tarjetasProvider = Provider.of<OpcionesPPTProvider>(context);
     return ChangeNotifierProvider(
       //create: (_) => PartidaFormProvider(partidaService.selectedPartidas, tarjetasProvider.selectedTarjetas),
       create: (_) => PartidaFormProvider(partidaService.selectedPartidas),
@@ -54,6 +58,7 @@ class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
   @override
   Widget build(BuildContext context) {
     final partidaForm = Provider.of<PartidaFormProvider>(context);
+
     //final tarjetasProvider = Provider.of<OpcionesPPTProvider>(context);
     //final partida = partidaForm.partida;
     return Scaffold(
@@ -118,8 +123,8 @@ class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
                 //print(imageUrl);
                 /*await widget.partidaService.saveOrCreatePartida(
                     partidaForm.partida, tarjetasProvider.selectedTarjetas);*/
-                await widget.partidaService
-                    .saveOrCreatePartida(partidaForm.partida);
+                /*DESCOMENTARPARAACTIVAR await widget.partidaService
+                    .saveOrCreatePartida(partidaForm.partida);*/
 
                 //1de3-Para poner contexto para navegar entre rutas al editar las cards
                 /*await partidaService.saveOrCreatePartida(
@@ -143,7 +148,7 @@ class _PartidaFormState extends State<_PartidaForm> {
   Widget build(BuildContext context) {
     final partidaForm = Provider.of<PartidaFormProvider>(context);
     final partida = partidaForm.partida;
-
+    final partidaService = Provider.of<PartidasServices>(context);
     final tarjetasProvider = Provider.of<OpcionesPPTProvider>(context);
 
     return Padding(
@@ -175,8 +180,10 @@ class _PartidaFormState extends State<_PartidaForm> {
                     hintText: 'YYYY/MM/DD', labelText: 'Creación:'),
               ),
               const SizedBox(height: 10),
-              CardSwiper(tarjetas: tarjetasProvider.tarjetas),
-
+              CardSwiper(
+                tarjetas: tarjetasProvider.tarjetas,
+                partidaService: partidaService,
+              ),
               /*const SizedBox(height: 10),
               TextFormField(
                 enabled: false,
