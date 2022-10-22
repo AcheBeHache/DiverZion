@@ -1,8 +1,10 @@
+//import 'package:app_game/services/services.dart';
+//import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'dart:io';
-
-import 'package:flutter/material.dart';
 import 'package:app_game/models/models.dart';
+import 'package:date_format/date_format.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
 class PartidasServices extends ChangeNotifier {
@@ -12,6 +14,7 @@ class PartidasServices extends ChangeNotifier {
   bool isLoading = true;
   bool isSaving = false;
   File? newPictureFile;
+  String enviousrcreador = '';
   //para tarjetas ppt
   final List<Opcion> tarjetas = [];
   late Opcion selectedTarjetas;
@@ -91,7 +94,7 @@ class PartidasServices extends ChangeNotifier {
   }*/
 
   //Future saveOrCreatePartida(Ppt partida, Opcion tarj) async {
-  Future saveOrCreatePartida(Ppt partida, Opcion tarjetas) async {
+  Future saveOrCreatePartida(partida, tarjetas, enviousrcreador) async {
     //2de3-Para poner contexto para navegar entre rutas al editar las cards
     //Future saveOrCreatePartida(context, Ppt partida) async {
     isSaving = true;
@@ -99,7 +102,7 @@ class PartidasServices extends ChangeNotifier {
     //checar los id y idPrueba, la actualización ya está, falta la creación. Ojo: estoy pidiendo el id desde el formulario, que en teoría no debe ser null o si?
     if (partida.id == null || partida.id == '') {
       // Es necesario crear
-      print("entro al creador");
+      //print("entro al creador");
       await createPartida(partida);
       await updatePartida(partida);
       //3de3-Para poner contexto para navegar entre rutas al editar las cards
@@ -107,7 +110,8 @@ class PartidasServices extends ChangeNotifier {
     } else {
       // Actualizar
       //await updatePartida(partida);
-      await updateTarjeta(partida, tarjetas);
+      //print('3Recibe el await de saveorcreatepartida: $enviousrcreador');
+      await updateTarjeta(partida, tarjetas, enviousrcreador);
 
       //Navigator.pushNamed(context, 'partidas_ppt');
       //Sprint('actualizará_Partida');
@@ -117,13 +121,16 @@ class PartidasServices extends ChangeNotifier {
   }
 
   Future<String> createPartida(Ppt partida) async {
+    isSaving = true;
+    notifyListeners();
     final url = Uri.https(_baseUrl, 'partidas_ppt.json');
     final resp = await http.post(url, body: partida.toJson());
     final decodedData = json.decode(resp.body);
 
     partida.id = decodedData['name'];
     partidas.add(partida);
-
+    isSaving = false;
+    notifyListeners();
     return partida.id!;
   }
 
@@ -132,32 +139,60 @@ class PartidasServices extends ChangeNotifier {
 
   //actualizar partida
   Future<String> updatePartida(Ppt partida) async {
+    isSaving = true;
+    notifyListeners();
     final url = Uri.https(_baseUrl, 'partidas_ppt/${partida.id}.json');
     final resp = await http.put(url, body: partida.toJson());
     final decodedData = json.decode(resp.body);
-
     //TODO: Actualizar el listado de productos
     final index = partidas.indexWhere((element) => element.id == partida.id);
     partidas[index] = partida;
-
+    isSaving = false;
+    notifyListeners();
     return partida.id!;
   }
 
-  Future<String> updateTarjeta(Ppt partida, Opcion tarjetas) async {
+  Future<String> updateTarjeta(partida, tarjetas, enviousrcreador) async {
+    //creamos una instancia para utilizar el localstorage, mostrar usr 1de4
+    //BuildContext context;
+    //final authService = Provider.of<AuthService>(context, listen: false);
+    isSaving = true;
+    notifyListeners();
+    //print('4recibe updateTarjeta updateTarjeta: $enviousrcreador');
     final url = Uri.https(_baseUrl, 'partidas_ppt/${partida.id}.json');
     final resp = await http.put(url, body: partida.toJson());
     final decodedData = json.decode(resp.body);
+    print(decodedData);
+    final index = partidas.indexWhere((element) => (element.id == partida.id));
     final eleccioncreador = tarjetas.nombre;
+    String fechaFin = formatDate(
+        DateTime.now(), [d, '/', mm, '/', yyyy, ' ', H, ':', m, ':', am]);
     //selectedTarjetas = tarj;
 
     //print('Tarj: $tarj');
     //TODO: Actualizar el listado de productos
-    final index = partidas.indexWhere((element) => (element.id == partida.id));
+    if (partida.usridCreador == enviousrcreador) {
+      //partidas[index] = partida;
+      //print(partidas[index].respcreador);
+      partidas[index].respcreador = eleccioncreador;
+      //print(partidas[index].respcreador);
+      //partidas[index].fechafin = fechaFin;
+      //partidas[index].respoponente = 'eleccionoponente';
+    } else {
+      /*final index =
+          partidas.indexWhere((element) => (element.id == partida.id));*/
 
-    partidas[index] = partida;
-    partidas[index].respcreador = eleccioncreador;
-    partidas[index].respoponente = 'eleccionoponente';
+      //partidas[index] = partida;
+      //partidas[index].respcreador = 'eleccioncreador';
+      //print(partidas[index].respoponente);
+      partidas[index].respoponente = eleccioncreador;
+      //print(partidas[index].respoponente);
+      //programé para que el oponente cierre con fecha la partida, es el que la establece
+      partidas[index].fechafin = fechaFin;
+    }
     //notifyListeners();
+    isSaving = false;
+    notifyListeners();
     return tarjetas.id!;
   }
 
@@ -196,6 +231,8 @@ class PartidasServices extends ChangeNotifier {
     newPictureFile = null;
 
     final decodedData = json.decode(resp.body);
+    isSaving = false;
+    notifyListeners();
     return decodedData['secure_url'];
   }
 }

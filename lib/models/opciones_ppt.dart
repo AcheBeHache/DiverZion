@@ -45,7 +45,7 @@ class Opcion {
 
   String? heroId;
   get fullPosterImg {
-    if (this.img != null) {
+    if (img != null || img != '') {
       return img;
     }
 
@@ -53,7 +53,7 @@ class Opcion {
   }
 
   get tarjetaId {
-    if (this.id != null) {
+    if (id != null || id != '') {
       return id;
     }
 

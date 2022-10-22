@@ -1,9 +1,8 @@
-import 'package:image_picker/image_picker.dart';
-import 'package:app_game/providers/partida_form_provider.dart';
-
 //import 'package:app_game/bloc/peticionesppt_bloc.dart';
 //import 'package:app_game/models/models.dart';
 //import 'package:app_game/screens/screens.dart';
+//import 'package:image_picker/image_picker.dart';
+import 'package:app_game/providers/partida_form_provider.dart';
 import 'package:app_game/services/services.dart';
 import 'package:app_game/ui/input_decorations.dart';
 import 'package:app_game/widgets/widgets.dart';
@@ -50,7 +49,7 @@ class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
   @override
   Widget build(BuildContext context) {
     final partidaForm = Provider.of<PartidaFormProvider>(context);
-    final partida = partidaForm.partida;
+    //final partida = partidaForm.partida;
     return Scaffold(
       body: SingleChildScrollView(
         // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,

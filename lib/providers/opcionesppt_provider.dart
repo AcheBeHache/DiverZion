@@ -10,7 +10,7 @@ class OpcionesPPTProvider extends ChangeNotifier {
   //late Opcion selectedTarjetas;
   OpcionesPPTProvider() {
     //print("getondisplayTarjetas inicializado");
-    this.getOndisplayTarjetas();
+    getOndisplayTarjetas();
   }
   getOndisplayTarjetas() async {
     //para tarjetas ppt

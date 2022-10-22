@@ -120,6 +120,8 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                                 null)) {
                       NotificationsService.showSnackbar(
                           "Otro la hizo, deseas ser el oponente?, envía la notificación al creador!");
+                      //antes de activar la opción, es importante validar su monto en bolsa, modo basico o golden, etc...
+                      //si se le permite entrar inmediatamente hacer un update en usridoponente, para reservar su lugar
                     }
                     if (partidasService.partidas[index].usridCreador ==
                             usrcreador &&
@@ -146,8 +148,9 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                         partidasService.partidas[index].status == 2 &&
                         partidasService.partidas[index].usridoponente ==
                             usrcreador) {
-                      NotificationsService.showSnackbar(
-                          "¡Eres oponente, qué esperas! Envía tu respuesta.");
+                      Navigator.pushNamed(context, 'partida');
+                      /*NotificationsService.showSnackbar(
+                          "¡Eres oponente, qué esperas! Envía tu respuesta.");*/
                     }
 
                     if (partidasService.partidas[index].usridCreador ==

@@ -3,7 +3,6 @@
 //import 'package:app_game/bloc/peticionesppt_bloc.dart';
 //import 'package:app_game/screens/ppt.dart';
 //import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-
 import 'package:app_game/bloc/peticionesppt_bloc.dart';
 import 'package:app_game/screens/screens.dart';
 import 'package:app_game/services/services.dart';
@@ -70,7 +69,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
             stream: peticionesBloc.getPartidas,
             builder: (context, AsyncSnapshot<List<String>> snapshot) {
               final partidas = snapshot.data ?? [];
-              final monto = 10;
+              const monto = 10;
               /*if (snapshot.connectionState == ConnectionState.done) {
                 return const Text("fin del stream");
               }*/
@@ -145,7 +144,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
             },
           ),
           onRefresh: () {
-            return Future.delayed(Duration(seconds: 1), () {
+            return Future.delayed(const Duration(seconds: 1), () {
               setState(() {});
             });
           },
@@ -181,7 +180,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
               heroTag: "btnRefrescar",
               onPressed: () => {
                 //Navigator.push(context, _crearRuta1())
-                Future.delayed(Duration(seconds: 1), () {
+                Future.delayed(const Duration(seconds: 1), () {
                   setState(() {});
                 })
               },

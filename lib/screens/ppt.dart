@@ -1,14 +1,12 @@
 //import 'dart:html';
-
-import 'dart:async';
-
-import 'package:app_game/models/models.dart';
-import 'package:app_game/providers/partida_form_provider.dart';
-import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-
-//import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 //import 'package:app_game/bloc/peticionesppt_bloc.dart';
+//import 'package:app_game/widgets/card_swiper.dart';
+//import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'dart:async';
+import 'package:app_game/models/models.dart';
+//import 'package:app_game/providers/partida_form_provider.dart';
+import 'package:flutter/material.dart';
+//import 'package:provider/provider.dart';
 
 class PPT extends StatefulWidget {
   const PPT({Key? key}) : super(key: key);
@@ -85,12 +83,38 @@ class _PPTState extends State<PPT> {
   //Termina funciones del cronómetro
   @override
   Widget build(BuildContext context) {
-    final Opcion resultado =
-        ModalRoute.of(context)!.settings.arguments as Opcion;
+    final Ppt resultado = ModalRoute.of(context)!.settings.arguments as Ppt;
+
+    String? creadorimg = '';
+    String? oponenteimg = '';
+    if (resultado.respcreador == 'piedra') {
+      creadorimg =
+          "https://images.vexels.com/media/users/3/145641/isolated/preview/30bc99162bca69bdbd27451ceeef8848-ilustracion-de-piedra-de-la-tierra.png";
+    }
+    if (resultado.respoponente == 'piedra') {
+      oponenteimg =
+          "https://images.vexels.com/media/users/3/145641/isolated/preview/30bc99162bca69bdbd27451ceeef8848-ilustracion-de-piedra-de-la-tierra.png";
+    }
+    if (resultado.respcreador == 'papel') {
+      creadorimg =
+          "https://i.pinimg.com/originals/f2/9a/99/f29a995653ff0658cfcef654708a02fd.png";
+    }
+    if (resultado.respoponente == 'papel') {
+      oponenteimg =
+          "https://i.pinimg.com/originals/f2/9a/99/f29a995653ff0658cfcef654708a02fd.png";
+    }
+    if (resultado.respcreador == 'tijera') {
+      creadorimg =
+          "https://static.vecteezy.com/system/resources/thumbnails/009/664/151/small/scissor-icon-transparent-free-png.png";
+    }
+    if (resultado.respoponente == 'tijera') {
+      oponenteimg =
+          "https://static.vecteezy.com/system/resources/thumbnails/009/664/151/small/scissor-icon-transparent-free-png.png";
+    }
     /*final partidaForm = Provider.of<PartidaFormProvider>(context);
     final partida = partidaForm.partida;*/
     final size = MediaQuery.of(context).size;
-    print(resultado.nombre);
+    //print(resultado.nombre);
     return WillPopScope(
       onWillPop: () async {
         //este if no permite salir al jugador cuando está en juego (recomendado)
@@ -139,7 +163,7 @@ class _PPTState extends State<PPT> {
                   ),
                 ),
                 Text(
-                  '\nMuestra fichas de usuarios.',
+                  '\nMuestra fichas de usuarios. \n',
                   style: titulosTxt,
                   textAlign: TextAlign.center,
                 ),
@@ -163,7 +187,8 @@ class _PPTState extends State<PPT> {
                   children: <Widget>[
                     //cambiarlo por un gidget img y llamar la propiedad img
                     //if (resultado.nombre == null || resultado.nombre == '')
-                    if (resultado.nombre == null || resultado.nombre == '')
+                    if (resultado.respcreador == null ||
+                        resultado.respcreador == '')
                       const SizedBox(
                         child: Center(
                           child: CircularProgressIndicator(),
@@ -178,7 +203,7 @@ class _PPTState extends State<PPT> {
                           height: size.height * 0.4,*/
                             placeholder:
                                 const AssetImage('assets/images/no-image.png'),
-                            image: NetworkImage(resultado.img),
+                            image: NetworkImage(creadorimg),
                             //image: AssetImage('assets/images/no-image.png'),
                             fit: BoxFit.cover,
                           )),
@@ -191,11 +216,27 @@ class _PPTState extends State<PPT> {
                       "<->",
                       style: numerosTxt,
                     ),
-                    Text(
-                      //"$j2ficha",
-                      " ?",
-                      style: numerosTxt,
-                    ),
+                    if (resultado.respoponente == null ||
+                        resultado.respoponente == '')
+                      const SizedBox(
+                        child: Center(
+                          child: CircularProgressIndicator(),
+                        ),
+                      )
+                    else
+                      SizedBox(
+                          //width: double.infinity,
+                          height: size.height * 0.1,
+                          child: FadeInImage(
+                            /*width: size.width * 0.6,
+                          height: size.height * 0.4,*/
+                            placeholder:
+                                const AssetImage('assets/images/no-image.png'),
+                            //TODO: ponerle resultado del oponente, aquí si consultamos a BD
+                            image: NetworkImage(oponenteimg),
+                            //image: AssetImage('assets/images/no-image.png'),
+                            fit: BoxFit.cover,
+                          )),
                   ],
                 ),
                 Row(
@@ -205,7 +246,7 @@ class _PPTState extends State<PPT> {
                     //if (resultado.nombre == null || resultado.nombre == '')
                     Text(
                       //'$j1ficha ,
-                      'Tu resp: ${resultado.nombre!}',
+                      'Tu resp: ${resultado.respcreador!}',
                       style: numerosTxt,
                     ),
                     Text(
@@ -214,7 +255,7 @@ class _PPTState extends State<PPT> {
                     ),
                     Text(
                       //"$j2ficha",
-                      "Resp. Op.: ?",
+                      "Resp. Op.: ${resultado.respoponente!}",
                       style: numerosTxt,
                     ),
                   ],

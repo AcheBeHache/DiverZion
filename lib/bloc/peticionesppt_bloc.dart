@@ -16,7 +16,7 @@ const partidasGrales = [
 ];
 
 class PeticionesPPTBloc {
-  StreamController<int> _partidasContador = StreamController<int>();
+  final StreamController<int> _partidasContador = StreamController<int>();
   Stream<int> get partidasContador => _partidasContador.stream;
   //List<String> partidasList = [];
 

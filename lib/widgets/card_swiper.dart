@@ -1,7 +1,8 @@
-import 'package:app_game/bloc/peticionesppt_bloc.dart';
-import 'package:app_game/providers/opcionesppt_provider.dart';
+//import 'package:app_game/bloc/peticionesppt_bloc.dart';
+//import 'package:app_game/providers/opcionesppt_provider.dart';
 import 'package:app_game/providers/partida_form_provider.dart';
-import 'package:app_game/services/partidas_services.dart';
+//import 'package:app_game/services/partidas_services.dart';
+import 'package:app_game/services/services.dart';
 import 'package:card_swiper/card_swiper.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_card_swipper/flutter_card_swiper.dart';
@@ -26,9 +27,21 @@ class CardSwiper extends StatefulWidget {
 
 class _CardSwiperState extends State<CardSwiper> {
   //const CardSwiper({super.key, required this.tarjetas});
+  String enviousrcreador = '';
   @override
   Widget build(BuildContext context) {
-    final partidaService = Provider.of<PartidasServices>(context);
+    //final partidaService = Provider.of<PartidasServices>(context);
+    //creamos una instancia para utilizar el localstorage, mostrar usr 1de4
+    final authService = Provider.of<AuthService>(context, listen: false);
+    //2 de 4
+    mostrarusr() async {
+      String? rrvalue = await authService.storage.read(key: 'usremail');
+      enviousrcreador = rrvalue!;
+      return enviousrcreador;
+    }
+
+    //3de4 para mostrar usr
+    mostrarusr();
     //final tarjetasProvider = Provider.of<OpcionesPPTProvider>(context);
     /*return ChangeNotifierProvider(
       //create: (_) => PartidaFormProvider(partidaService.selectedPartidas, tarjetasProvider.selectedTarjetas),
@@ -77,14 +90,34 @@ class _CardSwiperState extends State<CardSwiper> {
                     final String? imageUrl =
                         await widget.partidaService.uploadImage();
 
-                    if (imageUrl != null) partidaForm.partida.img = imageUrl;
+                    if (imageUrl != null || imageUrl != '') {
+                      partida.img = imageUrl;
+                    }
 
                     //print(imageUrl);
                     /*await widget.partidaService.saveOrCreatePartida(
                     partidaForm.partida, tarjetasProvider.selectedTarjetas);*/
+                    //considera 2 móviles iniciando de 0 sin respuesta alguna, validar ésta parte
                     await widget.partidaService
-                        .saveOrCreatePartida(partidaForm.partida, tarjeta);
-                    Navigator.pushNamed(context, 'ppt', arguments: tarjeta);
+                        .saveOrCreatePartida(partida, tarjeta, enviousrcreador);
+                    await widget.partidaService
+                        .updateTarjeta(partida, tarjeta, enviousrcreador);
+                    /*Future.delayed(const Duration(seconds: 2), () async {
+                      /*await widget.partidaService
+                          .saveOrCreatePartida(partidaForm.partida, tarjeta);*/
+
+                      await widget.partidaService.updateTarjeta(
+                          partidaForm.partida, tarjeta, enviousrcreador);
+
+                      /*setState(() {});
+                      Navigator.pushNamed(context, 'ppt', arguments: tarjeta);*/
+                    });*/
+                    Future.delayed(const Duration(seconds: 6), () async {
+                      setState(() {});
+                      /*Navigator.pushNamed(context, 'ppt',
+                          arguments: [partida, tarjeta]);*/
+                      Navigator.pushNamed(context, 'ppt', arguments: partida);
+                    });
                   }
             /*widget.partidaService.isSaving
                   ? const CircularProgressIndicator(color: Colors.white)

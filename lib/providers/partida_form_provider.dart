@@ -3,7 +3,7 @@ import 'package:app_game/models/models.dart';
 
 class PartidaFormProvider extends ChangeNotifier {
   String mensajito = '';
-  GlobalKey<FormState> formKey = new GlobalKey<FormState>();
+  GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   Ppt partida;
   //Opcion tarj;
