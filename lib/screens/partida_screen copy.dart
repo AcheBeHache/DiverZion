@@ -279,8 +279,8 @@ class _PartidaFormState extends State<_PartidaForm> {
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
-                initialValue: partida.usridCreador,
-                onChanged: (value) => partida.usridCreador = value,
+                initialValue: partida.usridcreador,
+                onChanged: (value) => partida.usridcreador = value,
                 validator: (value) {
                   //if (value == null || value.length < 1) {
                   if (value == null || value.length < 1) {

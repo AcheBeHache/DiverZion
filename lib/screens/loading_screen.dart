@@ -11,7 +11,7 @@ class _LoadingScreenState extends State<LoadingScreen> {
     return Scaffold(
       appBar: AppBar(
         //title: const Text('Selecciona o crea una partida.'),
-        title: const Text('Partidas encontradas: '),
+        title: const Text('pnPartidas encontradas: '),
         elevation: 8.0,
       ),
       body: const Center(

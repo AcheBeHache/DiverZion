@@ -3,9 +3,13 @@
 //import 'package:app_game/widgets/card_swiper.dart';
 //import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'dart:async';
+import 'dart:convert';
 import 'package:app_game/models/models.dart';
+import 'package:app_game/services/services.dart';
 //import 'package:app_game/providers/partida_form_provider.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:http/http.dart' as http;
 //import 'package:provider/provider.dart';
 
 class PPT extends StatefulWidget {
@@ -21,13 +25,19 @@ class _PPTState extends State<PPT> {
   TextStyle subtitulosTxt = const TextStyle(fontSize: 22);
   TextStyle numerosTxt = const TextStyle(fontSize: 25);
   TextStyle parrafosTxt = const TextStyle(fontSize: 17);
+  //variables para imprimir variables de BD
+  String? creadorimg = '';
+  String? oponenteimg = '';
   //variables PPT
   int j1ficha = 0, j2ficha = 0, montogame = 100;
-  String enviomsj = '', juegosactivos = '';
+  String enviomsj = '', juegosactivos = '', ganador = '';
   //variables para el stream
   //final juegosBloc = PeticionesPPTBloc();
   //Autenticación
   //final storage = new FlutterSecureStorage();
+  //variables para leer BD
+  final String _baseUrl = 'pptgame-d06ee-default-rtdb.firebaseio.com';
+  //final List<Ppt> xpartidas = [];
 
   //Funciones PPT
   void piedra() {
@@ -45,14 +55,23 @@ class _PPTState extends State<PPT> {
     setState(() {});
   }
 
-  void envio() {
-    _startTimer();
-    enviomsj = "Ficha enviada.";
+  void envio() async {
+    //_startTimer();
+    //enviomsj = "Ficha enviada.";
+    //
     setState(() {});
+
+    await Future.delayed(const Duration(seconds: 3), () async {
+      Navigator.pushNamed(context, 'partidas_ppt');
+    });
   }
 
   void juegos() {
     enviomsj = "Ficha enviada.";
+    setState(() {});
+  }
+
+  void actualizar() {
     setState(() {});
   }
 
@@ -81,12 +100,91 @@ class _PPTState extends State<PPT> {
   }
 
   //Termina funciones del cronómetro
+
   @override
   Widget build(BuildContext context) {
     final Ppt resultado = ModalRoute.of(context)!.settings.arguments as Ppt;
+    //StreamBuilder
+    int i = 0;
+    bool bandera = false;
+    final Stream _bids = (() {
+      late final StreamController controller;
+      //final partidaService = Provider.of<PartidasServices>(context);
+      controller = StreamController(
+        onListen: () async {
+          //await Future<void>.delayed(const Duration(seconds: 1));
+          if (resultado.respoponente == '') {
+            while (
+                resultado.respcreador != '' && resultado.respoponente == '') {
+              //await Future<void>.delayed(const Duration(seconds: 7));
+              await Future.delayed(const Duration(seconds: 7), () async {
+                final List<Ppt> xpartidas = [];
+                //comienza lectura a BD
+                /*isSaving = true;
+              notifyListeners();*/
+                final url = Uri.https(_baseUrl, 'partidas_ppt.json');
+                final resp = await http.get(url);
+                final Map<String, dynamic> partidasMap = json.decode(resp.body);
 
-    String? creadorimg = '';
-    String? oponenteimg = '';
+                partidasMap.forEach((key, value) {
+                  final tempPartidas = Ppt.fromMap(value);
+                  //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
+                  tempPartidas.id = key;
+                  xpartidas.add(tempPartidas);
+                });
+                final index = xpartidas
+                    .indexWhere((element) => element.id == resultado.id);
+                resultado.respoponente = xpartidas[index].respoponente;
+                /*print(xpartidas.length);*/
+                //resultado.respoponente = xpartidas[0].respoponente;
+                print('$i : ${resultado.respoponente}');
+                /*isSaving = false;
+              notifyListeners();*/
+                //termina lectura a BD
+                //if(partidaService.obtenerPartida.respoponente)
+                //bandera = partidaService.obtenerPartida(partida);
+                controller.add(i++);
+                //setState(() {});
+              });
+            }
+            bandera = true;
+            print("2Ya respondió, canijo");
+          } else {
+            print("Ya respondió, canijo");
+          }
+
+          //controller.add("HUgoooo");
+          /*await Future<void>.delayed(const Duration(seconds: 1));
+        controller.add(2);
+        await Future<void>.delayed(const Duration(seconds: 1));
+        controller.add(3);
+        await Future<void>.delayed(const Duration(seconds: 1));
+        controller.add(4);
+        await Future<void>.delayed(const Duration(seconds: 1));
+        controller.add(5);
+        await Future<void>.delayed(const Duration(seconds: 1));
+        controller.add(6);*/
+          //micodigo
+          /*await widget.partidaService.saveOrCreatePartida(
+            partida, tarjeta, enviousrcreador);*/
+          /*await widget.partidaService
+            .updateTarjeta(partida, tarjeta, enviousrcreador);*/
+          await controller.close();
+        },
+      );
+      return controller.stream;
+    })();
+    //termina función del streamcontroller
+    if (resultado.usridcreador == resultado.usridwin) {
+      ganador = 'Creador';
+    }
+    if (resultado.usridoponente == resultado.usridwin) {
+      ganador = 'Oponente';
+    }
+    if (resultado.usridcreador != '' || resultado.usridoponente == '') {
+      ganador = '??';
+    }
+
     if (resultado.respcreador == 'piedra') {
       creadorimg =
           "https://images.vexels.com/media/users/3/145641/isolated/preview/30bc99162bca69bdbd27451ceeef8848-ilustracion-de-piedra-de-la-tierra.png";
@@ -162,118 +260,336 @@ class _PPTState extends State<PPT> {
                     fontSize: 48,
                   ),
                 ),
-                Text(
-                  '\nMuestra fichas de usuarios. \n',
-                  style: titulosTxt,
-                  textAlign: TextAlign.center,
-                ),
-                const Text('\n\n'),
-                /*Text(
-                  '\nPor favor elije tu tarjeta:',
-                  style: subtitulosTxt,
-                ),*/
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: const <Widget>[
-                    FlutterLogo(),
-                    SizedBox(width: 26),
-                    /*Text(
-                        "Flutter's hot reload helps you quickly and easily experiment, build UIs, add features, and fix bug faster. Experience sub-second reload times, without losing state, on emulators, simulators, and hardware for iOS and Android."),*/
-                    Icon(Icons.sentiment_very_satisfied),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    //cambiarlo por un gidget img y llamar la propiedad img
-                    //if (resultado.nombre == null || resultado.nombre == '')
-                    if (resultado.respcreador == null ||
-                        resultado.respcreador == '')
-                      const SizedBox(
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      )
-                    else
-                      SizedBox(
-                          //width: double.infinity,
-                          height: size.height * 0.1,
-                          child: FadeInImage(
-                            /*width: size.width * 0.6,
-                          height: size.height * 0.4,*/
-                            placeholder:
-                                const AssetImage('assets/images/no-image.png'),
-                            image: NetworkImage(creadorimg),
-                            //image: AssetImage('assets/images/no-image.png'),
-                            fit: BoxFit.cover,
-                          )),
-                    /*Text(
-                      //'$j1ficha ',
-                      resultado.nombre!,
-                      style: numerosTxt,
-                    ),*/
-                    Text(
-                      "<->",
-                      style: numerosTxt,
-                    ),
-                    if (resultado.respoponente == null ||
-                        resultado.respoponente == '')
-                      const SizedBox(
-                        child: Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                      )
-                    else
-                      SizedBox(
-                          //width: double.infinity,
-                          height: size.height * 0.1,
-                          child: FadeInImage(
-                            /*width: size.width * 0.6,
-                          height: size.height * 0.4,*/
-                            placeholder:
-                                const AssetImage('assets/images/no-image.png'),
-                            //TODO: ponerle resultado del oponente, aquí si consultamos a BD
-                            image: NetworkImage(oponenteimg),
-                            //image: AssetImage('assets/images/no-image.png'),
-                            fit: BoxFit.cover,
-                          )),
-                  ],
-                ),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    //cambiarlo por un gidget img y llamar la propiedad img
-                    //if (resultado.nombre == null || resultado.nombre == '')
-                    Text(
-                      //'$j1ficha ,
-                      'Tu resp: ${resultado.respcreador!}',
-                      style: numerosTxt,
-                    ),
-                    Text(
-                      " /-/ ",
-                      style: numerosTxt,
-                    ),
-                    Text(
-                      //"$j2ficha",
-                      "Resp. Op.: ${resultado.respoponente!}",
-                      style: numerosTxt,
-                    ),
-                  ],
-                ),
-                Row(
+
+                //aqui
+                /*Row(
                   textDirection: TextDirection.rtl,
                   children: <Widget>[
                     const FlutterLogo(),
                     Expanded(
                       child: Text(
-                        "\nMonto en juego: $montogame.\n\n $enviomsj",
+                        "\nMsj. Final: \n\n $enviomsj",
                         style: parrafosTxt,
                         textAlign: TextAlign.center,
                       ),
                     ),
                     const Icon(Icons.sentiment_very_satisfied),
                   ],
-                ) /*,
+                ),*/
+                Row(
+                  children: [
+                    StreamBuilder(
+                      stream: _bids,
+                      builder: (BuildContext context, AsyncSnapshot snapshot) {
+                        List<Widget> children;
+                        if (snapshot.hasError) {
+                          children = <Widget>[
+                            const Icon(
+                              Icons.error_outline,
+                              color: Colors.red,
+                              size: 60,
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 16),
+                              child: Text('Error: ${snapshot.error}'),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(top: 8),
+                              child:
+                                  Text('Stack trace: ${snapshot.stackTrace}'),
+                            ),
+                          ];
+                        } else {
+                          switch (snapshot.connectionState) {
+                            case ConnectionState.none:
+                              print("entró al estado none");
+                              children = const <Widget>[
+                                Icon(
+                                  Icons.info,
+                                  color: Colors.blue,
+                                  size: 60,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(top: 16),
+                                  child: Text(
+                                      'Sin estado, vuelve a iniciar partida. ¡Gracias!'),
+                                ),
+                              ];
+                              break;
+                            case ConnectionState.waiting:
+                              print("entró al estado esperando waiting");
+                              children = <Widget>[
+                                const SizedBox(
+                                  width: 60,
+                                  height: 60,
+                                  child: CircularProgressIndicator(),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16),
+                                  child: Text(
+                                      'Esperando respuestas de ambos jugadores... $bandera'),
+                                ),
+                              ];
+                              break;
+                            case ConnectionState.active:
+                              //inicia el active para el while
+                              print("entró al estado activo");
+                              children = <Widget>[
+                                const Icon(
+                                  Icons.check_circle_outline,
+                                  color: Colors.green,
+                                  size: 60,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16),
+                                  //mostrar segundos para leer respuesta de ambos contrincantes.
+                                  //En teoría debería ser el mismo tiempo.
+                                  child: Text('\$${snapshot.data} $bandera'),
+                                ),
+                                Text(
+                                  '\nMuestra fichas de usuarios. \n',
+                                  style: titulosTxt,
+                                  textAlign: TextAlign.center,
+                                ),
+                                const Text('\n\n'),
+                                /*Text(
+                                  '\nPor favor elije tu tarjeta:',
+                                  style: subtitulosTxt,
+                                ),*/
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const <Widget>[
+                                    FlutterLogo(),
+                                    SizedBox(width: 26),
+                                    /*Text(
+                                        "Flutter's hot reload helps you quickly and easily experiment, build UIs, add features, and fix bug faster. Experience sub-second reload times, without losing state, on emulators, simulators, and hardware for iOS and Android."),*/
+                                    Icon(Icons.sentiment_very_satisfied),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    //cambiarlo por un gidget img y llamar la propiedad img
+                                    //if (resultado.nombre == null || resultado.nombre == '')
+                                    if (resultado.respcreador == null ||
+                                        resultado.respcreador == '')
+                                      const SizedBox(
+                                        child: Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      )
+                                    else
+                                      SizedBox(
+                                          //width: double.infinity,
+                                          height: size.height * 0.1,
+                                          child: const FadeInImage(
+                                            /*width: size.width * 0.6,
+                                          height: size.height * 0.4,*/
+                                            placeholder: AssetImage(
+                                                'assets/images/no-image.png'),
+                                            image: AssetImage(
+                                                'assets/images/interrogacion.png'),
+                                            //image: AssetImage('assets/images/no-image.png'),
+                                            fit: BoxFit.cover,
+                                          )),
+                                    /*Text(
+                                      //'$j1ficha ',
+                                      resultado.nombre!,
+                                      style: numerosTxt,
+                                    ),*/
+                                    Text(
+                                      "<->",
+                                      style: numerosTxt,
+                                    ),
+                                    if (resultado.respoponente == null ||
+                                        resultado.respoponente == '')
+                                      const SizedBox(
+                                        child: Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      )
+                                    else
+                                      SizedBox(
+                                          //width: double.infinity,
+                                          height: size.height * 0.1,
+                                          child: const FadeInImage(
+                                            /*width: size.width * 0.6,
+                                          height: size.height * 0.4,*/
+                                            placeholder: AssetImage(
+                                                'assets/images/no-image.png'),
+                                            //TODO: ponerle resultado del oponente, aquí si consultamos a BD
+                                            image: AssetImage(
+                                                'assets/images/interrogacion.png'),
+                                            //image: AssetImage('assets/images/no-image.png'),
+                                            fit: BoxFit.cover,
+                                          )),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    //cambiarlo por un gidget img y llamar la propiedad img
+                                    //if (resultado.nombre == null || resultado.nombre == '')
+                                    Text(
+                                      //'$j1ficha ,
+                                      'Creador: ?',
+                                      style: numerosTxt,
+                                    ),
+                                    Text(
+                                      " /-/ ",
+                                      style: numerosTxt,
+                                    ),
+                                    Text(
+                                      //"$j2ficha",
+                                      "Oponente: ??",
+                                      style: numerosTxt,
+                                    ),
+                                  ],
+                                ),
+                                //aquí
+
+                                Text(
+                                  "\nGanador (?): ? \n Poder en juego: ${resultado.montototal}.\n\n $enviomsj",
+                                  style: parrafosTxt,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ];
+                              break;
+                            //termina el active cierra el while
+                            case ConnectionState.done:
+                              print("entró al estado done");
+                              /*setState(() {
+                                resultado.respcreador = 'prueba Stream';
+                              });*/
+                              montogame = 200;
+                              children = <Widget>[
+                                const Icon(
+                                  Icons.info,
+                                  color: Colors.blue,
+                                  size: 60,
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(top: 16),
+                                  child: Text('\$${snapshot.data} (closed)'),
+                                ),
+                                Text(
+                                  '\nMuestra fichas de usuarios. \n',
+                                  style: titulosTxt,
+                                  textAlign: TextAlign.center,
+                                ),
+                                const Text('\n\n'),
+                                /*Text(
+                                  '\nPor favor elije tu tarjeta:',
+                                  style: subtitulosTxt,
+                                ),*/
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: const <Widget>[
+                                    FlutterLogo(),
+                                    SizedBox(width: 26),
+                                    /*Text(
+                                        "Flutter's hot reload helps you quickly and easily experiment, build UIs, add features, and fix bug faster. Experience sub-second reload times, without losing state, on emulators, simulators, and hardware for iOS and Android."),*/
+                                    Icon(Icons.sentiment_very_satisfied),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    //cambiarlo por un gidget img y llamar la propiedad img
+                                    //if (resultado.nombre == null || resultado.nombre == '')
+                                    if (resultado.respcreador == null ||
+                                        resultado.respcreador == '')
+                                      const SizedBox(
+                                        child: Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      )
+                                    else
+                                      SizedBox(
+                                          //width: double.infinity,
+                                          height: size.height * 0.1,
+                                          child: FadeInImage(
+                                            /*width: size.width * 0.6,
+                                          height: size.height * 0.4,*/
+                                            placeholder: const AssetImage(
+                                                'assets/images/no-image.png'),
+                                            image: NetworkImage(creadorimg!),
+                                            //image: AssetImage('assets/images/no-image.png'),
+                                            fit: BoxFit.cover,
+                                          )),
+                                    /*Text(
+                                      //'$j1ficha ',
+                                      resultado.nombre!,
+                                      style: numerosTxt,
+                                    ),*/
+                                    Text(
+                                      "<->",
+                                      style: numerosTxt,
+                                    ),
+                                    if (resultado.respoponente == null ||
+                                        resultado.respoponente == '')
+                                      const SizedBox(
+                                        child: Center(
+                                          child: CircularProgressIndicator(),
+                                        ),
+                                      )
+                                    else
+                                      SizedBox(
+                                          //width: double.infinity,
+                                          height: size.height * 0.1,
+                                          child: FadeInImage(
+                                            /*width: size.width * 0.6,
+                                          height: size.height * 0.4,*/
+                                            placeholder: const AssetImage(
+                                                'assets/images/no-image.png'),
+                                            //TODO: ponerle resultado del oponente, aquí si consultamos a BD
+                                            image: NetworkImage(oponenteimg!),
+                                            //image: AssetImage('assets/images/no-image.png'),
+                                            fit: BoxFit.cover,
+                                          )),
+                                  ],
+                                ),
+                                Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: <Widget>[
+                                    //cambiarlo por un gidget img y llamar la propiedad img
+                                    //if (resultado.nombre == null || resultado.nombre == '')
+                                    Text(
+                                      //'$j1ficha ,
+                                      'Creador: ${resultado.respcreador!}',
+                                      style: numerosTxt,
+                                    ),
+                                    Text(
+                                      " /-/ ",
+                                      style: numerosTxt,
+                                    ),
+                                    Text(
+                                      //"$j2ficha",
+                                      "Oponente: ${resultado.respoponente!}",
+                                      style: numerosTxt,
+                                    ),
+                                  ],
+                                ),
+                                Text(
+                                  "\nGanador ($ganador): ${resultado.usridwin} \n Poder en juego: ${resultado.montototal}.\n\n $enviomsj",
+                                  style: parrafosTxt,
+                                  textAlign: TextAlign.center,
+                                ),
+                              ];
+                              break;
+                          }
+                        }
+                        return Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: children,
+                        );
+                      },
+                    ),
+                  ],
+                  //Termina el streamBuilder
+                  //lógica fin.
+                )
+                /*,
                 StreamBuilder(
                   builder: (BuildContext context, AsyncSnapshot<dynamic> snapshot) {
                     return ListView.builder(
@@ -295,6 +611,7 @@ class _PPTState extends State<PPT> {
             ),
           ),
         ),
+        //floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
         floatingActionButton: BotoneraInferior(
             piedraFn: piedra,
@@ -330,7 +647,7 @@ class _BotoneraInferiorState extends State<BotoneraInferior> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
       children: [
-        FloatingActionButton(
+        /*FloatingActionButton(
           heroTag: "btnPiedra",
           child: const Icon(Icons.storm),
           onPressed: () => widget
@@ -339,9 +656,9 @@ class _BotoneraInferiorState extends State<BotoneraInferior> {
             setState(() {});
           }
           ,*/
-        ),
+        ),*/
         //const SizedBox(width: 20),
-        FloatingActionButton(
+        /*FloatingActionButton(
           heroTag: "btnPapel",
           child: const Icon(Icons.filter_frames),
           onPressed: () => widget
@@ -361,7 +678,7 @@ class _BotoneraInferiorState extends State<BotoneraInferior> {
             setState(() {});
           }
           ,*/
-        ),
+        ),*/
         //const SizedBox(width: 20),
         FloatingActionButton(
           heroTag: "btnEnvioMsj",

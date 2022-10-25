@@ -38,7 +38,7 @@ class Ppt {
       required this.montototal,
       this.oponentes,
       required this.status,
-      required this.usridCreador,
+      required this.usridcreador,
       this.usridoponente,
       this.usridwin,
       this.img,
@@ -85,7 +85,7 @@ class Ppt {
   int montototal;
   int? oponentes;
   int status;
-  String usridCreador;
+  String usridcreador;
   String? usridoponente;
   String? usridwin;
   String? idPrueba;
@@ -106,7 +106,7 @@ class Ppt {
       montototal: json["montototal"],
       oponentes: json["oponentes"],
       status: json["status"],
-      usridCreador: json["usrid_creador"],
+      usridcreador: json["usridcreador"],
       usridoponente: json["usridoponente"],
       usridwin: json["usridwin"],
       img: json["img"],
@@ -123,7 +123,7 @@ class Ppt {
         "montototal": montototal,
         "oponentes": oponentes,
         "status": status,
-        "usrid_creador": usridCreador,
+        "usridcreador": usridcreador,
         "usridoponente": usridoponente,
         "usridwin": usridwin,
         "img": img,
@@ -141,7 +141,7 @@ class Ppt {
       montototal: montototal,
       oponentes: oponentes,
       status: status,
-      usridCreador: usridCreador,
+      usridcreador: usridcreador,
       usridoponente: usridoponente,
       usridwin: usridwin,
       img: img,

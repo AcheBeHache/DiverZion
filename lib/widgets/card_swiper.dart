@@ -1,5 +1,7 @@
 //import 'package:app_game/bloc/peticionesppt_bloc.dart';
 //import 'package:app_game/providers/opcionesppt_provider.dart';
+import 'dart:async';
+
 import 'package:app_game/providers/partida_form_provider.dart';
 //import 'package:app_game/services/partidas_services.dart';
 import 'package:app_game/services/services.dart';
@@ -28,6 +30,7 @@ class CardSwiper extends StatefulWidget {
 class _CardSwiperState extends State<CardSwiper> {
   //const CardSwiper({super.key, required this.tarjetas});
   String enviousrcreador = '';
+
   @override
   Widget build(BuildContext context) {
     //final partidaService = Provider.of<PartidasServices>(context);
@@ -98,10 +101,7 @@ class _CardSwiperState extends State<CardSwiper> {
                     /*await widget.partidaService.saveOrCreatePartida(
                     partidaForm.partida, tarjetasProvider.selectedTarjetas);*/
                     //considera 2 móviles iniciando de 0 sin respuesta alguna, validar ésta parte
-                    await widget.partidaService
-                        .saveOrCreatePartida(partida, tarjeta, enviousrcreador);
-                    await widget.partidaService
-                        .updateTarjeta(partida, tarjeta, enviousrcreador);
+
                     /*Future.delayed(const Duration(seconds: 2), () async {
                       /*await widget.partidaService
                           .saveOrCreatePartida(partidaForm.partida, tarjeta);*/
@@ -112,8 +112,47 @@ class _CardSwiperState extends State<CardSwiper> {
                       /*setState(() {});
                       Navigator.pushNamed(context, 'ppt', arguments: tarjeta);*/
                     });*/
+
+                    //micodigo
+                    if (partida.id == null || partida.id == '') {
+                      await widget.partidaService.saveOrCreatePartida(partida);
+                    }
+                    //do del creador
+                    if (partida.usridcreador == enviousrcreador) {
+                      if (partida.respcreador == null ||
+                          partida.respcreador == '') {
+                        await widget.partidaService
+                            .updateTarjeta(partida, tarjeta, enviousrcreador);
+                        Future.delayed(const Duration(seconds: 2), () async {
+                          await widget.partidaService
+                              .updateTarjeta(partida, tarjeta, enviousrcreador);
+                        });
+                      }
+                    }
+                    //do del oponente
+                    if (partida.usridoponente == enviousrcreador) {
+                      do {
+                        //Future.delayed(const Duration(seconds: 4), () async {
+                        if ((partida.respoponente == null ||
+                                partida.respoponente == '') &&
+                            partida.respcreador != '') {
+                          await widget.partidaService
+                              .updateTarjeta(partida, tarjeta, enviousrcreador);
+                          Future.delayed(const Duration(seconds: 2), () async {
+                            await widget.partidaService.updateTarjeta(
+                                partida, tarjeta, enviousrcreador);
+                          });
+                        } else {
+                          //implementar un msj en gui de espere, deshabilitando el botón de enviar respuesta...
+                          print("Espere...");
+                        }
+                        //});
+                      } while ((partida.respoponente == '' &&
+                          partida.respcreador != ''));
+                    }
                     Future.delayed(const Duration(seconds: 6), () async {
-                      setState(() {});
+                      //setState(() {});
+                      print("se tienen ambas respuestas, redirigiendo---");
                       /*Navigator.pushNamed(context, 'ppt',
                           arguments: [partida, tarjeta]);*/
                       Navigator.pushNamed(context, 'ppt', arguments: partida);

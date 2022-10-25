@@ -1,11 +1,8 @@
-//import 'dart:convert';
-//import 'dart:io';
 //import 'package:app_game/bloc/peticionesppt_bloc.dart';
 //import 'package:app_game/models/models.dart';
 //import 'package:app_game/screens/screens.dart';
-//import 'package:card_swiper/card_swiper.dart';
-//import 'package:http/http.dart' as http;
 //import 'package:image_picker/image_picker.dart';
+import 'package:app_game/models/models.dart';
 import 'package:app_game/providers/opcionesppt_provider.dart';
 import 'package:app_game/providers/partida_form_provider.dart';
 import 'package:app_game/services/services.dart';
@@ -21,20 +18,19 @@ TextStyle deshabilitarTxts =
     const TextStyle(fontSize: 13, color: Color.fromARGB(255, 228, 226, 226));
 //msjito del modo manual/automático
 //String mensajito = 'manual';
+late Ppt selectedPartidas;
 
-class PartidaScreen extends StatefulWidget {
+class PartidaPPTScreen extends StatefulWidget {
   @override
-  State<PartidaScreen> createState() => _PartidaScreenState();
+  State<PartidaPPTScreen> createState() => _PartidaScreenState();
 }
 
-class _PartidaScreenState extends State<PartidaScreen> {
+class _PartidaScreenState extends State<PartidaPPTScreen> {
   @override
   Widget build(BuildContext context) {
     final partidaService = Provider.of<PartidasServices>(context);
 
-    //final tarjetasProvider = Provider.of<OpcionesPPTProvider>(context);
     return ChangeNotifierProvider(
-      //create: (_) => PartidaFormProvider(partidaService.selectedPartidas, tarjetasProvider.selectedTarjetas),
       create: (_) => PartidaFormProvider(partidaService.selectedPartidas),
       child: _PartidaScreenBody(partidaService: partidaService),
     );
@@ -57,23 +53,21 @@ class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
   @override
   Widget build(BuildContext context) {
     final partidaForm = Provider.of<PartidaFormProvider>(context);
-
-    //final tarjetasProvider = Provider.of<OpcionesPPTProvider>(context);
-    //final partida = partidaForm.partida;
+    final partida = partidaForm.partida;
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Selecciona tu respuesta...'),
+        title: const Text('Personaliza tu partida...'),
         elevation: 0,
       ),
       body: SingleChildScrollView(
         // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Padding(
           padding:
-              const EdgeInsets.symmetric(vertical: 100.0, horizontal: 10.20),
+              const EdgeInsets.symmetric(vertical: 90.0, horizontal: 10.20),
           child: Column(
             children: [
               /*Stack(
-                children: [
+                  children: [
                   PartidaImage(url: widget.partidaService.selectedPartidas.img),
                   Positioned(
                       top: 60,
@@ -83,7 +77,7 @@ class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
                         icon: const Icon(Icons.arrow_back_ios_new,
                             size: 40, color: Colors.white),
                       )),
-                  /*Descomentar para permitir al usr cargar una fotografía
+                  Descomentar para permitir al usr cargar una fotografía
                   Positioned(
                       top: 60,
                       right: 20,
@@ -105,16 +99,16 @@ class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
                         },
                         icon: const Icon(Icons.camera_alt_outlined,
                             size: 40, color: Colors.white),
-                      ))*/
+                      ))
                 ],
-              ),*/
+                  ),*/
               _PartidaForm(),
               const SizedBox(height: 100),
             ],
           ),
         ),
       ),
-      /*floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+      floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
       floatingActionButton: FloatingActionButton(
         //ejemplo para comenzar a emparejar partida con otro oponente: select, update, etc...
         onPressed: widget.partidaService.isSaving
@@ -128,10 +122,8 @@ class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
                 if (imageUrl != null) partidaForm.partida.img = imageUrl;*/
 
                 //print(imageUrl);
-                /*await widget.partidaService.saveOrCreatePartida(
-                    partidaForm.partida, tarjetasProvider.selectedTarjetas);*/
-                /*DESCOMENTARPARAACTIVAR await widget.partidaService
-                    .saveOrCreatePartida(partidaForm.partida);*/
+                //TODO: Descomentar Necesario
+                await widget.partidaService.saveOrCreatePartida(partida);
 
                 //1de3-Para poner contexto para navegar entre rutas al editar las cards
                 /*await partidaService.saveOrCreatePartida(
@@ -140,7 +132,7 @@ class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
         child: widget.partidaService.isSaving
             ? const CircularProgressIndicator(color: Colors.white)
             : const Icon(Icons.save_outlined),
-      ),*/
+      ),
     );
   }
 }
@@ -155,6 +147,7 @@ class _PartidaFormState extends State<_PartidaForm> {
   Widget build(BuildContext context) {
     final partidaForm = Provider.of<PartidaFormProvider>(context);
     final partida = partidaForm.partida;
+    //para carrusel de img ppt
     final partidaService = Provider.of<PartidasServices>(context);
     final tarjetasProvider = Provider.of<OpcionesPPTProvider>(context);
 
@@ -186,40 +179,6 @@ class _PartidaFormState extends State<_PartidaForm> {
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'YYYY/MM/DD', labelText: 'Creación:'),
               ),*/
-              const SizedBox(height: 30),
-              const Text('<< xDesliza para seleccionar tu respuesta >>'),
-              /*const SizedBox(height: 30),
-              TextFormField(
-                enabled: false,
-                initialValue: '${partida.montototal}',
-                inputFormatters: [
-                  FilteringTextInputFormatter.allow(
-                      //RegExp(r'^(\d+)?\.?\d{0,2}'))
-                      RegExp(r'^[1-9]|[0-9]?$'))
-                ],
-                onChanged: (value) {
-                  if (int.tryParse(value) == null || int.tryParse(value) == 0) {
-                    //TODO: verificar que el usr tenga poder en su granja
-                    partida.montototal = 1;
-                  } else {
-                    partida.montototal = int.parse(value);
-                  }
-                },
-                keyboardType: TextInputType.number,
-                decoration: InputDecorations.authInputDecoration(
-                    hintText: 'Rango del 1 al 99',
-                    labelText: 'Poder en juego:'),
-              ),*/
-              const SizedBox(height: 10),
-              CardSwiper(
-                tarjetas: tarjetasProvider.tarjetas,
-                partidaService: partidaService,
-              ),
-              const SizedBox(height: 30),
-              const Text('Se tienen 10 segundos para elegir respuesta.'),
-              const SizedBox(height: 30),
-              const Text(
-                  'La respuesta se envía al terminó del cronómetro, en automático.'),
               /*const SizedBox(height: 10),
               TextFormField(
                 enabled: false,
@@ -288,7 +247,6 @@ class _PartidaFormState extends State<_PartidaForm> {
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'Manual/Automático', labelText: 'Modo Juego:'),
               ),*/
-
               /*const SizedBox(height: 30),
               TextFormField(
                 enabled: false,
@@ -310,7 +268,8 @@ class _PartidaFormState extends State<_PartidaForm> {
                 decoration: InputDecorations.authInputDecoration(
                     hintText: '1', labelText: 'Status:'),
               ),*/
-              /*const SizedBox(height: 10),
+              //TODO: mostrar el monto en bolsa actual, y que el usr visualice el monto en tiempo real cada que cree partida.
+              const SizedBox(height: 10),
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
@@ -326,7 +285,28 @@ class _PartidaFormState extends State<_PartidaForm> {
                 },
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'usridDeFirebase', labelText: 'Creadora/or: '),
-              ),*/
+              ),
+              const SizedBox(height: 30),
+              TextFormField(
+                initialValue: '${partida.montototal}',
+                inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                      //RegExp(r'^(\d+)?\.?\d{0,2}'))
+                      RegExp(r'^[1-9]|[0-9]?$'))
+                ],
+                onChanged: (value) {
+                  if (int.tryParse(value) == null || int.tryParse(value) == 0) {
+                    //TODO: verificar que el usr tenga poder en su granja
+                    partida.montototal = 1;
+                  } else {
+                    partida.montototal = int.parse(value);
+                  }
+                },
+                keyboardType: TextInputType.number,
+                decoration: InputDecorations.authInputDecoration(
+                    hintText: 'Rango del 1 al 99',
+                    labelText: 'Poder en juego:'),
+              ),
               /*const SizedBox(height: 10),
               TextFormField(
                 enabled: false,
@@ -344,8 +324,8 @@ class _PartidaFormState extends State<_PartidaForm> {
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'usridOponenteLocalStorage',
                     labelText: 'Oponente: '),
-              ),*/
-              /*const SizedBox(height: 10),
+              ),
+              const SizedBox(height: 10),
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
@@ -363,16 +343,23 @@ class _PartidaFormState extends State<_PartidaForm> {
                     hintText: 'usridwinDeFirebase',
                     labelText: 'Recibe poder: '),
               ),*/
-              /*const SizedBox(height: 30),
+              const SizedBox(height: 30),
+              const Text('<< Desliza para seleccionar tu respuesta >>'),
+              const SizedBox(height: 10),
+              CardSwiper(
+                tarjetas: tarjetasProvider.tarjetas,
+                partidaService: partidaService,
+              ),
+              const SizedBox(height: 30),
               SwitchListTile.adaptive(
                   //NO APLICA - enabled: false,
-                  //TODO: falta habilitar el timeReal del modo
+                  //TODO: falta habilitar en automatico, que muestre las tarjetasw para seleccionar o bien, un random que lo asigne dicho sistema.
                   value: partida.modojuego,
                   //title: Text('Modo: ${partida.modojuego}'),
                   title: const Text('Activar modo automático:'),
                   subtitle: Text('${partida.modojuego}.'),
                   activeColor: Colors.indigo,
-                  onChanged: partidaForm.updateModojuego),*/
+                  onChanged: partidaForm.updateModojuego),
               const SizedBox(height: 30),
             ],
           ),

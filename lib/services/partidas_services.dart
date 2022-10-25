@@ -43,6 +43,7 @@ class PartidasServices extends ChangeNotifier {
 
     isLoading = false;
     notifyListeners();
+    //return partidas;
     /*print(partidasMap);
     print(partidasMap.length);*/
     /*print(partidas[1].toMap());
@@ -94,7 +95,7 @@ class PartidasServices extends ChangeNotifier {
   }*/
 
   //Future saveOrCreatePartida(Ppt partida, Opcion tarj) async {
-  Future saveOrCreatePartida(partida, tarjetas, enviousrcreador) async {
+  Future saveOrCreatePartida(partida) async {
     //2de3-Para poner contexto para navegar entre rutas al editar las cards
     //Future saveOrCreatePartida(context, Ppt partida) async {
     isSaving = true;
@@ -111,7 +112,7 @@ class PartidasServices extends ChangeNotifier {
       // Actualizar
       //await updatePartida(partida);
       //print('3Recibe el await de saveorcreatepartida: $enviousrcreador');
-      await updateTarjeta(partida, tarjetas, enviousrcreador);
+      //await updateTarjeta(partida, tarjetas, enviousrcreador);
 
       //Navigator.pushNamed(context, 'partidas_ppt');
       //Sprint('actualizará_Partida');
@@ -132,6 +133,22 @@ class PartidasServices extends ChangeNotifier {
     isSaving = false;
     notifyListeners();
     return partida.id!;
+  }
+
+  //borrar
+  Future obtenerPartida(Ppt partida) async {
+    /*isSaving = true;
+    notifyListeners();*/
+    final url = Uri.https(_baseUrl, 'partidas_ppt.json');
+    final resp = await http.get(url);
+    final decodedData = json.decode(resp.body);
+
+    partida.id = decodedData['name'];
+    partidas.add(partida);
+    print(partidas);
+    /*isSaving = false;
+    notifyListeners();*/
+    return partidas;
   }
 
   //actualizar tarjeta
@@ -171,7 +188,7 @@ class PartidasServices extends ChangeNotifier {
 
     //print('Tarj: $tarj');
     //TODO: Actualizar el listado de productos
-    if (partida.usridCreador == enviousrcreador) {
+    if (partida.usridcreador == enviousrcreador) {
       //partidas[index] = partida;
       //print(partidas[index].respcreador);
       partidas[index].respcreador = eleccioncreador;
@@ -189,6 +206,37 @@ class PartidasServices extends ChangeNotifier {
       //print(partidas[index].respoponente);
       //programé para que el oponente cierre con fecha la partida, es el que la establece
       partidas[index].fechafin = fechaFin;
+      partidas[index].status = 3;
+
+      //TODO: Faltanreglas del gane PPT, para guardar el usridGanador en usridwin
+      if (partida.respcreador == 'piedra' && eleccioncreador == 'piedra') {
+        partidas[index].usridwin = 'empate';
+        //programar la revancha.
+      }
+      if (partida.respcreador == 'piedra' && eleccioncreador == 'papel') {
+        partidas[index].usridwin = partida.usridoponente;
+      }
+      if (partida.respcreador == 'piedra' && eleccioncreador == 'tijera') {
+        partidas[index].usridwin = partida.usridcreador;
+      }
+      if (partida.respcreador == 'papel' && eleccioncreador == 'piedra') {
+        partidas[index].usridwin = partida.usridcreador;
+      }
+      if (partida.respcreador == 'papel' && eleccioncreador == 'papel') {
+        partidas[index].usridwin = 'empate';
+      }
+      if (partida.respcreador == 'papel' && eleccioncreador == 'tijera') {
+        partidas[index].usridwin = partida.usridoponente;
+      }
+      if (partida.respcreador == 'tijera' && eleccioncreador == 'piedra') {
+        partidas[index].usridwin = partida.usridoponente;
+      }
+      if (partida.respcreador == 'tijera' && eleccioncreador == 'papel') {
+        partidas[index].usridwin = partida.usridcreador;
+      }
+      if (partida.respcreador == 'tijera' && eleccioncreador == 'tijera') {
+        partidas[index].usridwin = 'empate';
+      }
     }
     //notifyListeners();
     isSaving = false;

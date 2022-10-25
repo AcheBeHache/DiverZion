@@ -33,10 +33,13 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
   @override
   Widget build(BuildContext context) {
     //llamamos las partidasServicio
-    final partidasService = Provider.of<PartidasServices>(context);
+    final PartidasServices partidasService =
+        Provider.of<PartidasServices>(context);
     if (partidasService.isLoading) {
       return LoadingScreen();
-    }
+    } /* else {
+      final partidasService = Provider.of<PartidasServices>(context);
+    }*/
     //Obtenemos el usr - idToken
     final authService = Provider.of<AuthService>(context, listen: false);
     mostrarusr() async {
@@ -91,6 +94,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
           child: ListView.builder(
               //separatorBuilder: ((_, __) => const Divider()),
               //return ListView.builder(
+              //NoJalascrollDirection: Axis.horizontal,
               itemCount: partidasService.partidas.length,
               itemBuilder: (BuildContext context, int index) => GestureDetector(
                   onTap: () {
@@ -103,7 +107,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                         partidasService.partidas[index];
                     //incluir evalúo de que tenga poder en su granja el usr, así como el monto al día permitido,
                     //checar el tema de juego entre usrversionapp para poder mayor
-                    if (partidasService.partidas[index].usridCreador ==
+                    if (partidasService.partidas[index].usridcreador ==
                             usrcreador &&
                         partidasService.partidas[index].status == 1 &&
                         (partidasService.partidas[index].usridoponente == '' ||
@@ -112,7 +116,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                       NotificationsService.showSnackbar(
                           "tú mismo la hicistesss, aún no hay oponente, recibirás una notificación!");
                     }
-                    if (partidasService.partidas[index].usridCreador !=
+                    if (partidasService.partidas[index].usridcreador !=
                             usrcreador &&
                         partidasService.partidas[index].status == 1 &&
                         (partidasService.partidas[index].usridoponente == '' ||
@@ -123,7 +127,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                       //antes de activar la opción, es importante validar su monto en bolsa, modo basico o golden, etc...
                       //si se le permite entrar inmediatamente hacer un update en usridoponente, para reservar su lugar
                     }
-                    if (partidasService.partidas[index].usridCreador ==
+                    if (partidasService.partidas[index].usridcreador ==
                             usrcreador &&
                         partidasService.partidas[index].status == 2 &&
                         (partidasService.partidas[index].usridoponente != '' ||
@@ -134,7 +138,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                           "Vientos! puedes entrar a retar, ya se tiene oponente!");*/
                     }
 
-                    if (partidasService.partidas[index].usridCreador !=
+                    if (partidasService.partidas[index].usridcreador !=
                             usrcreador &&
                         partidasService.partidas[index].status == 2 &&
                         partidasService.partidas[index].usridoponente !=
@@ -143,7 +147,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                           "Ya te la ganaron! no la creastess ni eres oponente. refresca y busca nueva partida. O crea una.");
                     }
 
-                    if (partidasService.partidas[index].usridCreador !=
+                    if (partidasService.partidas[index].usridcreador !=
                             usrcreador &&
                         partidasService.partidas[index].status == 2 &&
                         partidasService.partidas[index].usridoponente ==
@@ -153,7 +157,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                           "¡Eres oponente, qué esperas! Envía tu respuesta.");*/
                     }
 
-                    if (partidasService.partidas[index].usridCreador ==
+                    if (partidasService.partidas[index].usridcreador ==
                             usrcreador &&
                         partidasService.partidas[index].status == 3 &&
                         (partidasService.partidas[index].usridoponente != '' ||
@@ -163,7 +167,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                           "Ya la llevaste a cabo, fuiste el creador! Realiza una nueva partida.");
                     }
 
-                    if (partidasService.partidas[index].usridCreador !=
+                    if (partidasService.partidas[index].usridcreador !=
                             usrcreador &&
                         partidasService.partidas[index].status == 3 &&
                         partidasService.partidas[index].usridoponente !=
@@ -172,7 +176,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                           "Chav@, Ya se llevó a cabo! No estás dentro de la partida. Intenta creando nueva partida.");
                     }
 
-                    if (partidasService.partidas[index].usridCreador !=
+                    if (partidasService.partidas[index].usridcreador !=
                             usrcreador &&
                         partidasService.partidas[index].status == 3 &&
                         partidasService.partidas[index].usridoponente ==
@@ -193,6 +197,13 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                         : const Text(""),*/
                   )),
           onRefresh: () {
+            setState(() {
+              partidasService.partidas.length = partidasService.partidas.length;
+              //partidasService.selectedPartidas = partidasService.partidas[0];
+              /*PartidasCard(
+                partida: partidasService.selectedPartidas,
+              );*/
+            });
             /*print(formatDate(DateTime.now(), [H, ':', m, am]));
             print('----');
             print(formatDate(DateTime.now(), [d, '-', M, '-', yyyy]));
@@ -204,6 +215,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                 [d, '/', mm, '/', yyyy, '->', H, ':', m, ':', am]));*/
             return Future.delayed(const Duration(seconds: 1), () {
               setState(() {});
+              //Navigator.pushNamed(context, 'pptpartida');
             });
           },
         ),
@@ -224,8 +236,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                     montototal: 1,
                     oponentes: 1,
                     status: 1,
-                    //TODO: establecerle el dato del localstorage
-                    usridCreador: usrcreador,
+                    usridcreador: usrcreador,
                     usridoponente: '',
                     usridwin: '',
                     fechafin: '',
@@ -233,7 +244,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                     respcreador: '',
                     respoponente: '',
                     notificar: false);
-                Navigator.pushNamed(context, 'partida');
+                Navigator.pushNamed(context, 'pptpartida');
                 /*showDialog(
                     context: context,
                     builder: (context) => AlertDialog(

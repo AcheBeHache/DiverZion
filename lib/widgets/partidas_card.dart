@@ -31,7 +31,7 @@ class _PartidasCardState extends State<PartidasCard> {
             _ProductDetails(
               finicio: widget.partida.fechainicio,
               ffin: widget.partida.fechafin,
-              creador: widget.partida.usridCreador,
+              creador: widget.partida.usridcreador,
             ),
 
             Positioned(

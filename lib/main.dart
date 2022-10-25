@@ -1,6 +1,7 @@
 //import 'package:app_game/services/notifications_service.dart';
 import 'package:app_game/providers/opcionesppt_provider.dart';
 import 'package:app_game/screens/pagina3.dart';
+import 'package:app_game/screens/partida_pptscreen.dart';
 import 'package:app_game/screens/partida_screen.dart';
 import 'package:app_game/screens/partidas_ppt.dart';
 import 'package:flutter/material.dart';
@@ -53,6 +54,7 @@ class _MyAppState extends State<MyApp> {
         'register': (_) => RegisterScreen(),
         'pagina3': (_) => Pagina3(),
         'partida': (_) => PartidaScreen(),
+        'pptpartida': (_) => PartidaPPTScreen(),
       },
       scaffoldMessengerKey: NotificationsService.messengerKey,
       theme: ThemeData.light().copyWith(
