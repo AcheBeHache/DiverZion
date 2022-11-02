@@ -33,8 +33,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
   @override
   Widget build(BuildContext context) {
     //llamamos las partidasServicio
-    final PartidasServices partidasService =
-        Provider.of<PartidasServices>(context);
+    final partidasService = Provider.of<PartidasServices>(context);
     if (partidasService.isLoading) {
       return LoadingScreen();
     } /* else {
@@ -42,6 +41,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
     }*/
     //Obtenemos el usr - idToken
     final authService = Provider.of<AuthService>(context, listen: false);
+    //final PartidasServices partidas;
     mostrarusr() async {
       //String? rrvalue = await AuthService().readEmail();
       //String? valor = await authService.storage.read(key: 'usremail');
@@ -79,13 +79,13 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
       },
       child: Scaffold(
         appBar: AppBar(
-          //title: const Text('Selecciona o crea una partida.'),
-          title: StreamBuilder(
+          title: const Text('Selecciona o crea una partida.'),
+          /*title: StreamBuilder(
             stream: peticionesBloc.partidasContador,
             builder: (context, snapshot) {
               return Text('Partidas encontradas: ${snapshot.data ?? 0}');
             },
-          ),
+          ),*/
           elevation: 8.0,
         ),
         backgroundColor: Colors.amber.shade100,
@@ -122,8 +122,9 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                         (partidasService.partidas[index].usridoponente == '' ||
                             partidasService.partidas[index].usridoponente ==
                                 null)) {
-                      NotificationsService.showSnackbar(
-                          "Otro la hizo, deseas ser el oponente?, envía la notificación al creador!");
+                      Navigator.pushNamed(context, 'partida');
+                      /*NotificationsService.showSnackbar(
+                          "Otro la hizo, deseas ser el oponente?, envía la notificación al creador!");*/
                       //antes de activar la opción, es importante validar su monto en bolsa, modo basico o golden, etc...
                       //si se le permite entrar inmediatamente hacer un update en usridoponente, para reservar su lugar
                     }
@@ -197,13 +198,21 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                         : const Text(""),*/
                   )),
           onRefresh: () {
-            setState(() {
-              partidasService.partidas.length = partidasService.partidas.length;
-              //partidasService.selectedPartidas = partidasService.partidas[0];
-              /*PartidasCard(
+            //partidasService.dispose;
+            //setState(() {
+            //final PartidasServices partidasService =
+            //Provider.of<PartidasServices>(context, listen: false);
+
+            /*final PartidasServices partidasService =
+                  Provider.of<PartidasServices>(context, listen: false);*/
+            //partidasService.partidas.length = partidasService.partidas.length;
+
+            //partidasService.selectedPartidas = partidasService.partidas[0];
+            /*PartidasCard(
                 partida: partidasService.selectedPartidas,
               );*/
-            });
+            //});
+            //setState(() {});
             /*print(formatDate(DateTime.now(), [H, ':', m, am]));
             print('----');
             print(formatDate(DateTime.now(), [d, '-', M, '-', yyyy]));
@@ -214,7 +223,9 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
             print(formatDate(DateTime.now(),
                 [d, '/', mm, '/', yyyy, '->', H, ':', m, ':', am]));*/
             return Future.delayed(const Duration(seconds: 1), () {
-              setState(() {});
+              setState(() {
+                partidasService.refrescaTarjetas();
+              });
               //Navigator.pushNamed(context, 'pptpartida');
             });
           },
@@ -225,7 +236,8 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
             FloatingActionButton(
-              heroTag: "btnRecargar",
+              //heroTag: "btnRecargar",
+              heroTag: "btnCrearPartida",
               onPressed: () {
                 partidasService.selectedPartidas = Ppt(
                     fechainicio: formatDate(DateTime.now(),
@@ -267,9 +279,11 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
             FloatingActionButton(
               heroTag: "btnRefrescar",
               onPressed: () => {
-                //Navigator.push(context, _crearRuta1())
+                //Navigator.push(context, _crearRuta1()),
                 Future.delayed(const Duration(seconds: 1), () {
-                  setState(() {});
+                  setState(() {
+                    partidasService.refrescaTarjetas();
+                  });
                 })
               },
               tooltip: 'Refrescar',
@@ -296,11 +310,13 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
     );
   }
 
+  //borrarRuta - se omite por la función.
   Route _crearRuta1() {
     return PageRouteBuilder(
         pageBuilder: (BuildContext context, Animation<double> animation,
                 Animation<double> secondaryAnimation) =>
-            const PPT(),
+            //const PPT(),
+            const PARTIDASPPT(),
         transitionDuration: const Duration(seconds: 1),
         transitionsBuilder: (context, animation, secondaryAnimation, child) {
           final curvedAnimation =

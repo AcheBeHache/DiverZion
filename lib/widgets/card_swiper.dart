@@ -129,6 +129,13 @@ class _CardSwiperState extends State<CardSwiper> {
                         });
                       }
                     }
+                    //apartar partida
+                    if ((partida.usridcreador != '' &&
+                            partida.usridcreador != enviousrcreador) &&
+                        partida.usridoponente == '') {
+                      await widget.partidaService
+                          .apartaPartida(partida, tarjeta, enviousrcreador);
+                    }
                     //do del oponente
                     if (partida.usridoponente == enviousrcreador) {
                       do {

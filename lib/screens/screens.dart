@@ -8,3 +8,4 @@ export 'package:app_game/screens/loading_screen.dart';
 export 'package:app_game/screens/login.dart';
 export 'package:app_game/screens/ppt.dart';
 export 'package:app_game/screens/register_screen.dart';
+export 'package:app_game/screens/usuarios_screen.dart';

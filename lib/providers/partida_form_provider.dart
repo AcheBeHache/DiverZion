@@ -6,6 +6,7 @@ class PartidaFormProvider extends ChangeNotifier {
   GlobalKey<FormState> formKey = GlobalKey<FormState>();
 
   Ppt partida;
+  //UsrGame usuario;
   //Opcion tarj;
 
   // PartidaFormProvider(this.partida, this.tarj);

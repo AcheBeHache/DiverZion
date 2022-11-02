@@ -1,9 +1,12 @@
 //import 'package:app_game/services/notifications_service.dart';
 import 'package:app_game/providers/opcionesppt_provider.dart';
+import 'package:app_game/providers/usuarios_form_provider.dart';
 import 'package:app_game/screens/pagina3.dart';
 import 'package:app_game/screens/partida_pptscreen.dart';
 import 'package:app_game/screens/partida_screen.dart';
 import 'package:app_game/screens/partidas_ppt.dart';
+import 'package:app_game/screens/usuarios_screen.dart';
+//import 'package:app_game/screens/perfilusr_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 //import 'package:app_game/screens/ppt.dart';
@@ -27,6 +30,8 @@ class _AppStateState extends State<AppState> {
         ChangeNotifierProvider(create: (_) => AuthService()),
         ChangeNotifierProvider(create: (_) => PartidasServices()),
         ChangeNotifierProvider(create: (_) => OpcionesPPTProvider()),
+        ChangeNotifierProvider(create: (_) => UsuariosService()),
+        //ChangeNotifierProvider(create: (_) => UsuariosFormProvider()),
       ],
       child: MyApp(),
     );
@@ -55,6 +60,7 @@ class _MyAppState extends State<MyApp> {
         'pagina3': (_) => Pagina3(),
         'partida': (_) => PartidaScreen(),
         'pptpartida': (_) => PartidaPPTScreen(),
+        'perfil': (_) => UsuariosScreen(),
       },
       scaffoldMessengerKey: NotificationsService.messengerKey,
       theme: ThemeData.light().copyWith(

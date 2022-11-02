@@ -1,5 +1,3 @@
-//import 'package:app_game/services/services.dart';
-//import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:app_game/models/models.dart';
@@ -8,7 +6,119 @@ import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:app_game/bloc/peticionesppt_bloc.dart';
 
-class PartidasServices extends ChangeNotifier {
+class UsuariosService extends ChangeNotifier {
+  final String _baseUrl = 'pptgame-d06ee-default-rtdb.firebaseio.com';
+  final List<UsrGame> usuarios = [];
+  late UsrGame selectedUsuarios;
+  File? newPictureFile;
+  bool isLoading = true;
+  bool isSaving = false;
+  UsuariosService() {
+    loadUsuarios();
+  }
+  Future loadUsuarios() async {
+    isLoading = true;
+    notifyListeners();
+
+    final url = Uri.https(_baseUrl, 'usuarios/games.json');
+    final resp = await http.get(url);
+
+    final Map<String, dynamic> usuariosMap = json.decode(resp.body);
+
+    usuariosMap.forEach((key, value) {
+      final tempUsuarios = UsrGame.fromMap(value);
+      //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
+      tempUsuarios.id = key;
+      usuarios.add(tempUsuarios);
+    });
+    print(usuarios[1].email);
+    isLoading = false;
+    notifyListeners();
+    return usuarios;
+  }
+
+  Future saveOrCreateUsuario(perfil) async {
+    //2de3-Para poner contexto para navegar entre rutas al editar las cards
+    //Future saveOrCreatePartida(context, Ppt partida) async {
+    isSaving = true;
+    notifyListeners();
+    //checar los id y idPrueba, la actualización ya está, falta la creación. Ojo: estoy pidiendo el id desde el formulario, que en teoría no debe ser null o si?
+    if (perfil.usrId == null || perfil.usrId == '') {
+      // Es necesario crear
+      //print("entro al creador");
+      //await createPartida(partida);
+      await updateUsuario(perfil);
+      //3de3-Para poner contexto para navegar entre rutas al editar las cards
+      //Navigator.pushNamed(context, 'partidas_ppt');
+    } else {
+      // Actualizar
+      //await updatePartida(partida);
+      //print('3Recibe el await de saveorcreatepartida: $enviousrcreador');
+      //await updateTarjeta(partida, tarjetas, enviousrcreador);
+
+      //Navigator.pushNamed(context, 'partidas_ppt');
+      //Sprint('actualizará_Partida');
+    }
+    isSaving = false;
+    notifyListeners();
+  }
+
+  Future<String> updateUsuario(UsrGame perfil) async {
+    isSaving = true;
+    notifyListeners();
+    final url = Uri.https(_baseUrl, 'usuarios/games/${perfil.usrId}.json');
+    final resp = await http.put(url, body: perfil.toJson());
+    final decodedData = json.decode(resp.body);
+    //TODO: Actualizar el listado de productos
+    final index = usuarios.indexWhere((element) => element.id == perfil.usrId);
+    usuarios[index] = perfil;
+    isSaving = false;
+    notifyListeners();
+    return perfil.usrId!;
+  }
+
+  void updateSelectedPartidaImage(String path) {
+    selectedUsuarios.avatar = path;
+    newPictureFile = File.fromUri(Uri(path: path));
+
+    notifyListeners();
+  }
+
+  Future<String?> uploadImage() async {
+    if (newPictureFile == null) return null;
+
+    isSaving = true;
+    notifyListeners();
+
+    final url = Uri.parse(
+        'https://api.cloudinary.com/v1_1/dqtjgerwt/image/upload?upload_preset=wjh87pn9');
+
+    final imageUploadRequest = http.MultipartRequest('POST', url);
+
+    final file =
+        await http.MultipartFile.fromPath('file', newPictureFile!.path);
+
+    imageUploadRequest.files.add(file);
+
+    final streamResponse = await imageUploadRequest.send();
+    final resp = await http.Response.fromStream(streamResponse);
+
+    if (resp.statusCode != 200 && resp.statusCode != 201) {
+      print('algo salio mal');
+      print(resp.body);
+      return null;
+    }
+
+    newPictureFile = null;
+
+    final decodedData = json.decode(resp.body);
+    isSaving = false;
+    notifyListeners();
+    return decodedData['secure_url'];
+  }
+}
+
+/*class PartidasServices extends ChangeNotifier {
   final String _baseUrl = 'pptgame-d06ee-default-rtdb.firebaseio.com';
   final List<Ppt> partidas = [];
   late Ppt selectedPartidas;
@@ -358,4 +468,4 @@ class PartidasServices extends ChangeNotifier {
     notifyListeners();
     return usuario.usrId!;
   }
-}
+}*/

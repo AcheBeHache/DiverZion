@@ -1,7 +1,12 @@
 //import 'dart:math';
 
+import 'package:app_game/models/models.dart';
+import 'package:app_game/providers/usuarios_form_provider.dart';
 import 'package:app_game/screens/pagina1.dart';
+import 'package:app_game/screens/screens.dart';
 import 'package:app_game/services/services.dart';
+import 'package:app_game/widgets/widgets.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 //import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -23,8 +28,15 @@ class _HomeScreen extends State<HomeScreen> {
   String enviomsj = '';
   //Para poner la primera letra en mayúscula de una palabra
   String get inCaps => '$this[0].toUpperCase()$this.substring(1)';
+  String rrvalue = '';
   @override
   Widget build(BuildContext context) {
+    final partidasService = Provider.of<PartidasServices>(context);
+    final usuariosService = Provider.of<UsuariosService>(context);
+    final infoUsr = usuariosService.usuarios;
+    if (partidasService.isLoading) {
+      return LoadingScreen();
+    }
     //TextStyle titulosTxt = const TextStyle(fontSize: 27);
     TextStyle subtitulosTxt = TextStyle(
       fontSize: 22,
@@ -40,7 +52,12 @@ class _HomeScreen extends State<HomeScreen> {
     final Shader linearGradient = const LinearGradient(
       colors: <Color>[Color(0xffDA44bb), Color(0xff8921aa)],
     ).createShader(const Rect.fromLTWH(0, 0, 200, 70));
+    //creamos instancia del provider del usr
+    //final perfil = Provider.of<UsuariosService>(context);
+    //print('perfil-usuarios: ${perfil.usuarios[0]}');
+    //print('Perfil-getOnDisplayUsusarios: ${perfil.getOndisplayUsuarios}');
 
+    //print(perfil.getOndisplayUsuarios);
     //creamos una instancia para utilizar el localstorage, mostrar usr 1de4
     final authService = Provider.of<AuthService>(context, listen: false);
 
@@ -53,14 +70,14 @@ class _HomeScreen extends State<HomeScreen> {
     mostrarusr() async {
       //String? rrvalue = await AuthService().readEmail();
       //String? valor = await authService.storage.read(key: 'usremail');
-      String? rrvalue = await authService.storage.read(key: 'usremail');
+      rrvalue = (await authService.storage.read(key: 'usremail'))!;
       /*obtenemos el nombre del usuario tomando como referencia su email, lo que va antes del @ con split:
       ${rrvalue!.split('@')[0]}*/
       /* Obtenemos la primera letra y la convertimos en mayúscula:
         ${rrvalue![0].toUpperCase()}${rrvalue.substring(1)}
       */
       enviomsj =
-          '\n${rrvalue![0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}';
+          '\n${rrvalue[0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}';
       //print(enviomsj);
       setState(() {});
       return enviomsj;
@@ -69,17 +86,95 @@ class _HomeScreen extends State<HomeScreen> {
     //ejecutamos la función para mostrar usrname, mostrar usr 3de4
     mostrarusr();
     //const storage = FlutterSecureStorage();
+
     return Scaffold(
       //backgroundColor: Colors.amber,
       appBar: AppBar(
         title: const Text('DiverZión - Almacén'),
         elevation: 8.0,
-        //Para poner el icono de logout en la parte derecha, class254min1:19
-        /*actions: [IconButton(
-          onPressed: (){}), 
-          icon: const Icon(Icons.logout_rounded)),
-          ),]*/
-        leading: IconButton(
+        actions: <Widget>[
+          IconButton(
+            icon: const Icon(Icons.perm_identity_rounded),
+            tooltip: 'Mi perfil',
+            onPressed: () {
+              //aquí el código para obtener el index del usr y pintar lo correspondiente a su sesión
+              usuariosService.selectedUsuarios = UsrGame(
+                  id: rrvalue,
+                  usrId: rrvalue, //validar
+                  avatar: infoUsr[0].avatar, //validar
+                  bolsa: infoUsr[0].bolsa,
+                  cinvbolsa: infoUsr[0].cinvbolsa,
+                  codigoinv: infoUsr[0].codigoinv,
+                  comisionbolsa: infoUsr[0].comisionbolsa,
+                  email: rrvalue,
+                  masbolsa: infoUsr[0].masbolsa,
+                  menosbolsa: infoUsr[0].menosbolsa,
+                  modo: infoUsr[0].modo,
+                  padrecodigo: infoUsr[0].padrecodigo,
+                  status: infoUsr[0].status);
+              Navigator.pushNamed(context, 'perfil');
+              /*ListView.builder(
+                  //separatorBuilder: ((_, __) => const Divider()),
+                  //return ListView.builder(
+                  //NoJalascrollDirection: Axis.horizontal,
+                  itemCount: usuariosService.usuarios.length,
+                  itemBuilder: (BuildContext context, int index) => GestureDetector(
+                      onTap: () {
+                        //Aquí tenemos que cambiar la funcionalidad "total", pero dirigir con los datos a la ventana (PPT) para comenzar el juego
+                        //Me quedé aqui para hacer pruebas de visualizar y copiar únicamente las cards con status 1y2
+                        /*partidasService.selectedPartidas =
+                        partidasService.partidas[index].copy();*/
+                        //TODO: Checar el copy
+                        usuariosService.selectedUsuarios =
+                            usuariosService.usuarios[index];
+                        Navigator.pushNamed(context, 'perfil');
+                        //incluir evalúo de que tenga poder en su granja el usr, así como el monto al día permitido,
+                        //checar el tema de juego entre usrversionapp para poder mayor
+                        /*if (usuariosService.usuarios[index].email == rrvalue) {
+                          NotificationsService.showSnackbar(
+                              "tú mismo la hicistesss, aún no hay oponente, recibirás una notificación!");
+                          //Navigator.pushNamed(context, 'partida');
+                        }*/
+                      },
+                      child: UsuariosCard(
+                        usuario: usuariosService.usuarios[index],
+                      )
+                      /*Logra mostrar al usr únicamente cards disponibles y en status 'En partida' 
+                    partidasService.partidas[index].status == 1 ||
+                            partidasService.partidas[index].status == 2
+                        /? PartidasCard(
+                            partida: partidasService.partidas[index],
+                          )
+                        : const Text(""),*/
+                      ));*/
+              /*showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                          backgroundColor: Colors.lightBlue.shade100,
+                          title: const Text("¡A tu medida!"),
+                          content: const SingleChildScrollView(
+                            child: Text(
+                                "Crea una partida e invita a la comunidad. \n Antes de establecer los siguientes datos es importante tener poder en tu granja, tu poder actual es de: \$\$\$ DiverZCoin"),
+                          ),
+                          actions: [
+                            TextButton(
+                                onPressed: () => Navigator.pop(context),
+                                child: const Text("Crear e invitar..."))
+                          ],
+                        ))*/
+            },
+          ),
+          IconButton(
+            icon: const Icon(Icons.add_alert),
+            tooltip: 'Notificaciones',
+            onPressed: () {
+              ScaffoldMessenger.of(context).showSnackBar(
+                  const SnackBar(content: Text('Preparar popup.')));
+            },
+          ),
+          IconButton(
+            tooltip: 'Salir',
+            icon: const Icon(Icons.logout_rounded),
             onPressed: () async {
               /*String? value = await authService.storage.read(key: 'usremail');
               print(value);
@@ -89,7 +184,25 @@ class _HomeScreen extends State<HomeScreen> {
               authService.logout();*/
               Navigator.pushReplacementNamed(context, 'login');
             },
-            icon: const Icon(Icons.logout_rounded)),
+          ),
+        ],
+        //Para poner el icono de logout en la parte derecha, class254min1:19
+        /*actions: [IconButton(
+          onPressed: (){}), 
+          icon: const Icon(Icons.logout_rounded)),
+          ),]*/
+        /*leading: IconButton(
+            onPressed: () async {
+              /*String? value = await authService.storage.read(key: 'usremail');
+              print(value);
+              String? xvalue = await AuthService().readEmail();
+              print('xvalue: ' + xvalue);
+              print(mostrarusr().toString());
+              authService.logout();*/
+              Navigator.pushReplacementNamed(context, 'login');
+            },
+            icon: const Icon(Icons.logout_rounded)
+            ),*/
       ),
       backgroundColor: Colors.lightBlue.shade100,
       body: SingleChildScrollView(

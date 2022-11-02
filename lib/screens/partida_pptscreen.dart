@@ -8,7 +8,7 @@ import 'package:app_game/providers/partida_form_provider.dart';
 import 'package:app_game/services/services.dart';
 import 'package:app_game/ui/input_decorations.dart';
 import 'package:app_game/widgets/card_swiper.dart';
-import 'package:app_game/widgets/widgets.dart';
+//import 'package:app_game/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
@@ -116,10 +116,10 @@ class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
             : () async {
                 if (!partidaForm.isValidForm()) return;
 
-                /*final String? imageUrl =
+                final String? imageUrl =
                     await widget.partidaService.uploadImage();
 
-                if (imageUrl != null) partidaForm.partida.img = imageUrl;*/
+                if (imageUrl != null) partidaForm.partida.img = imageUrl;
 
                 //print(imageUrl);
                 //TODO: Descomentar Necesario

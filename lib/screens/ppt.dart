@@ -21,13 +21,13 @@ class PPT extends StatefulWidget {
 
 class _PPTState extends State<PPT> {
   //Estilos textos
-  /*var*/ TextStyle titulosTxt = const TextStyle(fontSize: 27);
-  TextStyle subtitulosTxt = const TextStyle(fontSize: 22);
-  TextStyle numerosTxt = const TextStyle(fontSize: 25);
-  TextStyle parrafosTxt = const TextStyle(fontSize: 17);
+  /*var*/ TextStyle titulosTxt = const TextStyle(fontSize: 20);
+  TextStyle subtitulosTxt = const TextStyle(fontSize: 15);
+  TextStyle numerosTxt = const TextStyle(fontSize: 18);
+  TextStyle parrafosTxt = const TextStyle(fontSize: 10);
   //variables para imprimir variables de BD
-  String? creadorimg = '';
-  String? oponenteimg = '';
+  String creadorimg = '';
+  String oponenteimg = '';
   //variables PPT
   int j1ficha = 0, j2ficha = 0, montogame = 100;
   String enviomsj = '', juegosactivos = '', ganador = '';
@@ -107,9 +107,10 @@ class _PPTState extends State<PPT> {
     //StreamBuilder
     int i = 0;
     bool bandera = false;
-    final Stream _bids = (() {
+    final Stream _resultados = (() {
       late final StreamController controller;
       //final partidaService = Provider.of<PartidasServices>(context);
+
       controller = StreamController(
         onListen: () async {
           //await Future<void>.delayed(const Duration(seconds: 1));
@@ -175,40 +176,7 @@ class _PPTState extends State<PPT> {
       return controller.stream;
     })();
     //termina función del streamcontroller
-    if (resultado.usridcreador == resultado.usridwin) {
-      ganador = 'Creador';
-    }
-    if (resultado.usridoponente == resultado.usridwin) {
-      ganador = 'Oponente';
-    }
-    if (resultado.usridcreador != '' || resultado.usridoponente == '') {
-      ganador = '??';
-    }
 
-    if (resultado.respcreador == 'piedra') {
-      creadorimg =
-          "https://images.vexels.com/media/users/3/145641/isolated/preview/30bc99162bca69bdbd27451ceeef8848-ilustracion-de-piedra-de-la-tierra.png";
-    }
-    if (resultado.respoponente == 'piedra') {
-      oponenteimg =
-          "https://images.vexels.com/media/users/3/145641/isolated/preview/30bc99162bca69bdbd27451ceeef8848-ilustracion-de-piedra-de-la-tierra.png";
-    }
-    if (resultado.respcreador == 'papel') {
-      creadorimg =
-          "https://i.pinimg.com/originals/f2/9a/99/f29a995653ff0658cfcef654708a02fd.png";
-    }
-    if (resultado.respoponente == 'papel') {
-      oponenteimg =
-          "https://i.pinimg.com/originals/f2/9a/99/f29a995653ff0658cfcef654708a02fd.png";
-    }
-    if (resultado.respcreador == 'tijera') {
-      creadorimg =
-          "https://static.vecteezy.com/system/resources/thumbnails/009/664/151/small/scissor-icon-transparent-free-png.png";
-    }
-    if (resultado.respoponente == 'tijera') {
-      oponenteimg =
-          "https://static.vecteezy.com/system/resources/thumbnails/009/664/151/small/scissor-icon-transparent-free-png.png";
-    }
     /*final partidaForm = Provider.of<PartidaFormProvider>(context);
     final partida = partidaForm.partida;*/
     final size = MediaQuery.of(context).size;
@@ -242,6 +210,7 @@ class _PPTState extends State<PPT> {
           child: Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: <Widget>[
                 (_counter > 0)
                     ? const Text("")
@@ -279,7 +248,7 @@ class _PPTState extends State<PPT> {
                 Row(
                   children: [
                     StreamBuilder(
-                      stream: _bids,
+                      stream: _resultados,
                       builder: (BuildContext context, AsyncSnapshot snapshot) {
                         List<Widget> children;
                         if (snapshot.hasError) {
@@ -449,11 +418,12 @@ class _PPTState extends State<PPT> {
                                 //aquí
 
                                 Text(
-                                  "\nGanador (?): ? \n Poder en juego: ${resultado.montototal}.\n\n $enviomsj",
+                                  "\nGanador (???): ??? \n Poder en juego: \$???.\n\n $enviomsj",
                                   style: parrafosTxt,
                                   textAlign: TextAlign.center,
                                 ),
                               ];
+                              //setState(() {});
                               break;
                             //termina el active cierra el while
                             case ConnectionState.done:
@@ -462,6 +432,43 @@ class _PPTState extends State<PPT> {
                                 resultado.respcreador = 'prueba Stream';
                               });*/
                               montogame = 200;
+                              if (resultado.usridcreador != '' ||
+                                  resultado.usridoponente != '') {
+                                ganador = '??cambio';
+                              }
+                              if (resultado.usridcreador ==
+                                  resultado.usridwin) {
+                                ganador = 'Creadorxxx';
+                              }
+                              if (resultado.usridoponente ==
+                                  resultado.usridwin) {
+                                ganador = 'Oponentexxx';
+                              }
+
+                              if (resultado.respcreador == 'piedra') {
+                                creadorimg =
+                                    "https://images.vexels.com/media/users/3/145641/isolated/preview/30bc99162bca69bdbd27451ceeef8848-ilustracion-de-piedra-de-la-tierra.png";
+                              }
+                              if (resultado.respoponente == 'piedra') {
+                                oponenteimg =
+                                    "https://images.vexels.com/media/users/3/145641/isolated/preview/30bc99162bca69bdbd27451ceeef8848-ilustracion-de-piedra-de-la-tierra.png";
+                              }
+                              if (resultado.respcreador == 'papel') {
+                                creadorimg =
+                                    "https://i.pinimg.com/originals/f2/9a/99/f29a995653ff0658cfcef654708a02fd.png";
+                              }
+                              if (resultado.respoponente == 'papel') {
+                                oponenteimg =
+                                    "https://i.pinimg.com/originals/f2/9a/99/f29a995653ff0658cfcef654708a02fd.png";
+                              }
+                              if (resultado.respcreador == 'tijera') {
+                                creadorimg =
+                                    "https://static.vecteezy.com/system/resources/thumbnails/009/664/151/small/scissor-icon-transparent-free-png.png";
+                              }
+                              if (resultado.respoponente == 'tijera') {
+                                oponenteimg =
+                                    "https://static.vecteezy.com/system/resources/thumbnails/009/664/151/small/scissor-icon-transparent-free-png.png";
+                              }
                               children = <Widget>[
                                 const Icon(
                                   Icons.info,
@@ -513,7 +520,7 @@ class _PPTState extends State<PPT> {
                                           height: size.height * 0.4,*/
                                             placeholder: const AssetImage(
                                                 'assets/images/no-image.png'),
-                                            image: NetworkImage(creadorimg!),
+                                            image: NetworkImage(creadorimg),
                                             //image: AssetImage('assets/images/no-image.png'),
                                             fit: BoxFit.cover,
                                           )),
@@ -542,8 +549,7 @@ class _PPTState extends State<PPT> {
                                           height: size.height * 0.4,*/
                                             placeholder: const AssetImage(
                                                 'assets/images/no-image.png'),
-                                            //TODO: ponerle resultado del oponente, aquí si consultamos a BD
-                                            image: NetworkImage(oponenteimg!),
+                                            image: NetworkImage(oponenteimg),
                                             //image: AssetImage('assets/images/no-image.png'),
                                             fit: BoxFit.cover,
                                           )),
@@ -556,7 +562,7 @@ class _PPTState extends State<PPT> {
                                     //if (resultado.nombre == null || resultado.nombre == '')
                                     Text(
                                       //'$j1ficha ,
-                                      'Creador: ${resultado.respcreador!}',
+                                      'Creador: ${resultado.respcreador}',
                                       style: numerosTxt,
                                     ),
                                     Text(
@@ -565,13 +571,13 @@ class _PPTState extends State<PPT> {
                                     ),
                                     Text(
                                       //"$j2ficha",
-                                      "Oponente: ${resultado.respoponente!}",
+                                      "Oponente: ${resultado.respoponente}",
                                       style: numerosTxt,
                                     ),
                                   ],
                                 ),
                                 Text(
-                                  "\nGanador ($ganador): ${resultado.usridwin} \n Poder en juego: ${resultado.montototal}.\n\n $enviomsj",
+                                  "\nGanador ($ganador): \n${resultado.usridwin} \n Poder en juego: ${resultado.montototal}.\n\n $enviomsj",
                                   style: parrafosTxt,
                                   textAlign: TextAlign.center,
                                 ),
