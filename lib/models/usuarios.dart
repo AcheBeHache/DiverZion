@@ -7,6 +7,7 @@ import 'dart:convert';
 class AdminusrGame1 {
   AdminusrGame1({
     this.avatar,
+    this.apodo,
     this.bolsa,
     this.cinvbolsa,
     this.codigoinv,
@@ -21,6 +22,7 @@ class AdminusrGame1 {
   });
 
   String? avatar;
+  String? apodo;
   int? bolsa;
   int? cinvbolsa;
   String? codigoinv;
@@ -40,6 +42,7 @@ class AdminusrGame1 {
 
   factory AdminusrGame1.fromMap(Map<String, dynamic> json) => AdminusrGame1(
         avatar: json["avatar"],
+        apodo: json["apodo"],
         bolsa: json["bolsa"],
         cinvbolsa: json["cinvbolsa"],
         codigoinv: json["codigoinv"],
@@ -55,6 +58,7 @@ class AdminusrGame1 {
 
   Map<String, dynamic> toMap() => {
         "avatar": avatar,
+        "apodo": apodo,
         "bolsa": bolsa,
         "cinvbolsa": cinvbolsa,
         "codigoinv": codigoinv,
@@ -73,6 +77,7 @@ class AdminusrGame1 {
 class UsrGame {
   UsrGame({
     this.avatar,
+    this.apodo,
     this.bolsa,
     this.cinvbolsa,
     this.codigoinv,
@@ -88,6 +93,7 @@ class UsrGame {
   });
 
   String? avatar;
+  String? apodo;
   int? bolsa;
   int? cinvbolsa;
   String? codigoinv;
@@ -107,6 +113,7 @@ class UsrGame {
 
   factory UsrGame.fromMap(Map<String, dynamic> json) => UsrGame(
         avatar: json["avatar"],
+        apodo: json["apodo"],
         bolsa: json["bolsa"],
         cinvbolsa: json["cinvbolsa"],
         codigoinv: json["codigoinv"],
@@ -123,6 +130,7 @@ class UsrGame {
 
   Map<String, dynamic> toMap() => {
         "avatar": avatar,
+        "apodo": apodo,
         "bolsa": bolsa,
         "cinvbolsa": cinvbolsa,
         "codigoinv": codigoinv,

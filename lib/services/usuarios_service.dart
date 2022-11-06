@@ -8,8 +8,24 @@ import 'package:app_game/bloc/peticionesppt_bloc.dart';
 
 class UsuariosService extends ChangeNotifier {
   final String _baseUrl = 'pptgame-d06ee-default-rtdb.firebaseio.com';
-  final List<UsrGame> usuarios = [];
-  late UsrGame selectedUsuarios;
+  List<UsrGame> usuarios = [];
+  //Aquí se inicializa la valriable de selectedUsuarios, falta llamar la info en timeReal
+  late UsrGame selectedUsuarios = UsrGame(
+      id: 'xxx',
+      usrId: 'xxxrrvalue', //validar
+      apodo: 'APODO',
+      avatar:
+          'https://img2.freepng.es/20180623/iqh/kisspng-computer-icons-avatar-social-media-blog-font-aweso-avatar-icon-5b2e99c40ce333.6524068515297806760528.jpg', //validar
+      bolsa: 0,
+      cinvbolsa: 0,
+      codigoinv: 'xxxDEFAULT',
+      comisionbolsa: 0,
+      email: 'xxxrrvalue',
+      masbolsa: 0,
+      menosbolsa: 0,
+      modo: 'xxxtrial',
+      padrecodigo: 'xxxDEFAULT',
+      status: true);
   File? newPictureFile;
   bool isLoading = true;
   bool isSaving = false;
@@ -31,7 +47,7 @@ class UsuariosService extends ChangeNotifier {
       tempUsuarios.id = key;
       usuarios.add(tempUsuarios);
     });
-    print(usuarios[1].email);
+    //print(usuarios[1].email);
     isLoading = false;
     notifyListeners();
     return usuarios;
@@ -64,14 +80,22 @@ class UsuariosService extends ChangeNotifier {
   }
 
   Future<String> updateUsuario(UsrGame perfil) async {
+    //Prueba1: Poder modificar el email sin que afecte y no actualice el campo del id
+    //Prueba2: Deshabilitar todo, y desde firebase cambiar el email, y que éste no afecte la funcionalidad general
+    //Prueba3: Verificar y validar el id default de firebase y cómo me servirá al hacer los match con otros modelos
+    //YAP4: Deshabilitar todo y que únicamente pueda cambiar el ávatar.
+    //OJO: Indicar desde aquí qué campos le permitiré actualizar, osea que no afecte todo el objeto
+    //Ojo2: Osea que sólo se actualice el ávatar y el apodo. INCLUIR CAMPO DE APODO
     isSaving = true;
     notifyListeners();
-    final url = Uri.https(_baseUrl, 'usuarios/games/${perfil.usrId}.json');
+    final url = Uri.https(_baseUrl, 'usuarios/games/${perfil.id}.json');
     final resp = await http.put(url, body: perfil.toJson());
     final decodedData = json.decode(resp.body);
     //TODO: Actualizar el listado de productos
-    final index = usuarios.indexWhere((element) => element.id == perfil.usrId);
-    usuarios[index] = perfil;
+    final index = usuarios.indexWhere((element) => element.id == perfil.id);
+    //únicamente permitimos cambiar dichos campos en la BD
+    usuarios[index].avatar = perfil.avatar;
+    usuarios[index].apodo = perfil.apodo;
     isSaving = false;
     notifyListeners();
     return perfil.usrId!;
@@ -115,6 +139,50 @@ class UsuariosService extends ChangeNotifier {
     isSaving = false;
     notifyListeners();
     return decodedData['secure_url'];
+  }
+
+  void int;
+  obtenerUsuario(String rrvalor) async {
+    /*isSaving = true;
+    notifyListeners();*/
+    final url = Uri.https(_baseUrl, 'usuarios/games.json');
+    final resp = await http.get(url);
+    final decodedData = json.decode(resp.body);
+
+    final index = usuarios.indexWhere((element) => element.email == rrvalor);
+    if (index == -1 || index == null) {
+      print('crearle tarjeta');
+      //createUsuario();
+      //Checar la base del obj
+    } else {
+      //print('info usuarios[index]: ${usuarios[index].email}');
+      //usuarios[index] = usuarios[index];
+      //print('usuarios retornados: ${usuarios[index]}');
+      return index;
+    }
+    /*usuarios[index] = usuarios[index];
+
+    usuario.usrId = decodedData['name'];
+    usuarios.add(usuario);*/
+    print('index del rrvalue con correo: $rrvalor  -> $index');
+
+    /*isSaving = false;
+    notifyListeners();*/
+    //return usuarios;
+  }
+
+  Future<String> createUsuario(UsrGame usr) async {
+    isSaving = true;
+    notifyListeners();
+    final url = Uri.https(_baseUrl, 'usuarios/games.json');
+    final resp = await http.post(url, body: usr.toJson());
+    final decodedData = json.decode(resp.body);
+
+    usr.id = decodedData['name'];
+    usuarios.add(usr);
+    isSaving = false;
+    notifyListeners();
+    return usr.id!;
   }
 }
 

@@ -24,6 +24,8 @@ TextStyle deshabilitarTxts =
 late UsrGame selectedUsuarios;
 
 class UsuariosScreen extends StatefulWidget {
+  const UsuariosScreen({super.key});
+
   @override
   State<UsuariosScreen> createState() => _UsuariosScreenState();
 }
@@ -71,22 +73,23 @@ class _UsuarioScreenBodyState extends State<_UsuarioScreenBody> {
         // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
         child: Padding(
           padding:
-              const EdgeInsets.symmetric(vertical: 90.0, horizontal: 10.20),
+              const EdgeInsets.symmetric(vertical: 20.0, horizontal: 10.20),
           child: Column(
             children: [
               Stack(
                 children: [
                   UsuariosImage(url: usuarioService.selectedUsuarios.avatar),
-                  Positioned(
+                  //Para habilitar la flechita para atrás
+                  /*Positioned(
                       top: 60,
                       left: 20,
                       child: IconButton(
                         onPressed: () => Navigator.of(context).pop(),
                         icon: const Icon(Icons.arrow_back_ios_new,
                             size: 40, color: Colors.white),
-                      )),
+                      )),*/
                   Positioned(
-                      top: 60,
+                      top: 65,
                       right: 20,
                       child: IconButton(
                         onPressed: () async {
@@ -129,7 +132,7 @@ class _UsuarioScreenBodyState extends State<_UsuarioScreenBody> {
 
                 //print(imageUrl);
                 //TODO: Descomentar Necesario
-                await usuarioService.saveOrCreateUsuario(perfil);
+                await usuarioService.updateUsuario(perfil);
 
                 //1de3-Para poner contexto para navegar entre rutas al editar las cards
                 /*await partidaService.saveOrCreatePartida(
@@ -156,7 +159,8 @@ class _UsuarioFormState extends State<_UsuarioForm> {
     //para info usr
     final perfil = Provider.of<UsuariosService>(context);
     //final usuario = perfil.selectedUsuarios;
-    print('usuariodatos: $perfil');
+    /*print('usuariodato-email: ${usuario.email}');
+    print(perfil.selectedUsuarios.email);*/
     //Obtengo info del usuario del provider Usuario
     //print(usuario[0].usrId);
 
@@ -189,7 +193,7 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'YYYY/MM/DD', labelText: 'Creación:'),
               ),*/
-              const SizedBox(height: 30),
+              /*const SizedBox(height: 30),
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
@@ -198,23 +202,21 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                 keyboardType: TextInputType.text,
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'códigoPadre', labelText: 'Padre Código: '),
-              ),
+              ),*/
               const SizedBox(height: 30),
               TextFormField(
-                enabled: false,
-                style: deshabilitarTxts,
-                initialValue: usuario.codigoinv,
-                onChanged: (value) => usuario.codigoinv,
+                initialValue: usuario.apodo,
+                onChanged: (value) => usuario.apodo = value,
                 keyboardType: TextInputType.text,
                 decoration: InputDecorations.authInputDecoration(
-                    hintText: 'código', labelText: 'Código Invitación: '),
+                    hintText: 'apodo', labelText: 'Apodo: '),
               ),
-              const SizedBox(height: 30),
+              /*const SizedBox(height: 30),
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
                 initialValue: usuario.modo,
-                onChanged: (value) => usuario.modo,
+                onChanged: (value) => usuario.modo = value,
                 keyboardType: TextInputType.text,
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'modo', labelText: 'Modo: '),
@@ -222,6 +224,8 @@ class _UsuarioFormState extends State<_UsuarioForm> {
               //TODO: mostrar el monto en bolsa actual, y que el usr visualice el monto en tiempo real cada que cree partida.
               const SizedBox(height: 10),
               TextFormField(
+                enabled: false,
+                style: deshabilitarTxts,
                 initialValue: usuario.email,
                 onChanged: (value) => usuario.email = value,
                 decoration: InputDecorations.authInputDecoration(
@@ -235,18 +239,21 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                 onChanged: (value) => usuario.usrId = value,
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'usridFirebase', labelText: 'Usuario: '),
-              ),
+              ),*/
               const SizedBox(height: 30),
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
-                initialValue: '${perfil.selectedUsuarios.bolsa}',
+                initialValue: '${usuario.bolsa}',
                 onChanged: (value) {
                   if (int.tryParse(value) == null) {
                     //TODO: verificar que el usr tenga poder en su granja
-                    perfil.selectedUsuarios.bolsa = 0;
+                    usuario.bolsa = 0;
                   } else {
-                    perfil.selectedUsuarios.bolsa = int.parse(value);
+                    //comenté ésta línea y agregue la de abajo para que desde la gui no permita modificar a BD
+                    //usuario.bolsa = int.parse(value);
+                    //checar tema de que las variables no guarden info entre partidas en bolsa
+                    usuario.bolsa = usuario.bolsa;
                   }
                 },
                 keyboardType: TextInputType.number,
@@ -254,7 +261,7 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                     hintText: 'Rango del 1 al 99',
                     labelText: 'Poder en juego:'),
               ),
-              const SizedBox(height: 30),
+              /*const SizedBox(height: 30),
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
@@ -289,7 +296,7 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'Rango del 1 al 99',
                     labelText: 'Comisión retenida por ganes:'),
-              ),
+              ),*/
               const SizedBox(height: 30),
               TextFormField(
                 enabled: false,
@@ -298,9 +305,10 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                 onChanged: (value) {
                   if (int.tryParse(value) == null) {
                     //TODO: verificar que el usr tenga poder en su granja
-                    perfil.selectedUsuarios.masbolsa = 0;
+                    usuario.masbolsa = 0;
                   } else {
-                    perfil.selectedUsuarios.masbolsa = int.parse(value);
+                    usuario.masbolsa = usuario.masbolsa;
+                    //usuario.masbolsa = int.parse(value);
                   }
                 },
                 keyboardType: TextInputType.number,
@@ -316,9 +324,10 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                 onChanged: (value) {
                   if (int.tryParse(value) == null) {
                     //TODO: verificar que el usr tenga poder en su granja
-                    perfil.selectedUsuarios.menosbolsa = 0;
+                    usuario.menosbolsa = 0;
                   } else {
-                    perfil.selectedUsuarios.menosbolsa = int.parse(value);
+                    usuario.menosbolsa = usuario.menosbolsa;
+                    //usuario.menosbolsa = int.parse(value);
                   }
                 },
                 keyboardType: TextInputType.number,
@@ -326,7 +335,7 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                     hintText: 'Máximo 80 al día',
                     labelText: 'Pérdida al día en bolsa:'),
               ),
-              const SizedBox(height: 30),
+              /*const SizedBox(height: 30),
               SwitchListTile.adaptive(
                   //NO APLICA - enabled: false,
                   //TODO: falta habilitar en automatico, que muestre las tarjetasw para seleccionar o bien, un random que lo asigne dicho sistema.
@@ -335,7 +344,20 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                   title: const Text('Status del usr:'),
                   subtitle: Text('${usuario.status}.'),
                   activeColor: Colors.indigo,
-                  onChanged: usuarioForm.updateStatus),
+                  onChanged: usuarioForm.updateStatus),*/
+              const SizedBox(height: 30),
+              //TODO: Falta crearle un código de invitación desde el homescreen
+              TextFormField(
+                enabled: false,
+                style: deshabilitarTxts,
+                initialValue: usuario.codigoinv,
+                //Quitamos el value para que no modifiquen el valor default
+                onChanged: (value) => usuario.codigoinv,
+                //onChanged: (value) => usuario.codigoinv = value,
+                keyboardType: TextInputType.text,
+                decoration: InputDecorations.authInputDecoration(
+                    hintText: 'código', labelText: 'Tu código de invitación: '),
+              ),
               const SizedBox(height: 30),
             ],
           ),

@@ -189,7 +189,7 @@ class PartidasServices extends ChangeNotifier {
     final url = Uri.https(_baseUrl, 'partidas_ppt/${partida.id}.json');
     final resp = await http.put(url, body: partida.toJson());
     final decodedData = json.decode(resp.body);
-    print(decodedData);
+    //print(decodedData);
     final index = partidas.indexWhere((element) => (element.id == partida.id));
     final eleccioncreador = tarjetas.nombre;
     String fechaFin = formatDate(

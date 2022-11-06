@@ -1,5 +1,7 @@
 //import 'dart:math';
 
+import 'dart:math';
+
 import 'package:app_game/models/models.dart';
 import 'package:app_game/providers/usuarios_form_provider.dart';
 import 'package:app_game/screens/pagina1.dart';
@@ -29,11 +31,22 @@ class _HomeScreen extends State<HomeScreen> {
   //Para poner la primera letra en mayúscula de una palabra
   String get inCaps => '$this[0].toUpperCase()$this.substring(1)';
   String rrvalue = '';
+  int? infoUsr = 0;
+  List<UsrGame> daUsr = [];
+  static const _chars =
+      'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
+  Random _rnd = Random.secure();
   @override
   Widget build(BuildContext context) {
     final partidasService = Provider.of<PartidasServices>(context);
     final usuariosService = Provider.of<UsuariosService>(context);
-    final infoUsr = usuariosService.usuarios;
+    final daUsr = usuariosService.usuarios;
+    //creamos código de inv de 5 dígitos, le pondremos aún parte de su email, más abajo
+    String getRandomString(int length) =>
+        String.fromCharCodes(Iterable.generate(
+            length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
+
+    //checar aquí la carga extraña en la pantalla inicial
     if (partidasService.isLoading) {
       return LoadingScreen();
     }
@@ -71,6 +84,7 @@ class _HomeScreen extends State<HomeScreen> {
       //String? rrvalue = await AuthService().readEmail();
       //String? valor = await authService.storage.read(key: 'usremail');
       rrvalue = (await authService.storage.read(key: 'usremail'))!;
+
       /*obtenemos el nombre del usuario tomando como referencia su email, lo que va antes del @ con split:
       ${rrvalue!.split('@')[0]}*/
       /* Obtenemos la primera letra y la convertimos en mayúscula:
@@ -86,7 +100,8 @@ class _HomeScreen extends State<HomeScreen> {
     //ejecutamos la función para mostrar usrname, mostrar usr 3de4
     mostrarusr();
     //const storage = FlutterSecureStorage();
-
+    //La siguiente línea probamos el código generado único
+    //print('${rrvalue[0]}${getRandomString(5)}${rrvalue[1]}');
     return Scaffold(
       //backgroundColor: Colors.amber,
       appBar: AppBar(
@@ -96,22 +111,49 @@ class _HomeScreen extends State<HomeScreen> {
           IconButton(
             icon: const Icon(Icons.perm_identity_rounded),
             tooltip: 'Mi perfil',
-            onPressed: () {
+            onPressed: () async {
               //aquí el código para obtener el index del usr y pintar lo correspondiente a su sesión
-              usuariosService.selectedUsuarios = UsrGame(
-                  id: rrvalue,
-                  usrId: rrvalue, //validar
-                  avatar: infoUsr[0].avatar, //validar
-                  bolsa: infoUsr[0].bolsa,
-                  cinvbolsa: infoUsr[0].cinvbolsa,
-                  codigoinv: infoUsr[0].codigoinv,
-                  comisionbolsa: infoUsr[0].comisionbolsa,
-                  email: rrvalue,
-                  masbolsa: infoUsr[0].masbolsa,
-                  menosbolsa: infoUsr[0].menosbolsa,
-                  modo: infoUsr[0].modo,
-                  padrecodigo: infoUsr[0].padrecodigo,
-                  status: infoUsr[0].status);
+              infoUsr = await usuariosService.obtenerUsuario(rrvalue);
+              if (infoUsr == null || infoUsr == -1) {
+                usuariosService.createUsuario(UsrGame(
+                    id: rrvalue,
+                    usrId: rrvalue, //validar
+                    apodo: 'AVATAR',
+                    avatar:
+                        'https://res.cloudinary.com/dqtjgerwt/image/upload/v1665216453/cld-sample-2.jpg', //validar
+                    bolsa: 0,
+                    cinvbolsa: 0,
+                    //Genera un código con función random y algo que extraiga de su email
+                    codigoinv:
+                        '${rrvalue[0]}${getRandomString(5)}${rrvalue[1]}',
+                    comisionbolsa: 0,
+                    email: rrvalue,
+                    masbolsa: 0,
+                    menosbolsa: 0,
+                    modo: 'trial',
+                    padrecodigo: 'DEFAULT',
+                    status: true));
+                //Aquí al final puedo lanzar un msj al usr nuevo de construyendo su perfil, intente ingresar en 1 minuto.
+              } else {
+                print('infousr: $infoUsr');
+                //usuariosService.obtenerUsuario(rrvalue);
+
+                usuariosService.selectedUsuarios = UsrGame(
+                    id: daUsr[infoUsr!].id,
+                    usrId: daUsr[infoUsr!].usrId, //validar
+                    apodo: daUsr[infoUsr!].apodo, //validar
+                    avatar: daUsr[infoUsr!].avatar, //validar
+                    bolsa: daUsr[infoUsr!].bolsa,
+                    cinvbolsa: daUsr[infoUsr!].cinvbolsa,
+                    codigoinv: daUsr[infoUsr!].codigoinv,
+                    comisionbolsa: daUsr[infoUsr!].comisionbolsa,
+                    email: daUsr[infoUsr!].email,
+                    masbolsa: daUsr[infoUsr!].masbolsa,
+                    menosbolsa: daUsr[infoUsr!].menosbolsa,
+                    modo: daUsr[infoUsr!].modo,
+                    padrecodigo: daUsr[infoUsr!].padrecodigo,
+                    status: daUsr[infoUsr!].status);
+              }
               Navigator.pushNamed(context, 'perfil');
               /*ListView.builder(
                   //separatorBuilder: ((_, __) => const Divider()),

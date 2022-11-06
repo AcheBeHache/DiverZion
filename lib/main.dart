@@ -60,7 +60,7 @@ class _MyAppState extends State<MyApp> {
         'pagina3': (_) => Pagina3(),
         'partida': (_) => PartidaScreen(),
         'pptpartida': (_) => PartidaPPTScreen(),
-        'perfil': (_) => UsuariosScreen(),
+        'perfil': (_) => const UsuariosScreen(),
       },
       scaffoldMessengerKey: NotificationsService.messengerKey,
       theme: ThemeData.light().copyWith(
