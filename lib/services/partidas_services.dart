@@ -3,10 +3,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:app_game/models/models.dart';
+import 'package:app_game/services/services.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:app_game/bloc/peticionesppt_bloc.dart';
+import 'package:provider/provider.dart';
 
 class PartidasServices extends ChangeNotifier {
   final String _baseUrl = 'pptgame-d06ee-default-rtdb.firebaseio.com';
@@ -22,6 +24,7 @@ class PartidasServices extends ChangeNotifier {
   late UsrGame selectedUsuarios;
   bool isLoading = true;
   bool isSaving = false;
+  String idBolsaS = '';
 
   PartidasServices() {
     loadPartidas();
@@ -179,7 +182,12 @@ class PartidasServices extends ChangeNotifier {
     return partida.id!;
   }
 
-  Future<String> updateTarjeta(partida, tarjetas, enviousrcreador) async {
+  /*Future<String> updateBolsa(partida, tarjetas, enviousrcreador) async {
+
+  }*/
+
+  Future<String> updateTarjeta(
+      partida, tarjetas, enviousrcreador, idBolsaS) async {
     //creamos una instancia para utilizar el localstorage, mostrar usr 1de4
     //BuildContext context;
     //final authService = Provider.of<AuthService>(context, listen: false);
@@ -206,12 +214,48 @@ class PartidasServices extends ChangeNotifier {
       //partidas[index].fechafin = fechaFin;
       //partidas[index].respoponente = 'eleccionoponente';
     } else {
+      //Inicia modificación en bolsa 1
+      //idBolsaS = (await storage.read(key: 'idBolsa'))!;
+      /*
+      Descomentar, me di cuenta que tengo que recibir también el objeto del modelo UsrGame para obtener los valores del mismo
+      Tanto el objeto del modelo como por otra parte la referencia del localStorage
+      final url = Uri.https(_baseUrl, 'usuarios/games/$idBolsaS.json');
+      final perfil = await http.get(url);
+      final Map<String, dynamic> usuariosMap = json.decode(perfil.body);
+      usuariosMap.forEach((key, value) {
+        final tempUsuarios = UsrGame.fromMap(value);
+        //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
+        tempUsuarios.id = key;
+        usuarios.add(tempUsuarios);
+      });
+      /*final resp = await http.put(url, body: idBolsaS.toJson());
+      final decodedData = json.decode(resp.body);*/
+      //TODO: Actualizar el listado de productos
+      print('Usuarios: $usuarios');*/
+      /*1final index =
+          usuarios.indexWhere((element) => element.id == decodedData['name']);*/
+      //únicamente permitimos cambiar dichos campos en la BD
+      //2usuarios[index].cinvbolsa = 1111;
+      //usuarios[index].apodo = perfil.apodo;
+
+      /*BuildContext context;
+        int? infoUsr = 0;
+        int? diverzcoin = 0;
+        final usuariosService = Provider.of<UsuariosService>(context);
+        final daUsr = usuariosService.usuarios;
+        infoUsr = await usuariosService.obtenerUsuario(enviousrcreador);
+        diverzcoin = daUsr[infoUsr!].bolsa;
+    */
+      //Finaliza edición bolsa 2
       /*final index =
           partidas.indexWhere((element) => (element.id == partida.id));*/
 
       //partidas[index] = partida;
       //partidas[index].respcreador = 'eleccioncreador';
       //print(partidas[index].respoponente);
+      print('idBolsa del usuarioActual: $idBolsaS');
+      //tendría que realizar un if para saber si la idBolsaS es del usrcreador o del oponente para realizar la operación correspondiente en su bolsa.
+
       partidas[index].respoponente = eleccioncreador;
       //print(partidas[index].respoponente);
       //programé para que el oponente cierre con fecha la partida, es el que la establece
@@ -225,28 +269,47 @@ class PartidasServices extends ChangeNotifier {
       }
       if (partida.respcreador == 'piedra' && eleccioncreador == 'papel') {
         partidas[index].usridwin = partida.usridoponente;
+        //gana oponente
       }
       if (partida.respcreador == 'piedra' && eleccioncreador == 'tijera') {
         partidas[index].usridwin = partida.usridcreador;
+        //gana creador
       }
       if (partida.respcreador == 'papel' && eleccioncreador == 'piedra') {
         partidas[index].usridwin = partida.usridcreador;
+        //gana creador
       }
       if (partida.respcreador == 'papel' && eleccioncreador == 'papel') {
         partidas[index].usridwin = 'empate';
+        //programar la revancha.
       }
       if (partida.respcreador == 'papel' && eleccioncreador == 'tijera') {
         partidas[index].usridwin = partida.usridoponente;
+        //gana oponente
       }
       if (partida.respcreador == 'tijera' && eleccioncreador == 'piedra') {
         partidas[index].usridwin = partida.usridoponente;
+        //gana oponente
       }
       if (partida.respcreador == 'tijera' && eleccioncreador == 'papel') {
         partidas[index].usridwin = partida.usridcreador;
+        //gana creador
       }
       if (partida.respcreador == 'tijera' && eleccioncreador == 'tijera') {
         partidas[index].usridwin = 'empate';
+        //programar la revancha.
       }
+      //Para ESCRIBIR DATOS EN BOLSA ES AQUÍIII
+      //Calculamos el/los valores en bolsa, en este caso se define desde la respuesta del usr que cierra la partida (oponente)
+      //primero establecemos el ganador, que en este caso ya nos lo da el campo usrwin
+      //imprimimos prueba del campo y bolsa del usrcreador y le asignamos valor
+      //variabledelobjMontoBolsaCreador = variabledelobjMontoBolsaCreador +/- partidas[index].montototal;
+
+      //obtenemos info del usrperdedor
+      //descontamos lo correspondiente
+
+      //OJO CON LA PARTIDA DE EMPATE. En este caso, sólo hay registro
+      //Ver la forma de lanzar el desempate
     }
     //notifyListeners();
     isSaving = false;

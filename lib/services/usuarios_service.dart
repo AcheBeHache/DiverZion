@@ -3,12 +3,17 @@ import 'dart:io';
 import 'package:app_game/models/models.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:app_game/services/services.dart';
 import 'package:http/http.dart' as http;
 import 'package:app_game/bloc/peticionesppt_bloc.dart';
 
 class UsuariosService extends ChangeNotifier {
   final String _baseUrl = 'pptgame-d06ee-default-rtdb.firebaseio.com';
   List<UsrGame> usuarios = [];
+  //1 de 3: Para guadar id de la bolsa del usuario actual en el storage
+  final storage = const FlutterSecureStorage();
+
   //Aquí se inicializa la valriable de selectedUsuarios, falta llamar la info en timeReal
   late UsrGame selectedUsuarios = UsrGame(
       id: 'xxx',
@@ -87,7 +92,7 @@ class UsuariosService extends ChangeNotifier {
     //OJO: Indicar desde aquí qué campos le permitiré actualizar, osea que no afecte todo el objeto
     //Ojo2: Osea que sólo se actualice el ávatar y el apodo. INCLUIR CAMPO DE APODO
     isSaving = true;
-    notifyListeners();
+    //notifyListeners();
     final url = Uri.https(_baseUrl, 'usuarios/games/${perfil.id}.json');
     final resp = await http.put(url, body: perfil.toJson());
     final decodedData = json.decode(resp.body);
@@ -96,6 +101,7 @@ class UsuariosService extends ChangeNotifier {
     //únicamente permitimos cambiar dichos campos en la BD
     usuarios[index].avatar = perfil.avatar;
     usuarios[index].apodo = perfil.apodo;
+
     isSaving = false;
     notifyListeners();
     return perfil.usrId!;
@@ -152,12 +158,22 @@ class UsuariosService extends ChangeNotifier {
     final index = usuarios.indexWhere((element) => element.email == rrvalor);
     if (index == -1 || index == null) {
       print('crearle tarjeta');
+      //await storage.write(key: 'idBolsa', value: decodedData['name']);
+      //print(decodedData['name']);
       //createUsuario();
       //Checar la base del obj
     } else {
       //print('info usuarios[index]: ${usuarios[index].email}');
       //usuarios[index] = usuarios[index];
       //print('usuarios retornados: ${usuarios[index]}');
+
+      //TODO: crearle la validación de que si es el email de firebase igual al del email del Storage se ejecuta la siguente línea sino no.
+      //Para no sobreescribir en el dispositivo del usr
+      await storage.write(key: 'idBolsa', value: usuarios[index].id);
+      String? bolsaValue = await storage.read(key: 'idBolsa');
+      //Todo: Descomentar este print para optimizar la app
+      //print('idBolsa al obtener usr: $bolsaValue');
+
       return index;
     }
     /*usuarios[index] = usuarios[index];
@@ -180,6 +196,15 @@ class UsuariosService extends ChangeNotifier {
 
     usr.id = decodedData['name'];
     usuarios.add(usr);
+    //2 de 3: guardado de la variable en storage
+    //print(usr.id);
+    await storage.write(key: 'idBolsa', value: usr.id);
+    /*
+    BORRAR
+    await storage.write(key: 'idBolsa', value: decodedData['name]);*/
+    //3 de 3: imprimimos valor de variable del storage
+    String? idBolsa = await storage.read(key: 'idBolsa');
+    print('idBolsa al crear usr: $idBolsa');
     isSaving = false;
     notifyListeners();
     return usr.id!;

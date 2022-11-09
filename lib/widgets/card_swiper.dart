@@ -19,6 +19,8 @@ class CardSwiper extends StatefulWidget {
   //List<String> tarjetas = ['Piedra', 'Papel', 'Tijera'];
   final List<Opcion> tarjetas;
   final PartidasServices partidaService;
+  //TODO: AQUIMEQUEDE AGREGUË AL CARDSWIPER EL THIS.BOLSA
+  //final UsrGame bolsa;
   const CardSwiper(
       {Key? key, required this.tarjetas, required this.partidaService})
       : super(key: key);
@@ -30,6 +32,7 @@ class CardSwiper extends StatefulWidget {
 class _CardSwiperState extends State<CardSwiper> {
   //const CardSwiper({super.key, required this.tarjetas});
   String enviousrcreador = '';
+  String idBolsaS = '';
 
   @override
   Widget build(BuildContext context) {
@@ -40,6 +43,13 @@ class _CardSwiperState extends State<CardSwiper> {
     mostrarusr() async {
       String? rrvalue = await authService.storage.read(key: 'usremail');
       enviousrcreador = rrvalue!;
+      try {
+        String? bolsaValue = await authService.storage.read(key: 'idBolsa');
+        idBolsaS = bolsaValue!;
+        print('valor del idBolsa, enviado en el card: $idBolsaS');
+      } catch (e) {
+        print(e);
+      }
       return enviousrcreador;
     }
 
@@ -114,22 +124,28 @@ class _CardSwiperState extends State<CardSwiper> {
                     });*/
 
                     //micodigo
+                    //Antes de crear/apartar partida se valida que se tenga efectivo en la bolsa
+                    //se le indica con un snackbar que tiene o no saldo
                     if (partida.id == null || partida.id == '') {
                       await widget.partidaService.saveOrCreatePartida(partida);
                     }
                     //do del creador
+                    //Antes de crear partida se valida que se tenga efectivo en la bolsa
+                    //se le indica con un snackbar que tiene o no saldo
                     if (partida.usridcreador == enviousrcreador) {
                       if (partida.respcreador == null ||
                           partida.respcreador == '') {
-                        await widget.partidaService
-                            .updateTarjeta(partida, tarjeta, enviousrcreador);
+                        await widget.partidaService.updateTarjeta(
+                            partida, tarjeta, enviousrcreador, idBolsaS);
                         Future.delayed(const Duration(seconds: 2), () async {
-                          await widget.partidaService
-                              .updateTarjeta(partida, tarjeta, enviousrcreador);
+                          await widget.partidaService.updateTarjeta(
+                              partida, tarjeta, enviousrcreador, idBolsaS);
                         });
                       }
                     }
                     //apartar partida
+                    //Antes de apartar partida se valida que se tenga efectivo en la bolsa
+                    //se le indica con un snackbar que tiene o no saldo
                     if ((partida.usridcreador != '' &&
                             partida.usridcreador != enviousrcreador) &&
                         partida.usridoponente == '') {
@@ -143,11 +159,11 @@ class _CardSwiperState extends State<CardSwiper> {
                         if ((partida.respoponente == null ||
                                 partida.respoponente == '') &&
                             partida.respcreador != '') {
-                          await widget.partidaService
-                              .updateTarjeta(partida, tarjeta, enviousrcreador);
+                          await widget.partidaService.updateTarjeta(
+                              partida, tarjeta, enviousrcreador, idBolsaS);
                           Future.delayed(const Duration(seconds: 2), () async {
                             await widget.partidaService.updateTarjeta(
-                                partida, tarjeta, enviousrcreador);
+                                partida, tarjeta, enviousrcreador, idBolsaS);
                           });
                         } else {
                           //implementar un msj en gui de espere, deshabilitando el botón de enviar respuesta...

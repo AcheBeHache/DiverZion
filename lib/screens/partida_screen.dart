@@ -187,7 +187,7 @@ class _PartidaFormState extends State<_PartidaForm> {
                     hintText: 'YYYY/MM/DD', labelText: 'Creación:'),
               ),*/
               const SizedBox(height: 30),
-              const Text('<< xDesliza para seleccionar tu respuesta >>'),
+              const Text('<< Desliza para seleccionar tu respuesta >>'),
               /*const SizedBox(height: 30),
               TextFormField(
                 enabled: false,
@@ -215,6 +215,7 @@ class _PartidaFormState extends State<_PartidaForm> {
                 tarjetas: tarjetasProvider.tarjetas,
                 partidaService: partidaService,
               ),
+              //TODO: Preparar el temporizador aquí, creo.
               const SizedBox(height: 30),
               const Text('Se tienen 10 segundos para elegir respuesta.'),
               const SizedBox(height: 30),

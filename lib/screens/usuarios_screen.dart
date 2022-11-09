@@ -66,7 +66,7 @@ class _UsuarioScreenBodyState extends State<_UsuarioScreenBody> {
     final partida = partidaForm.partida;*/
     return Scaffold(
       appBar: AppBar(
-        title: const Text('usrPersonaliza tu partida...'),
+        title: const Text('Personaliza tu partida...'),
         elevation: 0,
       ),
       body: SingleChildScrollView(

@@ -5,6 +5,7 @@
 import 'package:app_game/models/models.dart';
 import 'package:app_game/providers/opcionesppt_provider.dart';
 import 'package:app_game/providers/partida_form_provider.dart';
+import 'package:app_game/providers/usuarios_form_provider.dart';
 import 'package:app_game/services/services.dart';
 import 'package:app_game/ui/input_decorations.dart';
 import 'package:app_game/widgets/card_swiper.dart';
@@ -19,6 +20,11 @@ TextStyle deshabilitarTxts =
 //msjito del modo manual/automático
 //String mensajito = 'manual';
 late Ppt selectedPartidas;
+//para mostrar bolsa del usr
+int? infoUsr = 0;
+int? diverzcoin = 0;
+String rrvalue = '';
+String enviomsj = '';
 
 class PartidaPPTScreen extends StatefulWidget {
   @override
@@ -143,6 +149,8 @@ class _PartidaForm extends StatefulWidget {
 }
 
 class _PartidaFormState extends State<_PartidaForm> {
+  //1 de 4: controllerText
+  final controller = TextEditingController();
   @override
   Widget build(BuildContext context) {
     final partidaForm = Provider.of<PartidaFormProvider>(context);
@@ -150,6 +158,39 @@ class _PartidaFormState extends State<_PartidaForm> {
     //para carrusel de img ppt
     final partidaService = Provider.of<PartidasServices>(context);
     final tarjetasProvider = Provider.of<OpcionesPPTProvider>(context);
+    //1 de : Para consultar bolsa del usr
+    final usuariosService = Provider.of<UsuariosService>(context);
+    final daUsr = usuariosService.usuarios;
+    //Para consultar el localstorage
+    final authService = Provider.of<AuthService>(context, listen: false);
+    mostrarBolsa() async {
+      try {
+        rrvalue = (await authService.storage.read(key: 'usremail'))!;
+        /*obtenemos el nombre del usuario tomando como referencia su email, lo que va antes del @ con split:
+      ${rrvalue!.split('@')[0]}*/
+        /* Obtenemos la primera letra y la convertimos en mayúscula:
+        ${rrvalue![0].toUpperCase()}${rrvalue.substring(1)}
+      */
+        enviomsj =
+            '\n${rrvalue[0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}';
+        infoUsr = await usuariosService.obtenerUsuario(rrvalue);
+        diverzcoin = daUsr[infoUsr!].bolsa;
+        //2 de 4: controllerText
+        controller.text = '$diverzcoin';
+        //ponemos el if mounted para detener el error en el widget en tiempo de ejecución.
+        if (mounted) {
+          // check whether the state object is in tree
+          setState(() {
+            // make changes here
+          });
+        }
+        return diverzcoin;
+      } catch (e) {
+        print(e);
+      }
+    }
+
+    mostrarBolsa();
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -268,6 +309,35 @@ class _PartidaFormState extends State<_PartidaForm> {
                 decoration: InputDecorations.authInputDecoration(
                     hintText: '1', labelText: 'Status:'),
               ),*/
+              const SizedBox(height: 30),
+              TextFormField(
+                enabled: false,
+                style: deshabilitarTxts,
+                //initialValue: '${daUsr[infoUsr!].bolsa}',
+                //initialValue: '$diverzcoin',
+                //3 de 4: controllerText
+                controller: controller,
+                //4 de 4: controllerText
+                onChanged: (value) {
+                  diverzcoin = int.parse(value);
+                },
+                /*inputFormatters: [
+                  FilteringTextInputFormatter.allow(
+                      //RegExp(r'^(\d+)?\.?\d{0,2}'))
+                      RegExp(r'^[1-9]|[0-9]?$'))
+                ],*/
+                /*onChanged: (value) {
+                  if (int.tryParse(value) == null || int.tryParse(value) == 0) {
+                    //TODO: verificar que el usr tenga poder en su granja
+                    diverzcoin = 0;
+                  } else {
+                    diverzcoin = diverzcoin;
+                  }
+                },*/
+                keyboardType: TextInputType.number,
+                decoration: InputDecorations.authInputDecoration(
+                    hintText: 'Numérico en Mxn', labelText: 'Poder en Bolsa:'),
+              ),
               //TODO: mostrar el monto en bolsa actual, y que el usr visualice el monto en tiempo real cada que cree partida.
               const SizedBox(height: 10),
               TextFormField(
@@ -295,11 +365,25 @@ class _PartidaFormState extends State<_PartidaForm> {
                       RegExp(r'^[1-9]|[0-9]?$'))
                 ],
                 onChanged: (value) {
-                  if (int.tryParse(value) == null || int.tryParse(value) == 0) {
+                  //realizar la verificación versus DiverZcoin
+                  //Ya verifiqué que no ingrese información que no tenga en bolsa
+                  if (int.tryParse(value) == null ||
+                      int.tryParse(value) == 0 ||
+                      int.tryParse(value)! > diverzcoin!) {
                     //TODO: verificar que el usr tenga poder en su granja
-                    partida.montototal = 1;
-                  } else {
+                    partida.montototal = 0;
+                    print(
+                        'Es null, cero o supera el monto de tu bolsa. Se reestablece a 0, falta validación de que no acepte 0.');
+                    //validar que no puedan poner 0, una partida de 0 pesos.
+                  } else if (partida.montototal <= diverzcoin!) {
+                    print(partida.montototal);
+                    print(
+                        'Se guarda el dato del monto ya que entra en el rango.');
                     partida.montototal = int.parse(value);
+                  } else {
+                    print(partida.montototal);
+                    print('No cuentas con fondo suficiente en tu bolsa');
+                    //Poner la barrita señaladora en la parte de abajo
                   }
                 },
                 keyboardType: TextInputType.number,

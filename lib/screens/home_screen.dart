@@ -32,6 +32,7 @@ class _HomeScreen extends State<HomeScreen> {
   String get inCaps => '$this[0].toUpperCase()$this.substring(1)';
   String rrvalue = '';
   int? infoUsr = 0;
+  int? diverzcoin = 0;
   List<UsrGame> daUsr = [];
   static const _chars =
       'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
@@ -46,10 +47,10 @@ class _HomeScreen extends State<HomeScreen> {
         String.fromCharCodes(Iterable.generate(
             length, (_) => _chars.codeUnitAt(_rnd.nextInt(_chars.length))));
 
-    //checar aquí la carga extraña en la pantalla inicial
-    if (partidasService.isLoading) {
+    //activar el loading con una misma screen copia
+    /*if (partidasService.isLoading) {
       return LoadingScreen();
-    }
+    }*/
     //TextStyle titulosTxt = const TextStyle(fontSize: 27);
     TextStyle subtitulosTxt = TextStyle(
       fontSize: 22,
@@ -83,22 +84,50 @@ class _HomeScreen extends State<HomeScreen> {
     mostrarusr() async {
       //String? rrvalue = await AuthService().readEmail();
       //String? valor = await authService.storage.read(key: 'usremail');
-      rrvalue = (await authService.storage.read(key: 'usremail'))!;
+      try {
+        rrvalue = (await authService.storage.read(key: 'usremail'))!;
+        /*obtenemos el nombre del usuario tomando como referencia su email, lo que va antes del @ con split:
+      ${rrvalue!.split('@')[0]}*/
+        /* Obtenemos la primera letra y la convertimos en mayúscula:
+        ${rrvalue![0].toUpperCase()}${rrvalue.substring(1)}
+      */
+        enviomsj =
+            '\n${rrvalue[0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}';
+        //Las siguientes 2 líneas me sirven para obtener info del objeto USRGame para la bolsa
+        infoUsr = await usuariosService.obtenerUsuario(rrvalue);
+        diverzcoin = daUsr[infoUsr!].bolsa;
 
+        //ponemos el if mounted para detener el error en el widget en tiempo de ejecución.
+        if (mounted) {
+          // check whether the state object is in tree
+          setState(() {
+            // make changes here
+          });
+        }
+        return enviomsj;
+      } catch (error) {
+        print("???Try-Finally:Function Mostrar usr. $error");
+      }
+    }
+
+    //ejecutamos la función para mostrar usrname, mostrar usr 3de4
+    mostrarusr();
+    /*bolsa() async {
+      //Las siguientes 2 líneas me sirven para obtener info del objeto USRGame para la bolsa
+      infoUsr = await usuariosService.obtenerUsuario(rrvalue);
+      //diverzcoin = daUsr[infoUsr!].bolsa;
       /*obtenemos el nombre del usuario tomando como referencia su email, lo que va antes del @ con split:
       ${rrvalue!.split('@')[0]}*/
       /* Obtenemos la primera letra y la convertimos en mayúscula:
         ${rrvalue![0].toUpperCase()}${rrvalue.substring(1)}
       */
-      enviomsj =
-          '\n${rrvalue[0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}';
       //print(enviomsj);
       setState(() {});
-      return enviomsj;
+      return infoUsr;
     }
 
     //ejecutamos la función para mostrar usrname, mostrar usr 3de4
-    mostrarusr();
+    bolsa();*/
     //const storage = FlutterSecureStorage();
     //La siguiente línea probamos el código generado único
     //print('${rrvalue[0]}${getRandomString(5)}${rrvalue[1]}');
@@ -112,50 +141,51 @@ class _HomeScreen extends State<HomeScreen> {
             icon: const Icon(Icons.perm_identity_rounded),
             tooltip: 'Mi perfil',
             onPressed: () async {
-              //aquí el código para obtener el index del usr y pintar lo correspondiente a su sesión
-              infoUsr = await usuariosService.obtenerUsuario(rrvalue);
-              if (infoUsr == null || infoUsr == -1) {
-                usuariosService.createUsuario(UsrGame(
-                    id: rrvalue,
-                    usrId: rrvalue, //validar
-                    apodo: 'AVATAR',
-                    avatar:
-                        'https://res.cloudinary.com/dqtjgerwt/image/upload/v1665216453/cld-sample-2.jpg', //validar
-                    bolsa: 0,
-                    cinvbolsa: 0,
-                    //Genera un código con función random y algo que extraiga de su email
-                    codigoinv:
-                        '${rrvalue[0]}${getRandomString(5)}${rrvalue[1]}',
-                    comisionbolsa: 0,
-                    email: rrvalue,
-                    masbolsa: 0,
-                    menosbolsa: 0,
-                    modo: 'trial',
-                    padrecodigo: 'DEFAULT',
-                    status: true));
-                //Aquí al final puedo lanzar un msj al usr nuevo de construyendo su perfil, intente ingresar en 1 minuto.
-              } else {
-                print('infousr: $infoUsr');
-                //usuariosService.obtenerUsuario(rrvalue);
+              try {
+                //aquí el código para obtener el index del usr y pintar lo correspondiente a su sesión
+                infoUsr = await usuariosService.obtenerUsuario(rrvalue);
+                if (infoUsr == null || infoUsr == -1) {
+                  usuariosService.createUsuario(UsrGame(
+                      id: rrvalue,
+                      usrId: rrvalue, //validar
+                      apodo: 'AVATAR',
+                      avatar:
+                          'https://res.cloudinary.com/dqtjgerwt/image/upload/v1665216453/cld-sample-2.jpg', //validar
+                      bolsa: 0,
+                      cinvbolsa: 0,
+                      //Genera un código con función random y algo que extraiga de su email
+                      codigoinv:
+                          '${rrvalue[0]}${getRandomString(5)}${rrvalue[1]}',
+                      comisionbolsa: 0,
+                      email: rrvalue,
+                      masbolsa: 0,
+                      menosbolsa: 0,
+                      modo: 'trial',
+                      padrecodigo: 'DEFAULT',
+                      status: true));
+                  //Aquí al final puedo lanzar un msj al usr nuevo de construyendo su perfil, intente ingresar en 1 minuto.
+                } else {
+                  print('infousr: $infoUsr');
+                  //usuariosService.obtenerUsuario(rrvalue);
 
-                usuariosService.selectedUsuarios = UsrGame(
-                    id: daUsr[infoUsr!].id,
-                    usrId: daUsr[infoUsr!].usrId, //validar
-                    apodo: daUsr[infoUsr!].apodo, //validar
-                    avatar: daUsr[infoUsr!].avatar, //validar
-                    bolsa: daUsr[infoUsr!].bolsa,
-                    cinvbolsa: daUsr[infoUsr!].cinvbolsa,
-                    codigoinv: daUsr[infoUsr!].codigoinv,
-                    comisionbolsa: daUsr[infoUsr!].comisionbolsa,
-                    email: daUsr[infoUsr!].email,
-                    masbolsa: daUsr[infoUsr!].masbolsa,
-                    menosbolsa: daUsr[infoUsr!].menosbolsa,
-                    modo: daUsr[infoUsr!].modo,
-                    padrecodigo: daUsr[infoUsr!].padrecodigo,
-                    status: daUsr[infoUsr!].status);
-              }
-              Navigator.pushNamed(context, 'perfil');
-              /*ListView.builder(
+                  usuariosService.selectedUsuarios = UsrGame(
+                      id: daUsr[infoUsr!].id,
+                      usrId: daUsr[infoUsr!].usrId, //validar
+                      apodo: daUsr[infoUsr!].apodo, //validar
+                      avatar: daUsr[infoUsr!].avatar, //validar
+                      bolsa: daUsr[infoUsr!].bolsa,
+                      cinvbolsa: daUsr[infoUsr!].cinvbolsa,
+                      codigoinv: daUsr[infoUsr!].codigoinv,
+                      comisionbolsa: daUsr[infoUsr!].comisionbolsa,
+                      email: daUsr[infoUsr!].email,
+                      masbolsa: daUsr[infoUsr!].masbolsa,
+                      menosbolsa: daUsr[infoUsr!].menosbolsa,
+                      modo: daUsr[infoUsr!].modo,
+                      padrecodigo: daUsr[infoUsr!].padrecodigo,
+                      status: daUsr[infoUsr!].status);
+                }
+                Navigator.pushNamed(context, 'perfil');
+                /*ListView.builder(
                   //separatorBuilder: ((_, __) => const Divider()),
                   //return ListView.builder(
                   //NoJalascrollDirection: Axis.horizontal,
@@ -189,7 +219,7 @@ class _HomeScreen extends State<HomeScreen> {
                           )
                         : const Text(""),*/
                       ));*/
-              /*showDialog(
+                /*showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
                           backgroundColor: Colors.lightBlue.shade100,
@@ -204,6 +234,9 @@ class _HomeScreen extends State<HomeScreen> {
                                 child: const Text("Crear e invitar..."))
                           ],
                         ))*/
+              } catch (e) {
+                print(e);
+              }
             },
           ),
           IconButton(
@@ -224,6 +257,7 @@ class _HomeScreen extends State<HomeScreen> {
               print('xvalue: ' + xvalue);
               print(mostrarusr().toString());
               authService.logout();*/
+              authService.storage.deleteAll();
               Navigator.pushReplacementNamed(context, 'login');
             },
           ),
@@ -361,6 +395,10 @@ class _HomeScreen extends State<HomeScreen> {
               ),
               Text(
                 'Almacén actual:',
+                style: subtitulosTxt,
+              ),
+              Text(
+                'DiverZcoin: $diverzcoin',
                 style: subtitulosTxt,
               ),
               DataTable(

@@ -135,6 +135,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                             partidasService.partidas[index].usridoponente !=
                                 null)) {
                       Navigator.pushNamed(context, 'partida');
+                      //TODO: Cuando soy creador y di mi respuesta y me salgo, ésto me deja entrar y aunque no se guarde otra vez mi respuesta, el usr pensará que hizo un cambio
                       /*NotificationsService.showSnackbar(
                           "Vientos! puedes entrar a retar, ya se tiene oponente!");*/
                     }
