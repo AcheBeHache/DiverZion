@@ -6,6 +6,7 @@ import 'package:app_game/models/models.dart';
 import 'package:app_game/services/services.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
 import 'package:app_game/bloc/peticionesppt_bloc.dart';
 import 'package:provider/provider.dart';
@@ -22,13 +23,16 @@ class PartidasServices extends ChangeNotifier {
   //para usuarios
   final List<UsrGame> usuarios = [];
   late UsrGame selectedUsuarios;
+  late UsrGame selectUsr;
   bool isLoading = true;
   bool isSaving = false;
   String idBolsaS = '';
+  //1 de 3: Para guadar id de la bolsa del usuario actual en el storage
+  static const storage = FlutterSecureStorage();
 
   PartidasServices() {
     loadPartidas();
-    //loadTarjetas();
+    loadUsuarios();
   }
   void refrescaTarjetas() {
     //dispose();
@@ -52,6 +56,39 @@ class PartidasServices extends ChangeNotifier {
       //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
       tempPartidas.id = key;
       partidas.add(tempPartidas);
+    });
+
+    isLoading = false;
+    notifyListeners();
+    //return partidas;
+    /*print(partidasMap);
+    print(partidasMap.length);*/
+    /*print(partidas[1].toMap());
+    print('------');
+    print(partidas[1].id);
+    return partidas;*/
+
+/*    print(partidasMap);
+    print("---");
+    print('${partidas[0].id} ${partidas[0].fechainicio}');
+    print("---");
+    print('${partidas[1].id} ${partidas[1].fechainicio}');*/
+  }
+
+  Future loadUsuarios() async {
+    isLoading = true;
+    notifyListeners();
+
+    final url = Uri.https(_baseUrl, 'usuarios/games.json');
+    final resp = await http.get(url);
+
+    final Map<String, dynamic> usuariosMap = json.decode(resp.body);
+
+    usuariosMap.forEach((key, value) {
+      final tempUsuarios = UsrGame.fromMap(value);
+      //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
+      tempUsuarios.id = key;
+      usuarios.add(tempUsuarios);
     });
 
     isLoading = false;
@@ -187,58 +224,85 @@ class PartidasServices extends ChangeNotifier {
   }*/
 
   Future<String> updateTarjeta(
-      partida, tarjetas, enviousrcreador, idBolsaS) async {
+      partida, tarjetas, enviousrcreador, idBolsaS, usuariosLista) async {
     //creamos una instancia para utilizar el localstorage, mostrar usr 1de4
     //BuildContext context;
     //final authService = Provider.of<AuthService>(context, listen: false);
-    isSaving = true;
-    notifyListeners();
-    //print('4recibe updateTarjeta updateTarjeta: $enviousrcreador');
-    final url = Uri.https(_baseUrl, 'partidas_ppt/${partida.id}.json');
-    final resp = await http.put(url, body: partida.toJson());
-    final decodedData = json.decode(resp.body);
-    //print(decodedData);
-    final index = partidas.indexWhere((element) => (element.id == partida.id));
-    final eleccioncreador = tarjetas.nombre;
-    String fechaFin = formatDate(
-        DateTime.now(), [d, '/', mm, '/', yyyy, ' ', H, ':', m, ':', am]);
-    //selectedTarjetas = tarj;
+    try {
+      isSaving = true;
+      notifyListeners();
+      //print('4recibe updateTarjeta updateTarjeta: $enviousrcreador');
 
-    //print('Tarj: $tarj');
-    //TODO: Actualizar el listado de productos
-    if (partida.usridcreador == enviousrcreador) {
-      //partidas[index] = partida;
-      //print(partidas[index].respcreador);
-      partidas[index].respcreador = eleccioncreador;
-      //print(partidas[index].respcreador);
-      //partidas[index].fechafin = fechaFin;
-      //partidas[index].respoponente = 'eleccionoponente';
-    } else {
-      //Inicia modificación en bolsa 1
-      //idBolsaS = (await storage.read(key: 'idBolsa'))!;
-      /*
-      Descomentar, me di cuenta que tengo que recibir también el objeto del modelo UsrGame para obtener los valores del mismo
-      Tanto el objeto del modelo como por otra parte la referencia del localStorage
-      final url = Uri.https(_baseUrl, 'usuarios/games/$idBolsaS.json');
-      final perfil = await http.get(url);
-      final Map<String, dynamic> usuariosMap = json.decode(perfil.body);
-      usuariosMap.forEach((key, value) {
-        final tempUsuarios = UsrGame.fromMap(value);
-        //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
-        tempUsuarios.id = key;
-        usuarios.add(tempUsuarios);
-      });
-      /*final resp = await http.put(url, body: idBolsaS.toJson());
-      final decodedData = json.decode(resp.body);*/
+      final url = Uri.https(_baseUrl, 'partidas_ppt/${partida.id}.json');
+      final resp = await http.put(url, body: partida.toJson());
+      final decodedData = json.decode(resp.body);
+      //print(decodedData);
+      final index =
+          partidas.indexWhere((element) => (element.id == partida.id));
+      final eleccioncreador = tarjetas.nombre;
+      String fechaFin = formatDate(
+          DateTime.now(), [d, '/', mm, '/', yyyy, ' ', H, ':', m, ':', am]);
+      //selectedTarjetas = tarj;
+
+      //print('Tarj: $tarj');
       //TODO: Actualizar el listado de productos
-      print('Usuarios: $usuarios');*/
-      /*1final index =
-          usuarios.indexWhere((element) => element.id == decodedData['name']);*/
-      //únicamente permitimos cambiar dichos campos en la BD
-      //2usuarios[index].cinvbolsa = 1111;
-      //usuarios[index].apodo = perfil.apodo;
+      if (partida.usridcreador == enviousrcreador) {
+        //partidas[index] = partida;
+        //print(partidas[index].respcreador);
+        partidas[index].respcreador = eleccioncreador;
+        //print(partidas[index].respcreador);
+        //partidas[index].fechafin = fechaFin;
+        //partidas[index].respoponente = 'eleccionoponente';
+      } else {
+        //Aqui me quedé, me di cuenta que al guardar el dato en bolsa, se copia el perfil del usr creador
+        //en firebase, checar casteo de objetos.
+        //Resuelto el punto anterior, resulta que el creador de la partida debe ser hugo0589 y el oponente es es x@gm.cm
+        //Ya que se llama el obj con los corchetes [0]
+        //Lo interesante que si realiza la resta a la bolsa copiada.
+        //traerme el objeto seleccionado del card_swiper...
+        //Para ESCRIBIR DATOS EN BOLSA ES AQUÍIII
+        //Calculamos el/los valores en bolsa, en este caso se define desde la respuesta del usr que cierra la partida (oponente)
+        //primero establecemos el ganador, que en este caso ya nos lo da el campo usrwin
+        //imprimimos prueba del campo y bolsa del usrcreador y le asignamos valor
+        //variabledelobjMontoBolsaCreador = variabledelobjMontoBolsaCreador +/- partidas[index].montototal;
 
-      /*BuildContext context;
+        //obtenemos info del usrperdedor
+        //descontamos lo correspondiente
+
+        //OJO CON LA PARTIDA DE EMPATE. En este caso, sólo hay registro
+        //Ver la forma de lanzar el desempate
+        //Inicia modificación en bolsa 1
+        //prueba1
+        //idBolsaS = (await storage.read(key: 'idBolsa'))!;
+
+        //print(idBolsaS);
+        //Actualización1
+        //selectUsr = UsuariosService().obtenerUsuario(enviousrcreador);
+
+        //Termina prueba 1
+        //print(xdecodedData);
+        //print(usuarios.email);
+        //Éstas dos líneas se integran dentro de los ifs para actualizar únicamene lo del usr correspondiente
+        //Ya sea creador u oponente.
+
+        //print("encuentro ID de bolsa");
+        //DESCOMENTAR:
+        /*print(xindex);
+      print(usuariosLista[xindex].email);
+      print('bolsa del usr actual: ${usuariosLista[index].bolsa}');*/
+        //usuariosLista[index].bolsa = usuariosLista[index].bolsa - 10;
+        /*BORRARfinal resp = await http.put(url, body: idBolsaS.toJson());
+      final decodedData = json.decode(resp.body);*/
+        //TODO: Actualizar el listado de productos
+        //print('Usuarios: $usuariosLista');
+        //print(usuarios);
+        /*1final index =
+          usuarios.indexWhere((element) => element.id == decodedData['name']);*/
+        //únicamente permitimos cambiar dichos campos en la BD
+        //2usuarios[index].cinvbolsa = 1111;
+        //usuarios[index].apodo = perfil.apodo;
+
+        /*BuildContext context;
         int? infoUsr = 0;
         int? diverzcoin = 0;
         final usuariosService = Provider.of<UsuariosService>(context);
@@ -246,75 +310,151 @@ class PartidasServices extends ChangeNotifier {
         infoUsr = await usuariosService.obtenerUsuario(enviousrcreador);
         diverzcoin = daUsr[infoUsr!].bolsa;
     */
-      //Finaliza edición bolsa 2
-      /*final index =
+        //Finaliza edición bolsa 2
+        /*final index =
           partidas.indexWhere((element) => (element.id == partida.id));*/
 
-      //partidas[index] = partida;
-      //partidas[index].respcreador = 'eleccioncreador';
-      //print(partidas[index].respoponente);
-      print('idBolsa del usuarioActual: $idBolsaS');
-      //tendría que realizar un if para saber si la idBolsaS es del usrcreador o del oponente para realizar la operación correspondiente en su bolsa.
+        //partidas[index] = partida;
+        //partidas[index].respcreador = 'eleccioncreador';
+        //print(partidas[index].respoponente);
+        print('idBolsa del usuarioActual: $idBolsaS');
+        //tendría que realizar un if para saber si la idBolsaS es del usrcreador o del oponente para realizar la operación correspondiente en su bolsa.
 
-      partidas[index].respoponente = eleccioncreador;
-      //print(partidas[index].respoponente);
-      //programé para que el oponente cierre con fecha la partida, es el que la establece
-      partidas[index].fechafin = fechaFin;
-      partidas[index].status = 3;
+        //Ejecución de la actualización de la Tarjeta
+        partidas[index].respoponente = eleccioncreador;
+        //print(partidas[index].respoponente);
+        //programé para que el oponente cierre con fecha la partida, es el que la establece
+        partidas[index].fechafin = fechaFin;
+        partidas[index].status = 3;
 
-      //TODO: Faltanreglas del gane PPT, para guardar el usridGanador en usridwin
-      if (partida.respcreador == 'piedra' && eleccioncreador == 'piedra') {
-        partidas[index].usridwin = 'empate';
-        //programar la revancha.
+        //TODO: Faltanreglas del gane PPT, para guardar el usridGanador en usridwin
+        if (partida.respcreador == 'piedra' && eleccioncreador == 'piedra') {
+          partidas[index].usridwin = 'empate';
+          print("No se actualiza la bolsa");
+          //programar la revancha.
+        }
+        if (partida.respcreador == 'piedra' && eleccioncreador == 'papel') {
+          partidas[index].usridwin = partida.usridoponente;
+          //gana oponente
+        }
+        if (partida.respcreador == 'piedra' && eleccioncreador == 'tijera') {
+          partidas[index].usridwin = partida.usridcreador;
+          //gana creador
+        }
+        if (partida.respcreador == 'papel' && eleccioncreador == 'piedra') {
+          partidas[index].usridwin = partida.usridcreador;
+          //gana creador
+        }
+        if (partida.respcreador == 'papel' && eleccioncreador == 'papel') {
+          partidas[index].usridwin = 'empate';
+          //programar la revancha.
+        }
+        if (partida.respcreador == 'papel' && eleccioncreador == 'tijera') {
+          partidas[index].usridwin = partida.usridoponente;
+          //gana oponente
+        }
+        if (partida.respcreador == 'tijera' && eleccioncreador == 'piedra') {
+          partidas[index].usridwin = partida.usridoponente;
+          //gana oponente
+        }
+        if (partida.respcreador == 'tijera' && eleccioncreador == 'papel') {
+          partidas[index].usridwin = partida.usridcreador;
+          //gana creador
+        }
+        if (partida.respcreador == 'tijera' && eleccioncreador == 'tijera') {
+          partidas[index].usridwin = 'empate';
+          //programar la revancha.
+        }
       }
-      if (partida.respcreador == 'piedra' && eleccioncreador == 'papel') {
-        partidas[index].usridwin = partida.usridoponente;
-        //gana oponente
-      }
-      if (partida.respcreador == 'piedra' && eleccioncreador == 'tijera') {
-        partidas[index].usridwin = partida.usridcreador;
-        //gana creador
-      }
-      if (partida.respcreador == 'papel' && eleccioncreador == 'piedra') {
-        partidas[index].usridwin = partida.usridcreador;
-        //gana creador
-      }
-      if (partida.respcreador == 'papel' && eleccioncreador == 'papel') {
-        partidas[index].usridwin = 'empate';
-        //programar la revancha.
-      }
-      if (partida.respcreador == 'papel' && eleccioncreador == 'tijera') {
-        partidas[index].usridwin = partida.usridoponente;
-        //gana oponente
-      }
-      if (partida.respcreador == 'tijera' && eleccioncreador == 'piedra') {
-        partidas[index].usridwin = partida.usridoponente;
-        //gana oponente
-      }
-      if (partida.respcreador == 'tijera' && eleccioncreador == 'papel') {
-        partidas[index].usridwin = partida.usridcreador;
-        //gana creador
-      }
-      if (partida.respcreador == 'tijera' && eleccioncreador == 'tijera') {
-        partidas[index].usridwin = 'empate';
-        //programar la revancha.
-      }
-      //Para ESCRIBIR DATOS EN BOLSA ES AQUÍIII
-      //Calculamos el/los valores en bolsa, en este caso se define desde la respuesta del usr que cierra la partida (oponente)
-      //primero establecemos el ganador, que en este caso ya nos lo da el campo usrwin
-      //imprimimos prueba del campo y bolsa del usrcreador y le asignamos valor
-      //variabledelobjMontoBolsaCreador = variabledelobjMontoBolsaCreador +/- partidas[index].montototal;
+      print('UsrCreador: ${partida.usridcreador}');
+      print('UsrOponente: ${partida.usridoponente}');
+      print('UsrWin-Ganador: ${partida.usridwin}');
 
-      //obtenemos info del usrperdedor
-      //descontamos lo correspondiente
+      //if para manejo de bolsa SUMA
+      if (partida.usridwin == enviousrcreador) {
+        final xurl = Uri.https(_baseUrl, 'usuarios/games/$idBolsaS.json');
+        //calculo index del ganador
+        final xindex =
+            usuarios.indexWhere((xelement) => (xelement.id == idBolsaS));
+        final xresp = await http.put(xurl, body: usuarios[xindex].toJson());
+        final xdecodedData = json.decode(xresp.body);
 
-      //OJO CON LA PARTIDA DE EMPATE. En este caso, sólo hay registro
-      //Ver la forma de lanzar el desempate
+        print('xdecodedData infoGanador: $xdecodedData');
+        //calculo index del perdedor CHECAR HOJA BLANCA
+        /*final yindex =
+            usuarios.indexWhere((yelement) => (yelement.email == idBolsaS));*/
+        usuarios[xindex].bolsa = (usuarios[xindex].bolsa! +
+            partidas[index].montototal); //(usuarios[xindex].bolsa! - 10)
+        print('usuarios[xindex] infoBolsa-Ganador: ${usuarios[xindex].bolsa}');
+        print("-----Modifica bolsa del ganador de la partida-----");
+      } /*else {
+        print('Entro a modificar ficha perdedorrrrr else');
+      }*/
+      //checar éste if, ya que se activa únicamente cuando se crea la tarjeta
+      //En este caso le implementé != '' para limitar el entre
+      //Manejo de bolsa: RESTA
+      /*if (partida.usridwin != '' &&
+          partida.usridwin != usuariosLista.email) {
+        final yurl =
+            Uri.https(_baseUrl, 'usuarios/games/${usuariosLista.id}.json');
+        final yresp = await http.put(yurl, body: usuariosLista.toJson());
+        final ydecodedData = json.decode(yresp.body);
+        //calculo index del perdedor
+        final yindex =
+            usuarios.indexWhere((yelement) => (yelement.id == idBolsaS));
+        print('ydecodedData infoGanador: $ydecodedData');
+        //calculo index del perdedor CHECAR HOJA BLANCA
+        usuariosLista.bolsa = (usuariosLista.bolsa -
+            partida.montototal); //(usuarios[xindex].bolsa! - 10)
+        print('usuarios[yindex] infoBolsa-Ganador: ${usuarios[yindex].bolsa}');
+        print('------ Entro a modificar ficha perdedorrrrr -----');
+      }*/
+      /*if (partidas[index]. != usuariosLista.email) {
+        final xurl =
+            Uri.https(_baseUrl, 'usuarios/games/${usuariosLista.id}.json');
+        final xresp = await http.put(xurl, body: usuariosLista.toJson());
+        final xdecodedData = json.decode(xresp.body);
+        final xindex =
+            usuarios.indexWhere((xelement) => (xelement.id == idBolsaS));
+        print('xindexGanador: $xdecodedData');
+        usuariosLista.bolsa = (usuariosLista.bolsa -
+            partidas[index].montototal); //(usuarios[xindex].bolsa! - 10)
+        print("Modifica bolsa del ganador de la partida");
+      }*/
+
+      /*else {
+            //en teoría aqui deberia restarle al otro usrId el perdedor, pero está actualizando el mismo obj, checar mi limitante desde que traigo la url para aplicarle el put
+            final yurl =
+                Uri.https(_baseUrl, 'usuarios/games/${usuariosLista.id}.json');
+            final yresp = await http.put(yurl, body: usuariosLista.toJson());
+            final ydecodedData = json.decode(yresp.body);
+            final yindex =
+                usuarios.indexWhere((yelement) => (yelement.id == idBolsaS));
+            print('xindexGanador: $ydecodedData');
+            usuariosLista.bolsa =
+                (usuariosLista.bolsa - partidas[index].montototal);
+            print("Modifica bolsa del perdedor de la partida");
+          }*/ /*else {
+            print("Modifica bolsa del oponente de la partida");
+            final xurl =
+                Uri.https(_baseUrl, 'usuarios/games/${usuariosLista.id}.json');
+            final xresp = await http.put(xurl, body: usuariosLista.toJson());
+            final xdecodedData = json.decode(xresp.body);
+            final xindex =
+                usuarios.indexWhere((xelement) => (xelement.id == idBolsaS));
+            print('xindexPerdedor: $xdecodedData');
+            usuariosLista.bolsa = (usuariosLista.bolsa +
+                partidas[index].montototal); //(usuarios[xindex].bolsa! + 10)
+          }*/
+      //Termina if para manejo de bolsa
+      //notifyListeners();
+      isSaving = false;
+      notifyListeners();
+      return tarjetas.id!;
+    } catch (e) {
+      print('Error en updateTarjeta: $e');
+      return tarjetas.id!;
     }
-    //notifyListeners();
-    isSaving = false;
-    notifyListeners();
-    return tarjetas.id!;
   }
 
   //inicio apartar partida
@@ -406,7 +546,7 @@ class PartidasServices extends ChangeNotifier {
     return decodedData['secure_url'];
   }
 
-  //actualizar partida
+  //actualizar usuario
   Future<String> updateUsuario(UsrGame usuario) async {
     isSaving = true;
     notifyListeners();

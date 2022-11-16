@@ -147,44 +147,50 @@ class UsuariosService extends ChangeNotifier {
     return decodedData['secure_url'];
   }
 
+  //le integré el future, no tenía nada, estaba colo el void int;
   void int;
   obtenerUsuario(String rrvalor) async {
     /*isSaving = true;
     notifyListeners();*/
-    final url = Uri.https(_baseUrl, 'usuarios/games.json');
-    final resp = await http.get(url);
-    final decodedData = json.decode(resp.body);
+    try {
+      final url = Uri.https(_baseUrl, 'usuarios/games.json');
+      final resp = await http.get(url);
+      final decodedData = json.decode(resp.body);
 
-    final index = usuarios.indexWhere((element) => element.email == rrvalor);
-    if (index == -1 || index == null) {
-      print('crearle tarjeta');
-      //await storage.write(key: 'idBolsa', value: decodedData['name']);
-      //print(decodedData['name']);
-      //createUsuario();
-      //Checar la base del obj
-    } else {
-      //print('info usuarios[index]: ${usuarios[index].email}');
-      //usuarios[index] = usuarios[index];
-      //print('usuarios retornados: ${usuarios[index]}');
+      final index = usuarios.indexWhere((element) => element.email == rrvalor);
+      if (index == -1 || index == null) {
+        print('crearle tarjeta');
+        //await storage.write(key: 'idBolsa', value: decodedData['name']);
+        //print(decodedData['name']);
+        //createUsuario();
+        //TODO: Checar el retorno de este obj
+        //return index;
+      } else {
+        //print('info usuarios[index]: ${usuarios[index].email}');
+        //usuarios[index] = usuarios[index];
+        //print('usuarios retornados: ${usuarios[index]}');
 
-      //TODO: crearle la validación de que si es el email de firebase igual al del email del Storage se ejecuta la siguente línea sino no.
-      //Para no sobreescribir en el dispositivo del usr
-      await storage.write(key: 'idBolsa', value: usuarios[index].id);
-      String? bolsaValue = await storage.read(key: 'idBolsa');
-      //Todo: Descomentar este print para optimizar la app
-      //print('idBolsa al obtener usr: $bolsaValue');
+        //TODO: crearle la validación de que si es el email de firebase igual al del email del Storage se ejecuta la siguente línea sino no.
+        //Para no sobreescribir en el dispositivo del usr
+        await storage.write(key: 'idBolsa', value: usuarios[index].id);
+        String? bolsaValue = await storage.read(key: 'idBolsa');
+        //Todo: Descomentar este print para optimizar la app
+        //print('idBolsa al obtener usr: $bolsaValue');
 
-      return index;
-    }
-    /*usuarios[index] = usuarios[index];
+        return index;
+      }
+      /*usuarios[index] = usuarios[index];
 
     usuario.usrId = decodedData['name'];
     usuarios.add(usuario);*/
-    print('index del rrvalue con correo: $rrvalor  -> $index');
+      print('index del rrvalue con correo: $rrvalor  -> $index');
 
-    /*isSaving = false;
+      /*isSaving = false;
     notifyListeners();*/
-    //return usuarios;
+      //return usuarios;
+    } catch (e) {
+      print("error en función obtener usuario");
+    }
   }
 
   Future<String> createUsuario(UsrGame usr) async {

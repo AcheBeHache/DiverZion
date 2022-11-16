@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:app_game/providers/partida_form_provider.dart';
+import 'package:app_game/screens/partida_pptscreen.dart';
 //import 'package:app_game/services/partidas_services.dart';
 import 'package:app_game/services/services.dart';
 import 'package:card_swiper/card_swiper.dart';
@@ -19,10 +20,14 @@ class CardSwiper extends StatefulWidget {
   //List<String> tarjetas = ['Piedra', 'Papel', 'Tijera'];
   final List<Opcion> tarjetas;
   final PartidasServices partidaService;
+  final UsuariosService usuariosLista;
   //TODO: AQUIMEQUEDE AGREGUË AL CARDSWIPER EL THIS.BOLSA
   //final UsrGame bolsa;
   const CardSwiper(
-      {Key? key, required this.tarjetas, required this.partidaService})
+      {Key? key,
+      required this.tarjetas,
+      required this.partidaService,
+      required this.usuariosLista})
       : super(key: key);
 
   @override
@@ -33,22 +38,26 @@ class _CardSwiperState extends State<CardSwiper> {
   //const CardSwiper({super.key, required this.tarjetas});
   String enviousrcreador = '';
   String idBolsaS = '';
-
+  int usuario = 0;
   @override
   Widget build(BuildContext context) {
     //final partidaService = Provider.of<PartidasServices>(context);
     //creamos una instancia para utilizar el localstorage, mostrar usr 1de4
     final authService = Provider.of<AuthService>(context, listen: false);
+    final usuariosService = Provider.of<UsuariosService>(context);
+
     //2 de 4
     mostrarusr() async {
-      String? rrvalue = await authService.storage.read(key: 'usremail');
-      enviousrcreador = rrvalue!;
       try {
+        String? rrvalue = await authService.storage.read(key: 'usremail');
+        enviousrcreador = rrvalue!;
+        usuario = await usuariosService.obtenerUsuario(enviousrcreador);
+        //print('usuario: $usuario');
         String? bolsaValue = await authService.storage.read(key: 'idBolsa');
         idBolsaS = bolsaValue!;
-        print('valor del idBolsa, enviado en el card: $idBolsaS');
+        //print('valor del idBolsa, enviado en el card: $idBolsaS');
       } catch (e) {
-        print(e);
+        print('Error en función mostrarusr: $e');
       }
       return enviousrcreador;
     }
@@ -65,6 +74,10 @@ class _CardSwiperState extends State<CardSwiper> {
     final partidaForm = Provider.of<PartidaFormProvider>(context);
     final partida = partidaForm.partida;
 
+    //print(usuariosService.);
+    final usuariosLista = usuariosService.usuarios[usuario];
+    //print('usuario: ${usuariosLista.email}');
+    //print('usuarioLista enviado: $usuariosLista');
     final size = MediaQuery.of(context).size;
 
     if (widget.tarjetas == null || widget.tarjetas == '') {
@@ -135,11 +148,16 @@ class _CardSwiperState extends State<CardSwiper> {
                     if (partida.usridcreador == enviousrcreador) {
                       if (partida.respcreador == null ||
                           partida.respcreador == '') {
-                        await widget.partidaService.updateTarjeta(
-                            partida, tarjeta, enviousrcreador, idBolsaS);
+                        await widget.partidaService.updateTarjeta(partida,
+                            tarjeta, enviousrcreador, idBolsaS, usuariosLista);
                         Future.delayed(const Duration(seconds: 2), () async {
+                          print('usuario enviado: ${usuariosLista.email}');
                           await widget.partidaService.updateTarjeta(
-                              partida, tarjeta, enviousrcreador, idBolsaS);
+                              partida,
+                              tarjeta,
+                              enviousrcreador,
+                              idBolsaS,
+                              usuariosLista);
                         });
                       }
                     }
@@ -160,10 +178,18 @@ class _CardSwiperState extends State<CardSwiper> {
                                 partida.respoponente == '') &&
                             partida.respcreador != '') {
                           await widget.partidaService.updateTarjeta(
-                              partida, tarjeta, enviousrcreador, idBolsaS);
+                              partida,
+                              tarjeta,
+                              enviousrcreador,
+                              idBolsaS,
+                              usuariosLista);
                           Future.delayed(const Duration(seconds: 2), () async {
                             await widget.partidaService.updateTarjeta(
-                                partida, tarjeta, enviousrcreador, idBolsaS);
+                                partida,
+                                tarjeta,
+                                enviousrcreador,
+                                idBolsaS,
+                                usuariosLista);
                           });
                         } else {
                           //implementar un msj en gui de espere, deshabilitando el botón de enviar respuesta...

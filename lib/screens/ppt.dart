@@ -104,6 +104,7 @@ class _PPTState extends State<PPT> {
   @override
   Widget build(BuildContext context) {
     final Ppt resultado = ModalRoute.of(context)!.settings.arguments as Ppt;
+
     //StreamBuilder
     int i = 0;
     bool bandera = false;
@@ -139,6 +140,23 @@ class _PPTState extends State<PPT> {
                 /*print(xpartidas.length);*/
                 //resultado.respoponente = xpartidas[0].respoponente;
                 print('$i : ${resultado.respoponente}');
+                //Comienza bolsa del oponente
+
+                /*if (xpartidas[index].usridwin != '' &&
+                    xpartidas[index].usridwin != usuariosLista.email) {
+                  final xurl =
+                      Uri.https(_baseUrl, 'usuarios/games/${usuariosLista.id}.json');
+                  final xresp = await http.put(xurl, body: usuariosLista.toJson());
+                  final xdecodedData = json.decode(xresp.body);
+                  final xindex =
+                      usuarios.indexWhere((xelement) => (xelement.id == idBolsaS));
+                  print('xindexGanador: $xdecodedData');
+                  usuariosLista.bolsa = (usuariosLista.bolsa -
+                      xpartidas[index].montototal); //(usuarios[xindex].bolsa! - 10)
+                  print("Modifica bolsa del ganador de la partida");
+                }*/
+
+                //Finaliza bolsa del oponente
                 /*isSaving = false;
               notifyListeners();*/
                 //termina lectura a BD

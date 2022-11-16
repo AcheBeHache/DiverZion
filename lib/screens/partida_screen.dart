@@ -157,6 +157,8 @@ class _PartidaFormState extends State<_PartidaForm> {
     final partida = partidaForm.partida;
     final partidaService = Provider.of<PartidasServices>(context);
     final tarjetasProvider = Provider.of<OpcionesPPTProvider>(context);
+    final usuariosService = Provider.of<UsuariosService>(context);
+    final daUsr = usuariosService.usuarios;
 
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
@@ -214,6 +216,7 @@ class _PartidaFormState extends State<_PartidaForm> {
               CardSwiper(
                 tarjetas: tarjetasProvider.tarjetas,
                 partidaService: partidaService,
+                usuariosLista: usuariosService,
               ),
               //TODO: Preparar el temporizador aquí, creo.
               const SizedBox(height: 30),

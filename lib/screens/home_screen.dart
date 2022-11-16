@@ -141,6 +141,9 @@ class _HomeScreen extends State<HomeScreen> {
             icon: const Icon(Icons.perm_identity_rounded),
             tooltip: 'Mi perfil',
             onPressed: () async {
+              //TODO: Imprimimos para revisar los valores del storage
+              print(await authService.storage.read(key: 'usremail'));
+              print(await authService.storage.read(key: 'idBolsa'));
               try {
                 //aquí el código para obtener el index del usr y pintar lo correspondiente a su sesión
                 infoUsr = await usuariosService.obtenerUsuario(rrvalue);
@@ -257,7 +260,7 @@ class _HomeScreen extends State<HomeScreen> {
               print('xvalue: ' + xvalue);
               print(mostrarusr().toString());
               authService.logout();*/
-              authService.storage.deleteAll();
+              //TODO: authService.storage.deleteAll();
               Navigator.pushReplacementNamed(context, 'login');
             },
           ),

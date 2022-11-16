@@ -72,6 +72,9 @@ class AuthService extends ChangeNotifier {
 
   Future logout() async {
     await storage.delete(key: 'token');
+    //agregué los siguientes 2 deletes
+    await storage.delete(key: 'usremail');
+    await storage.delete(key: 'idBolsa');
     return;
   }
 
@@ -80,13 +83,14 @@ class AuthService extends ChangeNotifier {
   }
 
   Future<String> readEmail() async {
+    //print(storage.read(key: 'usremail'));
     return await storage.read(key: 'usremail') ?? '';
     /*String? value = await storage.read(key: 'usremail') ?? '';
     return value;*/
     /*String value = await storage.read(key: 'usremail') ?? '';
     return value; */
     //print('---------');
-    //print(storage.read(key: 'usremail'));
+
     //return decodedResp['token']['email'];
   }
 }

@@ -433,6 +433,7 @@ class _PartidaFormState extends State<_PartidaForm> {
               CardSwiper(
                 tarjetas: tarjetasProvider.tarjetas,
                 partidaService: partidaService,
+                usuariosLista: usuariosService,
               ),
               const SizedBox(height: 30),
               SwitchListTile.adaptive(
