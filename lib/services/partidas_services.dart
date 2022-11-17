@@ -27,6 +27,7 @@ class PartidasServices extends ChangeNotifier {
   bool isLoading = true;
   bool isSaving = false;
   String idBolsaS = '';
+  String xidBolsaSOponente = '';
   //1 de 3: Para guadar id de la bolsa del usuario actual en el storage
   static const storage = FlutterSecureStorage();
 
@@ -381,13 +382,68 @@ class PartidasServices extends ChangeNotifier {
 
         print('xdecodedData infoGanador: $xdecodedData');
         //calculo index del perdedor CHECAR HOJA BLANCA
-        /*final yindex =
-            usuarios.indexWhere((yelement) => (yelement.email == idBolsaS));*/
+        /**/
         usuarios[xindex].bolsa = (usuarios[xindex].bolsa! +
             partidas[index].montototal); //(usuarios[xindex].bolsa! - 10)
+        // pongo ganancia al límite máximo por día $300
+        usuarios[xindex].masbolsa =
+            (usuarios[xindex].masbolsa! + partidas[index].montototal);
+        //TODO: Falta calculo comisión, convertir a double la variable
+        usuarios[xindex].comisionbolsa =
+            usuarios[xindex].comisionbolsa! + (partidas[index].montototal * 2);
+        //el conteo de la pérdida del día, la manejamos aparte
+        //pongo pérdida permitida al día $80
+        /*usuarios[xindex].menosbolsa = (usuarios[xindex].menosbolsa! +
+            partidas[index].montototal);*/
+        //validar la instrucción anterior
         print('usuarios[xindex] infoBolsa-Ganador: ${usuarios[xindex].bolsa}');
         print("-----Modifica bolsa del ganador de la partida-----");
-      } /*else {
+        //-------------Para restar valor de la bolsa del oponente perdedor. 'Falta implementar el empate como condición', <- creo no por el if general de esta sección, no aplica.
+        if (partida.usridcreador == enviousrcreador &&
+            partida.usridwin == enviousrcreador) {
+          xidBolsaSOponente = partida.usridoponente;
+          print('perdedor el oponente: $xidBolsaSOponente');
+        }
+        if (partida.usridcreador != enviousrcreador &&
+            partida.usridwin == enviousrcreador) {
+          xidBolsaSOponente = partida.usridcreador;
+          print('perdedor el creador: $xidBolsaSOponente');
+        }
+        final yindex = usuarios
+            .indexWhere((yelement) => (yelement.email == xidBolsaSOponente));
+        //obtengo idBolsa del adversario
+        final yidBolsaindex = usuarios
+            .indexWhere((yelement) => (yelement.id == usuarios[yindex].id));
+        print(
+            'index del perdedor: $yindex, idName: ${usuarios[yidBolsaindex].id}');
+        final yurl = Uri.https(
+            _baseUrl, 'usuarios/games/${usuarios[yidBolsaindex].id}.json');
+        final yresp = await http.put(yurl, body: usuarios[yindex].toJson());
+        final ydecodedData = json.decode(yresp.body);
+        print('ydecodedData infoPerdedor: $ydecodedData');
+        usuarios[yindex].bolsa =
+            (usuarios[yindex].bolsa! - partidas[index].montototal);
+      }
+      //Falta validar: partida.usridwin != '' dentro de un if
+      //if (partida.usridwin != enviousrcreador && partida.usridwin != 'empate' && partida.usridwin != '')
+      /*if (partida.usridwin != enviousrcreador && partida.usridwin != '') {
+        final yurl = Uri.https(_baseUrl, 'usuarios/games/$idBolsaS.json');
+        //calculo index del ganador
+        final yindex =
+            usuarios.indexWhere((yelement) => (yelement.id == idBolsaS));
+        final yresp = await http.put(yurl, body: usuarios[yindex].toJson());
+        final ydecodedData = json.decode(yresp.body);
+
+        print('xdecodedData infoPerdedor: $ydecodedData');
+        //calculo index del perdedor CHECAR HOJA BLANCA
+        /*final yindex =
+            usuarios.indexWhere((yelement) => (yelement.email == idBolsaS));*/
+        usuarios[yindex].bolsa = (usuarios[yindex].bolsa! -
+            partidas[index].montototal); //(usuarios[xindex].bolsa! - 10)
+        print('usuarios[xindex] infoBolsa-Perdedor: ${usuarios[yindex].bolsa}');
+        print("-----Modifica bolsa del perdedor de la partida-----");
+      }*/
+      /*else {
         print('Entro a modificar ficha perdedorrrrr else');
       }*/
       //checar éste if, ya que se activa únicamente cuando se crea la tarjeta
