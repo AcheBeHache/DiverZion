@@ -100,7 +100,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                       ),
                       onPressed: () {
                         final game = partidas[i];
-                        print(game);
+                        //print(game);
                         Navigator.push(context, _crearRuta1());
                       },
                       //child: Text('${partidas[i]} monto: \$$monto vs usrN.')),

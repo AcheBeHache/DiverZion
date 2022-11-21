@@ -3,12 +3,12 @@
 import 'dart:math';
 
 import 'package:app_game/models/models.dart';
-import 'package:app_game/providers/usuarios_form_provider.dart';
+//import 'package:app_game/providers/usuarios_form_provider.dart';
 import 'package:app_game/screens/pagina1.dart';
-import 'package:app_game/screens/screens.dart';
+//import 'package:app_game/screens/screens.dart';
 import 'package:app_game/services/services.dart';
-import 'package:app_game/widgets/widgets.dart';
-import 'package:date_format/date_format.dart';
+//import 'package:app_game/widgets/widgets.dart';
+//import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 //import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 //import 'package:flutter_secure_storage/flutter_secure_storage.dart';
@@ -141,9 +141,9 @@ class _HomeScreen extends State<HomeScreen> {
             icon: const Icon(Icons.perm_identity_rounded),
             tooltip: 'Mi perfil',
             onPressed: () async {
-              //TODO: Imprimimos para revisar los valores del storage
-              print(await authService.storage.read(key: 'usremail'));
-              print(await authService.storage.read(key: 'idBolsa'));
+              //Imprimimos para revisar los valores del storage
+              //print(await authService.storage.read(key: 'usremail'));
+              //print(await authService.storage.read(key: 'idBolsa'));
               try {
                 //aquí el código para obtener el index del usr y pintar lo correspondiente a su sesión
                 infoUsr = await usuariosService.obtenerUsuario(rrvalue);
@@ -168,7 +168,7 @@ class _HomeScreen extends State<HomeScreen> {
                       status: true));
                   //Aquí al final puedo lanzar un msj al usr nuevo de construyendo su perfil, intente ingresar en 1 minuto.
                 } else {
-                  print('infousr: $infoUsr');
+                  //print('infousr: $infoUsr');
                   //usuariosService.obtenerUsuario(rrvalue);
 
                   usuariosService.selectedUsuarios = UsrGame(

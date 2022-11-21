@@ -24,12 +24,6 @@ class PartidaFormProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /*updateId(dynamic value) {
-    print(value);
-    partida.id = value;
-    notifyListeners();
-  }*/
-
   bool isValidForm() {
     /*print(partida.id);
     print(partida.montototal);

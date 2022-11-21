@@ -3,7 +3,7 @@
 //import 'package:app_game/screens/screens.dart';
 //import 'package:image_picker/image_picker.dart';
 import 'package:app_game/providers/partida_form_provider.dart';
-import 'package:app_game/screens/partida_pptscreen.dart';
+//import 'package:app_game/screens/partida_pptscreen.dart';
 import 'package:app_game/services/services.dart';
 import 'package:app_game/ui/input_decorations.dart';
 import 'package:app_game/widgets/widgets.dart';

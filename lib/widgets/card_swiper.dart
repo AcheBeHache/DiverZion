@@ -3,7 +3,7 @@
 import 'dart:async';
 
 import 'package:app_game/providers/partida_form_provider.dart';
-import 'package:app_game/screens/partida_pptscreen.dart';
+//import 'package:app_game/screens/partida_pptscreen.dart';
 //import 'package:app_game/services/partidas_services.dart';
 import 'package:app_game/services/services.dart';
 import 'package:card_swiper/card_swiper.dart';
@@ -21,8 +21,6 @@ class CardSwiper extends StatefulWidget {
   final List<Opcion> tarjetas;
   final PartidasServices partidaService;
   final UsuariosService usuariosLista;
-  //TODO: AQUIMEQUEDE AGREGUË AL CARDSWIPER EL THIS.BOLSA
-  //final UsrGame bolsa;
   const CardSwiper(
       {Key? key,
       required this.tarjetas,
@@ -151,7 +149,7 @@ class _CardSwiperState extends State<CardSwiper> {
                         await widget.partidaService.updateTarjeta(partida,
                             tarjeta, enviousrcreador, idBolsaS, usuariosLista);
                         Future.delayed(const Duration(seconds: 2), () async {
-                          print('usuario enviado: ${usuariosLista.email}');
+                          //print('usuario enviado: ${usuariosLista.email}');
                           await widget.partidaService.updateTarjeta(
                               partida,
                               tarjeta,
@@ -201,7 +199,7 @@ class _CardSwiperState extends State<CardSwiper> {
                     }
                     Future.delayed(const Duration(seconds: 6), () async {
                       //setState(() {});
-                      print("se tienen ambas respuestas, redirigiendo---");
+                      //print("se tienen ambas respuestas, redirigiendo---");
                       /*Navigator.pushNamed(context, 'ppt',
                           arguments: [partida, tarjeta]);*/
                       Navigator.pushNamed(context, 'ppt', arguments: partida);

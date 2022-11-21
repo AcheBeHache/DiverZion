@@ -1,12 +1,12 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:app_game/models/models.dart';
-import 'package:date_format/date_format.dart';
+//import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:app_game/services/services.dart';
+//import 'package:app_game/services/services.dart';
 import 'package:http/http.dart' as http;
-import 'package:app_game/bloc/peticionesppt_bloc.dart';
+//import 'package:app_game/bloc/peticionesppt_bloc.dart';
 
 class UsuariosService extends ChangeNotifier {
   final String _baseUrl = 'pptgame-d06ee-default-rtdb.firebaseio.com';
@@ -135,7 +135,7 @@ class UsuariosService extends ChangeNotifier {
 
     if (resp.statusCode != 200 && resp.statusCode != 201) {
       print('algo salio mal');
-      print(resp.body);
+      //print(resp.body);
       return null;
     }
 
@@ -183,13 +183,13 @@ class UsuariosService extends ChangeNotifier {
 
     usuario.usrId = decodedData['name'];
     usuarios.add(usuario);*/
-      print('index del rrvalue con correo: $rrvalor  -> $index');
+      //print('index del rrvalue con correo: $rrvalor  -> $index');
 
       /*isSaving = false;
     notifyListeners();*/
       //return usuarios;
     } catch (e) {
-      print("error en función obtener usuario");
+      print("error en función obtener usuario: $e");
     }
   }
 
@@ -210,7 +210,7 @@ class UsuariosService extends ChangeNotifier {
     await storage.write(key: 'idBolsa', value: decodedData['name]);*/
     //3 de 3: imprimimos valor de variable del storage
     String? idBolsa = await storage.read(key: 'idBolsa');
-    print('idBolsa al crear usr: $idBolsa');
+    //print('idBolsa al crear usr: $idBolsa');
     isSaving = false;
     notifyListeners();
     return usr.id!;

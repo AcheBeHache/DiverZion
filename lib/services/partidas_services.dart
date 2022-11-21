@@ -3,13 +3,13 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:app_game/models/models.dart';
-import 'package:app_game/services/services.dart';
+//import 'package:app_game/services/services.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:http/http.dart' as http;
-import 'package:app_game/bloc/peticionesppt_bloc.dart';
-import 'package:provider/provider.dart';
+//import 'package:app_game/bloc/peticionesppt_bloc.dart';
+//import 'package:provider/provider.dart';
 
 class PartidasServices extends ChangeNotifier {
   final String _baseUrl = 'pptgame-d06ee-default-rtdb.firebaseio.com';
@@ -196,7 +196,7 @@ class PartidasServices extends ChangeNotifier {
 
     partida.id = decodedData['name'];
     partidas.add(partida);
-    print(partidas);
+    //print(partidas);
     /*isSaving = false;
     notifyListeners();*/
     return partidas;
@@ -318,7 +318,7 @@ class PartidasServices extends ChangeNotifier {
         //partidas[index] = partida;
         //partidas[index].respcreador = 'eleccioncreador';
         //print(partidas[index].respoponente);
-        print('idBolsa del usuarioActual: $idBolsaS');
+        //print('idBolsa del usuarioActual: $idBolsaS');
         //tendría que realizar un if para saber si la idBolsaS es del usrcreador o del oponente para realizar la operación correspondiente en su bolsa.
 
         //Ejecución de la actualización de la Tarjeta
@@ -367,9 +367,9 @@ class PartidasServices extends ChangeNotifier {
           //programar la revancha.
         }
       }
-      print('UsrCreador: ${partida.usridcreador}');
-      print('UsrOponente: ${partida.usridoponente}');
-      print('UsrWin-Ganador: ${partida.usridwin}');
+      //print('UsrCreador: ${partida.usridcreador}');
+      //print('UsrOponente: ${partida.usridoponente}');
+      //print('UsrWin-Ganador: ${partida.usridwin}');
 
       //if para manejo de bolsa SUMA
       if (partida.usridwin == enviousrcreador) {
@@ -380,7 +380,7 @@ class PartidasServices extends ChangeNotifier {
         final xresp = await http.put(xurl, body: usuarios[xindex].toJson());
         final xdecodedData = json.decode(xresp.body);
 
-        print('xdecodedData infoGanador: $xdecodedData');
+        //print('xdecodedData infoGanador: $xdecodedData');
         //calculo index del perdedor CHECAR HOJA BLANCA
         /**/
         usuarios[xindex].bolsa = (usuarios[xindex].bolsa! +
@@ -396,31 +396,31 @@ class PartidasServices extends ChangeNotifier {
         /*usuarios[xindex].menosbolsa = (usuarios[xindex].menosbolsa! +
             partidas[index].montototal);*/
         //validar la instrucción anterior
-        print('usuarios[xindex] infoBolsa-Ganador: ${usuarios[xindex].bolsa}');
-        print("-----Modifica bolsa del ganador de la partida-----");
+        //print('usuarios[xindex] infoBolsa-Ganador: ${usuarios[xindex].bolsa}');
+        //print("-----Modifica bolsa del ganador de la partida-----");
         //-------------Para restar valor de la bolsa del oponente perdedor. 'Falta implementar el empate como condición', <- creo no por el if general de esta sección, no aplica.
         if (partida.usridcreador == enviousrcreador &&
             partida.usridwin == enviousrcreador) {
           xidBolsaSOponente = partida.usridoponente;
-          print('perdedor el oponente: $xidBolsaSOponente');
+          //print('perdedor el oponente: $xidBolsaSOponente');
         }
         if (partida.usridcreador != enviousrcreador &&
             partida.usridwin == enviousrcreador) {
           xidBolsaSOponente = partida.usridcreador;
-          print('perdedor el creador: $xidBolsaSOponente');
+          //print('perdedor el creador: $xidBolsaSOponente');
         }
         final yindex = usuarios
             .indexWhere((yelement) => (yelement.email == xidBolsaSOponente));
         //obtengo idBolsa del adversario
         final yidBolsaindex = usuarios
             .indexWhere((yelement) => (yelement.id == usuarios[yindex].id));
-        print(
-            'index del perdedor: $yindex, idName: ${usuarios[yidBolsaindex].id}');
+        //print(
+        //'index del perdedor: $yindex, idName: ${usuarios[yidBolsaindex].id}');
         final yurl = Uri.https(
             _baseUrl, 'usuarios/games/${usuarios[yidBolsaindex].id}.json');
         final yresp = await http.put(yurl, body: usuarios[yindex].toJson());
         final ydecodedData = json.decode(yresp.body);
-        print('ydecodedData infoPerdedor: $ydecodedData');
+        //print('ydecodedData infoPerdedor: $ydecodedData');
         usuarios[yindex].bolsa =
             (usuarios[yindex].bolsa! - partidas[index].montototal);
       }
@@ -590,7 +590,7 @@ class PartidasServices extends ChangeNotifier {
 
     if (resp.statusCode != 200 && resp.statusCode != 201) {
       print('algo salio mal');
-      print(resp.body);
+      //print(resp.body);
       return null;
     }
 
