@@ -48,7 +48,14 @@ class _Pagina1State extends State<Pagina1> {
 
     //ejecutamos la función para mostrar usrname
     mostrarusr();
-    return Scaffold(
+    return /*WillPopScope(
+      onWillPop: () async {
+        //return true; principalmente estaba con éste código comentado
+        Navigator.pushNamed(context, 'home');
+        return true;
+      },
+      child:*/
+        Scaffold(
       appBar: AppBar(
         title: const Text('Regresa a tu almacén'),
       ),
@@ -93,13 +100,13 @@ class _Pagina1State extends State<Pagina1> {
               ),
               /*Image.asset("assets/images/piedra.png"),*/
               /*const Padding(
-                padding: EdgeInsets.all(20),
-                child: CircleAvatar(
-                  backgroundImage: NetworkImage(
-                      'https://images.vexels.com/media/users/3/145874/isolated/preview/b55eccb8fb67c9fd017e5df9f47cab3e-roca-de-piedra.png'),
-                  radius: 70,
-                ),
-              ),*/
+                  padding: EdgeInsets.all(20),
+                  child: CircleAvatar(
+                    backgroundImage: NetworkImage(
+                        'https://images.vexels.com/media/users/3/145874/isolated/preview/b55eccb8fb67c9fd017e5df9f47cab3e-roca-de-piedra.png'),
+                    radius: 70,
+                  ),
+                ),*/
               Text(
                 '\nSelecciona alguna de las tarjetas, dando clic en el título que hay debajo, para comenzar...\n',
                 style: parrafosTxt,
@@ -117,12 +124,12 @@ class _Pagina1State extends State<Pagina1> {
                 //showBottomBorder: true,
                 //dividerThickness: 5,
                 /*decoration: BoxDecoration(
-                  border: Border(
-                      right: Divider.createBorderSide(context, width: 5.0),
-                      left: Divider.createBorderSide(context, width: 5.0)),
-                  color: Colors.red.shade200,
-                  
-                ),*/
+                    border: Border(
+                        right: Divider.createBorderSide(context, width: 5.0),
+                        left: Divider.createBorderSide(context, width: 5.0)),
+                    color: Colors.red.shade200,
+                    
+                  ),*/
                 columns: const [
                   DataColumn(
                       label: Text("Elije tu \nfortaleza",
@@ -439,10 +446,11 @@ class _Pagina1State extends State<Pagina1> {
         ),
       ),
       /*floatingActionButton: FloatingActionButton(
-          child: const Icon(Icons.access_time),
-          onPressed: () {
-            Navigator.push(context, _crearRuta());
-          }),*/
+            child: const Icon(Icons.access_time),
+            onPressed: () {
+              Navigator.push(context, _crearRuta());
+            }),*/
+      //willscope),
     );
   }
 

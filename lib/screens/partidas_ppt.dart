@@ -75,6 +75,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
 
     return WillPopScope(
       onWillPop: () async {
+        //Navigator.pushNamed(_, 'momentos');
         return true;
       },
       child: Scaffold(
@@ -97,114 +98,109 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
               //NoJalascrollDirection: Axis.horizontal,
               itemCount: partidasService.partidas.length,
               itemBuilder: (BuildContext context, int index) => GestureDetector(
-                    onTap: () {
-                      //Aquí tenemos que cambiar la funcionalidad "total", pero dirigir con los datos a la ventana (PPT) para comenzar el juego
-                      //Me quedé aqui para hacer pruebas de visualizar y copiar únicamente las cards con status 1y2
-                      /*partidasService.selectedPartidas =
+                  onTap: () {
+                    //Aquí tenemos que cambiar la funcionalidad "total", pero dirigir con los datos a la ventana (PPT) para comenzar el juego
+                    //Me quedé aqui para hacer pruebas de visualizar y copiar únicamente las cards con status 1y2
+                    /*partidasService.selectedPartidas =
                         partidasService.partidas[index].copy();*/
-                      //TODO: Checar el copy
-                      partidasService.selectedPartidas =
-                          partidasService.partidas[index];
-                      //incluir evalúo de que tenga poder en su granja el usr, así como el monto al día permitido,
-                      //checar el tema de juego entre usrversionapp para poder mayor
-                      if (partidasService.partidas[index].usridcreador ==
-                              usrcreador &&
-                          partidasService.partidas[index].status == 1 &&
-                          (partidasService.partidas[index].usridoponente ==
-                                  '' ||
-                              partidasService.partidas[index].usridoponente ==
-                                  null)) {
-                        NotificationsService.showSnackbar(
-                            "tú mismo la hicistesss, aún no hay oponente, recibirás una notificación!");
-                      }
-                      if (partidasService.partidas[index].usridcreador !=
-                              usrcreador &&
-                          partidasService.partidas[index].status == 1 &&
-                          (partidasService.partidas[index].usridoponente ==
-                                  '' ||
-                              partidasService.partidas[index].usridoponente ==
-                                  null)) {
-                        Navigator.pushNamed(context, 'partida');
-                        /*NotificationsService.showSnackbar(
+                    //TODO: Checar el copy
+                    partidasService.selectedPartidas =
+                        partidasService.partidas[index];
+                    //incluir evalúo de que tenga poder en su granja el usr, así como el monto al día permitido,
+                    //checar el tema de juego entre usrversionapp para poder mayor
+                    if (partidasService.partidas[index].usridcreador ==
+                            usrcreador &&
+                        partidasService.partidas[index].status == 1 &&
+                        (partidasService.partidas[index].usridoponente == '' ||
+                            partidasService.partidas[index].usridoponente ==
+                                null)) {
+                      NotificationsService.showSnackbar(
+                          "tú mismo la hicistesss, aún no hay oponente, recibirás una notificación!");
+                    }
+                    if (partidasService.partidas[index].usridcreador !=
+                            usrcreador &&
+                        partidasService.partidas[index].status == 1 &&
+                        (partidasService.partidas[index].usridoponente == '' ||
+                            partidasService.partidas[index].usridoponente ==
+                                null)) {
+                      Navigator.pushNamed(context, 'partida');
+                      /*NotificationsService.showSnackbar(
                           "Otro la hizo, deseas ser el oponente?, envía la notificación al creador!");*/
-                        //antes de activar la opción, es importante validar su monto en bolsa, modo basico o golden, etc...
-                        //si se le permite entrar inmediatamente hacer un update en usridoponente, para reservar su lugar
-                      }
-                      if (partidasService.partidas[index].usridcreador ==
-                              usrcreador &&
-                          partidasService.partidas[index].status == 2 &&
-                          (partidasService.partidas[index].usridoponente !=
-                                  '' ||
-                              partidasService.partidas[index].usridoponente !=
-                                  null)) {
-                        Navigator.pushNamed(context, 'partida');
-                        //TODO: Cuando soy creador y di mi respuesta y me salgo, ésto me deja entrar y aunque no se guarde otra vez mi respuesta, el usr pensará que hizo un cambio
-                        /*NotificationsService.showSnackbar(
+                      //antes de activar la opción, es importante validar su monto en bolsa, modo basico o golden, etc...
+                      //si se le permite entrar inmediatamente hacer un update en usridoponente, para reservar su lugar
+                    }
+                    if (partidasService.partidas[index].usridcreador ==
+                            usrcreador &&
+                        partidasService.partidas[index].status == 2 &&
+                        (partidasService.partidas[index].usridoponente != '' ||
+                            partidasService.partidas[index].usridoponente !=
+                                null)) {
+                      Navigator.pushNamed(context, 'partida');
+                      //TODO: Cuando soy creador y di mi respuesta y me salgo, ésto me deja entrar y aunque no se guarde otra vez mi respuesta, el usr pensará que hizo un cambio
+                      /*NotificationsService.showSnackbar(
                           "Vientos! puedes entrar a retar, ya se tiene oponente!");*/
-                      }
+                    }
 
-                      if (partidasService.partidas[index].usridcreador !=
-                              usrcreador &&
-                          partidasService.partidas[index].status == 2 &&
-                          partidasService.partidas[index].usridoponente !=
-                              usrcreador) {
-                        NotificationsService.showSnackbar(
-                            "Ya te la ganaron! no la creastess ni eres oponente. refresca y busca nueva partida. O crea una.");
-                      }
+                    if (partidasService.partidas[index].usridcreador !=
+                            usrcreador &&
+                        partidasService.partidas[index].status == 2 &&
+                        partidasService.partidas[index].usridoponente !=
+                            usrcreador) {
+                      NotificationsService.showSnackbar(
+                          "Ya te la ganaron! no la creastess ni eres oponente. refresca y busca nueva partida. O crea una.");
+                    }
 
-                      if (partidasService.partidas[index].usridcreador !=
-                              usrcreador &&
-                          partidasService.partidas[index].status == 2 &&
-                          partidasService.partidas[index].usridoponente ==
-                              usrcreador) {
-                        Navigator.pushNamed(context, 'partida');
-                        /*NotificationsService.showSnackbar(
+                    if (partidasService.partidas[index].usridcreador !=
+                            usrcreador &&
+                        partidasService.partidas[index].status == 2 &&
+                        partidasService.partidas[index].usridoponente ==
+                            usrcreador) {
+                      Navigator.pushNamed(context, 'partida');
+                      /*NotificationsService.showSnackbar(
                           "¡Eres oponente, qué esperas! Envía tu respuesta.");*/
-                      }
+                    }
 
-                      if (partidasService.partidas[index].usridcreador ==
-                              usrcreador &&
-                          partidasService.partidas[index].status == 3 &&
-                          (partidasService.partidas[index].usridoponente !=
-                                  '' ||
-                              partidasService.partidas[index].usridoponente !=
-                                  null)) {
-                        NotificationsService.showSnackbar(
-                            "Ya la llevaste a cabo, fuiste el creador! Realiza una nueva partida.");
-                      }
+                    if (partidasService.partidas[index].usridcreador ==
+                            usrcreador &&
+                        partidasService.partidas[index].status == 3 &&
+                        (partidasService.partidas[index].usridoponente != '' ||
+                            partidasService.partidas[index].usridoponente !=
+                                null)) {
+                      NotificationsService.showSnackbar(
+                          "Ya la llevaste a cabo, fuiste el creador! Realiza una nueva partida.");
+                    }
 
-                      if (partidasService.partidas[index].usridcreador !=
-                              usrcreador &&
-                          partidasService.partidas[index].status == 3 &&
-                          partidasService.partidas[index].usridoponente !=
-                              usrcreador) {
-                        NotificationsService.showSnackbar(
-                            "Chav@, Ya se llevó a cabo! No estás dentro de la partida. Intenta creando nueva partida.");
-                      }
+                    if (partidasService.partidas[index].usridcreador !=
+                            usrcreador &&
+                        partidasService.partidas[index].status == 3 &&
+                        partidasService.partidas[index].usridoponente !=
+                            usrcreador) {
+                      NotificationsService.showSnackbar(
+                          "Chav@, Ya se llevó a cabo! No estás dentro de la partida. Intenta creando nueva partida.");
+                    }
 
-                      if (partidasService.partidas[index].usridcreador !=
-                              usrcreador &&
-                          partidasService.partidas[index].status == 3 &&
-                          partidasService.partidas[index].usridoponente ==
-                              usrcreador) {
-                        NotificationsService.showSnackbar(
-                            "Chav@, Ya se llevó a cabo! Fuiste el oponente en la partida. Intenta creando nueva partida.");
-                      }
-                    },
-                    //Logra mostrar al usr únicamente cards disponibles y en status 'En partida'
-                    //Falta aplicar una limpieza de la lista para que únicamente guarde las partidas con dichos estatus
-                    //lo que para que cuando la app muestra las mismas, se crean espacios en blanco con las de estatus finalizó
-                    child: partidasService.partidas[index].status == 1 ||
+                    if (partidasService.partidas[index].usridcreador !=
+                            usrcreador &&
+                        partidasService.partidas[index].status == 3 &&
+                        partidasService.partidas[index].usridoponente ==
+                            usrcreador) {
+                      NotificationsService.showSnackbar(
+                          "Chav@, Ya se llevó a cabo! Fuiste el oponente en la partida. Intenta creando nueva partida.");
+                    }
+                  },
+                  //Logra mostrar al usr únicamente cards disponibles y en status 'En partida'
+                  //Falta aplicar una limpieza de la lista para que únicamente guarde las partidas con dichos estatus
+                  //lo que para que cuando la app muestra las mismas, se crean espacios en blanco con las de estatus finalizó
+                  child: /*partidasService.partidas[index].status == 1 ||
                             partidasService.partidas[index].status == 2
                         ? PartidasCard(
                             partida: partidasService.partidas[index],
                           )
-                        : const Text(""),
-                    //Muestra todas las tarjetas
-                    /*PartidasCard(
+                        : const Text(""),*/
+                      //Muestra todas las tarjetas
+                      PartidasCard(
                     partida: partidasService.partidas[index],
-                  )*/
-                  )),
+                  ))),
           onRefresh: () {
             //partidasService.dispose;
             //setState(() {
@@ -243,6 +239,25 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
         floatingActionButton: Row(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
+            FloatingActionButton(
+              heroTag: "btnHome",
+              onPressed: () => {
+                //Navigator.push(context, _crearRuta1()),
+                Future.delayed(const Duration(seconds: 1), () {
+                  setState(() {
+                    Navigator.pushNamed(context, 'momentos');
+                  });
+                })
+              },
+              tooltip: 'Home',
+              //child: const Icon(Icons.add_reaction_rounded),
+              //child: const Icon(Icons.agriculture_rounded),
+              //child: const Icon(Icons.app_shortcut_sharp),
+              //child: const Icon(Icons.assured_workload_rounded),
+              //child: const Icon(Icons.auto_awesome),
+              child: const Icon(Icons.widgets_rounded),
+              //child: const Icon(Icons.pest_control_sharp),
+            ),
             FloatingActionButton(
               //heroTag: "btnRecargar",
               heroTag: "btnCrearPartida",
