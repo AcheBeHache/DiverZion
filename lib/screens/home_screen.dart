@@ -1,22 +1,20 @@
-//import 'dart:math';
-
-import 'dart:math';
-
-import 'package:app_game/models/models.dart';
-//import 'package:app_game/providers/usuarios_form_provider.dart';
-import 'package:app_game/screens/pagina1.dart';
-//import 'package:app_game/screens/screens.dart';
-import 'package:app_game/services/services.dart';
-//import 'package:app_game/widgets/widgets.dart';
-//import 'package:date_format/date_format.dart';
-import 'package:flutter/material.dart';
-//import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-//import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:provider/provider.dart';
 //ESTAimport 'package:paginas/pages/pagina1.dart';
 //import 'dart:async';
-
+//import 'dart:math';
+//import 'package:app_game/providers/usuarios_form_provider.dart';
+//import 'package:app_game/screens/screens.dart';
+//import 'package:app_game/widgets/widgets.dart';
+//import 'package:date_format/date_format.dart';
+//import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+//import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 //import 'package:paginas/pages/pagina3.dart';
+import 'dart:math';
+import 'package:app_game/models/models.dart';
+import 'package:app_game/screens/pagina1.dart';
+import 'package:app_game/services/services.dart';
+import 'package:date_format/date_format.dart';
+import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -32,7 +30,7 @@ class _HomeScreen extends State<HomeScreen> {
   String get inCaps => '$this[0].toUpperCase()$this.substring(1)';
   String rrvalue = '';
   int? infoUsr = 0;
-  int? diverzcoin = 0;
+  double? diverzcoin = 0;
   List<UsrGame> daUsr = [];
   static const _chars =
       'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
@@ -154,15 +152,18 @@ class _HomeScreen extends State<HomeScreen> {
                       apodo: 'AVATAR',
                       avatar:
                           'https://res.cloudinary.com/dqtjgerwt/image/upload/v1665216453/cld-sample-2.jpg', //validar
-                      bolsa: 0,
+                      bolsa: 0.1,
                       cinvbolsa: 0,
                       //Genera un código con función random y algo que extraiga de su email
                       codigoinv:
                           '${rrvalue[0]}${getRandomString(5)}${rrvalue[1]}',
-                      comisionbolsa: 0,
+                      comisionbolsa: 0.1,
                       email: rrvalue,
-                      masbolsa: 0,
+                      masbolsa: 0.1,
                       menosbolsa: 0,
+                      bolsaRetenida: 0,
+                      ultActualizacion: formatDate(DateTime.now(),
+                          [d, '/', mm, '/', yyyy, ' ', H, ':', m, ':', am]),
                       modo: 'trial',
                       padrecodigo: 'DEFAULT',
                       status: true));
@@ -183,6 +184,9 @@ class _HomeScreen extends State<HomeScreen> {
                       email: daUsr[infoUsr!].email,
                       masbolsa: daUsr[infoUsr!].masbolsa,
                       menosbolsa: daUsr[infoUsr!].menosbolsa,
+                      bolsaRetenida: daUsr[infoUsr!].bolsaRetenida,
+                      //ultActualizacion: daUsr[infoUsr!].ultActualizacion,
+                      ultActualizacion: daUsr[infoUsr!].ultActualizacion,
                       modo: daUsr[infoUsr!].modo,
                       padrecodigo: daUsr[infoUsr!].padrecodigo,
                       status: daUsr[infoUsr!].status);

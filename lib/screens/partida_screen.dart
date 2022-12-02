@@ -6,13 +6,17 @@
 //import 'package:card_swiper/card_swiper.dart';
 //import 'package:http/http.dart' as http;
 //import 'package:image_picker/image_picker.dart';
+import 'dart:async';
+
 import 'package:app_game/providers/opcionesppt_provider.dart';
 import 'package:app_game/providers/partida_form_provider.dart';
 import 'package:app_game/services/services.dart';
 //import 'package:app_game/ui/input_decorations.dart';
 import 'package:app_game/widgets/card_swiper.dart';
+import 'package:card_swiper/card_swiper.dart';
 //import 'package:app_game/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/widgets.dart';
 //import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
@@ -21,6 +25,15 @@ TextStyle deshabilitarTxts =
     const TextStyle(fontSize: 13, color: Color.fromARGB(255, 228, 226, 226));
 //msjito del modo manual/automático
 //String mensajito = 'manual';
+//Variables del cronómetro globales
+int _counter = 13;
+Timer? _timer;
+/*late var partidaForm;
+late var partida;
+late var partidaService;
+late var tarjetasProvider;
+late var usuariosService;
+late var daUsr;*/
 
 class PartidaScreen extends StatefulWidget {
   @override
@@ -60,87 +73,102 @@ class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
 
     //final tarjetasProvider = Provider.of<OpcionesPPTProvider>(context);
     //final partida = partidaForm.partida;
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Selecciona tu respuesta...'),
-        elevation: 0,
-      ),
-      body: SingleChildScrollView(
-        // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
-        child: Padding(
-          padding:
-              const EdgeInsets.symmetric(vertical: 100.0, horizontal: 10.20),
-          child: Column(
-            children: [
-              /*Stack(
-                children: [
-                  PartidaImage(url: widget.partidaService.selectedPartidas.img),
-                  Positioned(
-                      top: 60,
-                      left: 20,
-                      child: IconButton(
-                        onPressed: () => Navigator.of(context).pop(),
-                        icon: const Icon(Icons.arrow_back_ios_new,
-                            size: 40, color: Colors.white),
-                      )),
-                  /*Descomentar para permitir al usr cargar una fotografía
-                  Positioned(
-                      top: 60,
-                      right: 20,
-                      child: IconButton(
-                        onPressed: () async {
-                          final picker = ImagePicker();
-                          final PickedFile? pickedFile = await picker.getImage(
-                              //source: ImageSource.gallery,
-                              source: ImageSource.camera,
-                              imageQuality: 100);
-        
-                          if (pickedFile == null || pickedFile == '') {
-                            print('Archivo null o vacío.');
-                            return;
-                          }
-        
-                          widget.partidaService
-                              .updateSelectedPartidaImage(pickedFile.path);
-                        },
-                        icon: const Icon(Icons.camera_alt_outlined,
-                            size: 40, color: Colors.white),
-                      ))*/
-                ],
-              ),*/
-              _PartidaForm(),
-              const SizedBox(height: 100),
-            ],
+
+    return WillPopScope(
+      onWillPop: () async {
+        if (_counter >= 0) {
+          //print("Último número: $_counter");
+          _counter = 13;
+          _timer?.cancel();
+          return true;
+        } else {
+          //print("Último número: $_counter");
+          _timer?.cancel();
+          return true;
+        }
+      },
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Selecciona tu respuesta...'),
+          elevation: 0,
+        ),
+        body: SingleChildScrollView(
+          // keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
+          child: Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 100.0, horizontal: 10.20),
+            child: Column(
+              children: [
+                /*Stack(
+                  children: [
+                    PartidaImage(url: widget.partidaService.selectedPartidas.img),
+                    Positioned(
+                        top: 60,
+                        left: 20,
+                        child: IconButton(
+                          onPressed: () => Navigator.of(context).pop(),
+                          icon: const Icon(Icons.arrow_back_ios_new,
+                              size: 40, color: Colors.white),
+                        )),
+                    /*Descomentar para permitir al usr cargar una fotografía
+                    Positioned(
+                        top: 60,
+                        right: 20,
+                        child: IconButton(
+                          onPressed: () async {
+                            final picker = ImagePicker();
+                            final PickedFile? pickedFile = await picker.getImage(
+                                //source: ImageSource.gallery,
+                                source: ImageSource.camera,
+                                imageQuality: 100);
+          
+                            if (pickedFile == null || pickedFile == '') {
+                              print('Archivo null o vacío.');
+                              return;
+                            }
+          
+                            widget.partidaService
+                                .updateSelectedPartidaImage(pickedFile.path);
+                          },
+                          icon: const Icon(Icons.camera_alt_outlined,
+                              size: 40, color: Colors.white),
+                        ))*/
+                  ],
+                ),*/
+                _PartidaForm(),
+                const SizedBox(height: 100),
+              ],
+            ),
           ),
         ),
+        /*floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
+        floatingActionButton: FloatingActionButton(
+          //ejemplo para comenzar a emparejar partida con otro oponente: select, update, etc...
+          onPressed: widget.partidaService.isSaving
+              ? null
+              : () async {
+                  if (!partidaForm.isValidForm()) return;
+    
+                  /*final String? imageUrl =
+                      await widget.partidaService.uploadImage();
+    
+                  if (imageUrl != null) partidaForm.partida.img = imageUrl;*/
+    
+                  //print(imageUrl);
+                  /*await widget.partidaService.saveOrCreatePartida(
+                      partidaForm.partida, tarjetasProvider.selectedTarjetas);*/
+                  /*DESCOMENTARPARAACTIVAR await widget.partidaService
+                      .saveOrCreatePartida(partidaForm.partida);*/
+    
+                  //1de3-Para poner contexto para navegar entre rutas al editar las cards
+                  /*await partidaService.saveOrCreatePartida(
+                      context, partidaForm.partida);*/
+                },
+          child: widget.partidaService.isSaving
+              ? const CircularProgressIndicator(color: Colors.white)
+              : const Icon(Icons.save_outlined),
+        ),*/
       ),
-      /*floatingActionButtonLocation: FloatingActionButtonLocation.endDocked,
-      floatingActionButton: FloatingActionButton(
-        //ejemplo para comenzar a emparejar partida con otro oponente: select, update, etc...
-        onPressed: widget.partidaService.isSaving
-            ? null
-            : () async {
-                if (!partidaForm.isValidForm()) return;
-
-                /*final String? imageUrl =
-                    await widget.partidaService.uploadImage();
-
-                if (imageUrl != null) partidaForm.partida.img = imageUrl;*/
-
-                //print(imageUrl);
-                /*await widget.partidaService.saveOrCreatePartida(
-                    partidaForm.partida, tarjetasProvider.selectedTarjetas);*/
-                /*DESCOMENTARPARAACTIVAR await widget.partidaService
-                    .saveOrCreatePartida(partidaForm.partida);*/
-
-                //1de3-Para poner contexto para navegar entre rutas al editar las cards
-                /*await partidaService.saveOrCreatePartida(
-                    context, partidaForm.partida);*/
-              },
-        child: widget.partidaService.isSaving
-            ? const CircularProgressIndicator(color: Colors.white)
-            : const Icon(Icons.save_outlined),
-      ),*/
     );
   }
 }
@@ -159,7 +187,43 @@ class _PartidaFormState extends State<_PartidaForm> {
     final tarjetasProvider = Provider.of<OpcionesPPTProvider>(context);
     final usuariosService = Provider.of<UsuariosService>(context);
     final daUsr = usuariosService.usuarios;
+    //Funciones del cronómetro
 
+    void _startTimer() {
+      //_counter = 10;
+      if (_timer != null) {
+        _timer?.cancel();
+      }
+
+      _timer = Timer.periodic(const Duration(seconds: 1), (timer) {
+        /*if (mounted) {
+        //String _noDataText;
+        setState(() => _timer?.cancel());
+      }*/
+        if (mounted) {
+          setState(() {
+            if (_counter > 0) {
+              _counter--;
+            } else {
+              print('ejecuto función');
+              //asignarle un valor ramdom a tarjeta elejida porque detecta variable nula
+              //agregué libreria del screen card_swiper, crear los objetos para ver si así sí ejecuta la función con datos duros.
+              /*CardSwiper(
+                tarjetas: tarjetasProvider.tarjetas,
+                partidaService: partidaService,
+                usuariosLista: usuariosService,
+              ).partidaService.updateTarjeta(partida,
+                            tarjeta, 'x@gm.cm', '-NGLgXmPFTE-8ONMTksB', usuariosLista);*/ //partida, tarjeta, enviousrcreador, idBolsaS, usuariosLista
+              _counter = 13;
+              _timer?.cancel();
+            }
+          });
+        }
+      });
+    }
+
+    //Termina funciones del cronómetro
+    _startTimer();
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Container(
@@ -188,6 +252,24 @@ class _PartidaFormState extends State<_PartidaForm> {
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'YYYY/MM/DD', labelText: 'Creación:'),
               ),*/
+              const SizedBox(height: 30),
+              Text(
+                '$_counter',
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 48,
+                ),
+              ),
+              (_counter > 0)
+                  ? const Text("")
+                  : const Text(
+                      "Enviando respuesta...",
+                      style: TextStyle(
+                        color: Colors.green,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
+                      ),
+                    ),
               const SizedBox(height: 30),
               const Text('<< Desliza para seleccionar tu respuesta >>'),
               /*const SizedBox(height: 30),
@@ -220,7 +302,7 @@ class _PartidaFormState extends State<_PartidaForm> {
               ),
               //TODO: Preparar el temporizador aquí, creo.
               const SizedBox(height: 30),
-              const Text('Se tienen 10 segundos para elegir respuesta.'),
+              const Text('Se tienen 13 segundos para elegir respuesta.'),
               const SizedBox(height: 30),
               const Text(
                   'La respuesta se envía al terminó del cronómetro, en automático.'),

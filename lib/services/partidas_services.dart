@@ -1,15 +1,15 @@
+//import 'package:app_game/bloc/peticionesppt_bloc.dart';
 //import 'package:app_game/services/services.dart';
+//import 'package:app_game/services/services.dart';
+//import 'package:provider/provider.dart';
 //import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:app_game/models/models.dart';
-//import 'package:app_game/services/services.dart';
 import 'package:date_format/date_format.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-//import 'package:app_game/bloc/peticionesppt_bloc.dart';
-//import 'package:provider/provider.dart';
 
 class PartidasServices extends ChangeNotifier {
   final String _baseUrl = 'pptgame-d06ee-default-rtdb.firebaseio.com';
@@ -55,7 +55,8 @@ class PartidasServices extends ChangeNotifier {
     partidasMap.forEach((key, value) {
       final tempPartidas = Ppt.fromMap(value);
       //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
-      if (tempPartidas.status == 1 || tempPartidas.status == 2) {
+      if ((tempPartidas.status == 1 && tempPartidas.respcreador != '') ||
+          (tempPartidas.status == 2 && tempPartidas.respcreador != '')) {
         tempPartidas.id = key;
         partidas.add(tempPartidas);
       }
@@ -226,8 +227,8 @@ class PartidasServices extends ChangeNotifier {
 
   }*/
 
-  Future<String> updateTarjeta(
-      partida, tarjetas, enviousrcreador, idBolsaS, usuariosLista) async {
+  Future<String> updateTarjeta(partida, tarjetas, enviousrcreador, idBolsaS,
+      usuariosLista, vuelta) async {
     //creamos una instancia para utilizar el localstorage, mostrar usr 1de4
     //BuildContext context;
     //final authService = Provider.of<AuthService>(context, listen: false);
@@ -235,7 +236,7 @@ class PartidasServices extends ChangeNotifier {
       isSaving = true;
       notifyListeners();
       //print('4recibe updateTarjeta updateTarjeta: $enviousrcreador');
-
+      print('valor vuelta: $vuelta');
       final url = Uri.https(_baseUrl, 'partidas_ppt/${partida.id}.json');
       final resp = await http.put(url, body: partida.toJson());
       final decodedData = json.decode(resp.body);
@@ -375,24 +376,47 @@ class PartidasServices extends ChangeNotifier {
 
       //if para manejo de bolsa SUMA
       if (partida.usridwin == enviousrcreador) {
-        final xurl = Uri.https(_baseUrl, 'usuarios/games/$idBolsaS.json');
-        //calculo index del ganador
-        final xindex =
-            usuarios.indexWhere((xelement) => (xelement.id == idBolsaS));
-        final xresp = await http.put(xurl, body: usuarios[xindex].toJson());
-        final xdecodedData = json.decode(xresp.body);
+        if (vuelta == 1) {
+          final xurl = Uri.https(_baseUrl, 'usuarios/games/$idBolsaS.json');
+          //calculo index del ganador
+          final xindex =
+              usuarios.indexWhere((xelement) => (xelement.id == idBolsaS));
+          final xresp = await http.put(xurl, body: usuarios[xindex].toJson());
+          final xdecodedData = json.decode(xresp.body);
+          //Inicia variables para manejar Bolsa
+          double? bganador = 0.0;
+          double? bpartidacomision = 0.0;
+          double? bolsapartida = 0.0;
+          //Terminan variables para manejar bolsa
 
-        //print('xdecodedData infoGanador: $xdecodedData');
-        //calculo index del perdedor CHECAR HOJA BLANCA
-        /**/
-        usuarios[xindex].bolsa = (usuarios[xindex].bolsa! +
-            partidas[index].montototal); //(usuarios[xindex].bolsa! - 10)
-        // pongo ganancia al límite máximo por día $300
-        usuarios[xindex].masbolsa =
-            (usuarios[xindex].masbolsa! + partidas[index].montototal);
-        //TODO: Falta calculo comisión, convertir a double la variable
-        usuarios[xindex].comisionbolsa =
-            usuarios[xindex].comisionbolsa! + (partidas[index].montototal * 2);
+          //print('xdecodedData infoGanador: $xdecodedData');
+          //calculo index del perdedor CHECAR HOJA BLANCA
+          /**/
+
+          bganador = (usuarios[xindex].bolsa);
+          //TODO: en la siguiente aplico la comisión del 34%
+          bpartidacomision = (partidas[index].montototal).toDouble() * 0.50;
+          bolsapartida =
+              (partidas[index].montototal).toDouble() - bpartidacomision;
+          /*print('partidas valor: ${partidas[index].montototal}');
+          print('partidas valor:  ${partida.montototal}');
+          print('bganador, bolsa actual: $bganador');
+          print('bolsa partida - comisión:  $bolsapartida');*/
+
+          usuarios[xindex].bolsa =
+              bganador! + bolsapartida; //(usuarios[xindex].bolsa! - 10)
+          // pongo ganancia al límite máximo por día $300
+          usuarios[xindex].masbolsa =
+              ((usuarios[xindex].masbolsa! + bolsapartida));
+          //TODO: Falta calculo comisión, convertir a double la variable
+          usuarios[xindex].comisionbolsa =
+              ((usuarios[xindex].comisionbolsa! + bpartidacomision));
+        } else {
+          double? bganador = 0.0;
+          double? bpartidacomision = 0.0;
+          double? bolsapartida = 0.0;
+          print("No se ejecuta vuelta 2");
+        }
         //el conteo de la pérdida del día, la manejamos aparte
         //pongo pérdida permitida al día $80
         /*usuarios[xindex].menosbolsa = (usuarios[xindex].menosbolsa! +
@@ -411,20 +435,33 @@ class PartidasServices extends ChangeNotifier {
           xidBolsaSOponente = partida.usridcreador;
           //print('perdedor el creador: $xidBolsaSOponente');
         }
-        final yindex = usuarios
-            .indexWhere((yelement) => (yelement.email == xidBolsaSOponente));
-        //obtengo idBolsa del adversario
-        final yidBolsaindex = usuarios
-            .indexWhere((yelement) => (yelement.id == usuarios[yindex].id));
-        //print(
-        //'index del perdedor: $yindex, idName: ${usuarios[yidBolsaindex].id}');
-        final yurl = Uri.https(
-            _baseUrl, 'usuarios/games/${usuarios[yidBolsaindex].id}.json');
-        final yresp = await http.put(yurl, body: usuarios[yindex].toJson());
-        final ydecodedData = json.decode(yresp.body);
-        //print('ydecodedData infoPerdedor: $ydecodedData');
-        usuarios[yindex].bolsa =
-            (usuarios[yindex].bolsa! - partidas[index].montototal);
+        if (vuelta == 1) {
+          double? xbperdedor = 0.0;
+          double? xbolsapartida = 0.0;
+          final yindex = usuarios
+              .indexWhere((yelement) => (yelement.email == xidBolsaSOponente));
+          //obtengo idBolsa del adversario
+          final yidBolsaindex = usuarios
+              .indexWhere((yelement) => (yelement.id == usuarios[yindex].id));
+          //print(
+          //'index del perdedor: $yindex, idName: ${usuarios[yidBolsaindex].id}');
+          final yurl = Uri.https(
+              _baseUrl, 'usuarios/games/${usuarios[yidBolsaindex].id}.json');
+          final yresp = await http.put(yurl, body: usuarios[yindex].toJson());
+          final ydecodedData = json.decode(yresp.body);
+          //print('ydecodedData infoPerdedor: $ydecodedData');
+          xbperdedor = (usuarios[yindex].bolsa);
+          //partidas[index].montototal = partida.montototal;
+          xbolsapartida = (partida.montototal).toDouble();
+          xbolsapartida = xbolsapartida;
+          usuarios[yindex].bolsa = (xbperdedor! - xbolsapartida!);
+        } else {
+          double? xbperdedor = 0.0;
+          double? xbolsapartida = 0.0;
+          print("No se ejecuta vuelta 2");
+        }
+      } else {
+        //TODO: quitar el else y poner un if para repetir el código, pero ésta vez es para aplicar cuando el creador pierda(partida.usridwin == enviousrcreador)
       }
       //Falta validar: partida.usridwin != '' dentro de un if
       //if (partida.usridwin != enviousrcreador && partida.usridwin != 'empate' && partida.usridwin != '')
@@ -527,6 +564,7 @@ class PartidasServices extends ChangeNotifier {
     final resp = await http.put(url, body: partida.toJson());
     final decodedData = json.decode(resp.body);
     final index = partidas.indexWhere((element) => (element.id == partida.id));
+
     //final eleccioncreador = tarjetas.nombre;
     /*String fechaFin = formatDate(
         DateTime.now(), [d, '/', mm, '/', yyyy, ' ', H, ':', m, ':', am]);*/
@@ -560,7 +598,7 @@ class PartidasServices extends ChangeNotifier {
     //notifyListeners();
     isSaving = false;
     notifyListeners();
-    return tarjetas.id!;
+    return partidas[index].id!;
   }
   //Fin apartar partida
 

@@ -12,6 +12,8 @@ import 'package:app_game/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+final List<Opcion> tarjetas = [];
+
 class PARTIDASPPT extends StatefulWidget {
   const PARTIDASPPT({Key? key}) : super(key: key);
 
@@ -123,6 +125,19 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                         (partidasService.partidas[index].usridoponente == '' ||
                             partidasService.partidas[index].usridoponente ==
                                 null)) {
+                      //TODO: Antes de apartar, checar su bolsa del usr
+                      partidasService.apartaPartida(
+                          partidasService.partidas[index],
+                          tarjetas,
+                          usrcreador);
+                      //se crea el segundo apartaPartida para apartar en firebase. QS
+                      //TODO: FirebaseEjecución
+                      Future.delayed(const Duration(seconds: 2), () {
+                        partidasService.apartaPartida(
+                            partidasService.partidas[index],
+                            tarjetas,
+                            usrcreador);
+                      });
                       Navigator.pushNamed(context, 'partida');
                       /*NotificationsService.showSnackbar(
                           "Otro la hizo, deseas ser el oponente?, envía la notificación al creador!");*/

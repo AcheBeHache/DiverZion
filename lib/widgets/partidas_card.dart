@@ -31,6 +31,7 @@ class _PartidasCardState extends State<PartidasCard> {
             _ProductDetails(
               finicio: widget.partida.fechainicio,
               ffin: widget.partida.fechafin,
+              //TODO: Aquí, obtener el creador para poner del objeto USR el apodo del usr
               creador: widget.partida.usridcreador,
             ),
 

@@ -15,6 +15,8 @@ class AdminusrGame1 {
     required this.email,
     this.masbolsa,
     this.menosbolsa,
+    this.bolsaRetenida,
+    this.ultActualizacion,
     required this.modo,
     required this.padrecodigo,
     required this.status,
@@ -23,13 +25,15 @@ class AdminusrGame1 {
 
   String? avatar;
   String? apodo;
-  int? bolsa;
+  double? bolsa;
   int? cinvbolsa;
   String? codigoinv;
-  int? comisionbolsa;
+  double? comisionbolsa;
   String email;
-  int? masbolsa;
+  double? masbolsa;
   int? menosbolsa;
+  int? bolsaRetenida;
+  String? ultActualizacion;
   String modo;
   String padrecodigo;
   bool status;
@@ -50,6 +54,8 @@ class AdminusrGame1 {
         email: json["email"],
         masbolsa: json["masbolsa"],
         menosbolsa: json["menosbolsa"],
+        bolsaRetenida: json["bolsaRetenida"],
+        ultActualizacion: json["ultActualizacion"],
         modo: json["modo"],
         padrecodigo: json["padrecodigo"],
         status: json["status"],
@@ -66,6 +72,8 @@ class AdminusrGame1 {
         "email": email,
         "masbolsa": masbolsa,
         "menosbolsa": menosbolsa,
+        "bolsaRetenida": bolsaRetenida,
+        "ultActualizacion": ultActualizacion,
         "modo": modo,
         "padrecodigo": padrecodigo,
         "status": status,
@@ -85,6 +93,8 @@ class UsrGame {
     required this.email,
     this.masbolsa,
     this.menosbolsa,
+    this.bolsaRetenida,
+    this.ultActualizacion,
     required this.modo,
     required this.padrecodigo,
     required this.status,
@@ -94,13 +104,15 @@ class UsrGame {
 
   String? avatar;
   String? apodo;
-  int? bolsa;
+  double? bolsa;
   int? cinvbolsa;
   String? codigoinv;
-  int? comisionbolsa;
+  double? comisionbolsa;
   String email;
-  int? masbolsa;
+  double? masbolsa;
   int? menosbolsa;
+  int? bolsaRetenida;
+  String? ultActualizacion;
   String modo;
   String padrecodigo;
   bool status;
@@ -121,6 +133,8 @@ class UsrGame {
         email: json["email"],
         masbolsa: json["masbolsa"],
         menosbolsa: json["menosbolsa"],
+        bolsaRetenida: json["bolsaRetenida"],
+        ultActualizacion: json["ultActualizacion"],
         modo: json["modo"],
         padrecodigo: json["padrecodigo"],
         status: json["status"],
@@ -138,6 +152,8 @@ class UsrGame {
         "email": email,
         "masbolsa": masbolsa,
         "menosbolsa": menosbolsa,
+        "bolsaRetenida": bolsaRetenida,
+        "ultActualizacion": ultActualizacion,
         "modo": modo,
         "padrecodigo": padrecodigo,
         "status": status,

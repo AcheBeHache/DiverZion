@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 //import 'package:flutter_card_swipper/flutter_card_swiper.dart';
 import 'package:app_game/models/models.dart';
 import 'package:provider/provider.dart';
+/*int _counter = 13;
+  Timer? _timer;*/
 
 /*import 'dart:convert';
 import 'dart:io';
@@ -37,6 +39,7 @@ class _CardSwiperState extends State<CardSwiper> {
   String enviousrcreador = '';
   String idBolsaS = '';
   int usuario = 0;
+
   @override
   Widget build(BuildContext context) {
     //final partidaService = Provider.of<PartidasServices>(context);
@@ -146,8 +149,13 @@ class _CardSwiperState extends State<CardSwiper> {
                     if (partida.usridcreador == enviousrcreador) {
                       if (partida.respcreador == null ||
                           partida.respcreador == '') {
-                        await widget.partidaService.updateTarjeta(partida,
-                            tarjeta, enviousrcreador, idBolsaS, usuariosLista);
+                        await widget.partidaService.updateTarjeta(
+                            partida,
+                            tarjeta,
+                            enviousrcreador,
+                            idBolsaS,
+                            usuariosLista,
+                            1);
                         Future.delayed(const Duration(seconds: 2), () async {
                           //print('usuario enviado: ${usuariosLista.email}');
                           await widget.partidaService.updateTarjeta(
@@ -155,19 +163,29 @@ class _CardSwiperState extends State<CardSwiper> {
                               tarjeta,
                               enviousrcreador,
                               idBolsaS,
-                              usuariosLista);
+                              usuariosLista,
+                              2);
                         });
+                        /*if (_counter >= 0) {
+                          //print("Último número: $_counter");
+                          _counter = 13;
+                          _timer?.cancel();
+                        } else {
+                          //print("Último número: $_counter");
+                          _timer?.cancel();
+                        }*/
                       }
                     }
                     //apartar partida
                     //Antes de apartar partida se valida que se tenga efectivo en la bolsa
                     //se le indica con un snackbar que tiene o no saldo
-                    if ((partida.usridcreador != '' &&
+                    //TODO: ApartaPartidaComenté
+                    /*if ((partida.usridcreador != '' &&
                             partida.usridcreador != enviousrcreador) &&
                         partida.usridoponente == '') {
                       await widget.partidaService
                           .apartaPartida(partida, tarjeta, enviousrcreador);
-                    }
+                    }*/
                     //do del oponente
                     if (partida.usridoponente == enviousrcreador) {
                       do {
@@ -180,15 +198,18 @@ class _CardSwiperState extends State<CardSwiper> {
                               tarjeta,
                               enviousrcreador,
                               idBolsaS,
-                              usuariosLista);
+                              usuariosLista,
+                              1);
+                          //if(partida.respoponente == null || partida.respoponente == ''){
                           Future.delayed(const Duration(seconds: 2), () async {
                             await widget.partidaService.updateTarjeta(
                                 partida,
                                 tarjeta,
                                 enviousrcreador,
                                 idBolsaS,
-                                usuariosLista);
-                          });
+                                usuariosLista,
+                                2);
+                          }); //}
                         } else {
                           //implementar un msj en gui de espere, deshabilitando el botón de enviar respuesta...
                           print("Espere...");

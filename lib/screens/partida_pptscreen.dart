@@ -22,7 +22,7 @@ TextStyle deshabilitarTxts =
 late Ppt selectedPartidas;
 //para mostrar bolsa del usr
 int? infoUsr = 0;
-int? diverzcoin = 0;
+double? diverzcoin = 0;
 String rrvalue = '';
 String enviomsj = '';
 
@@ -318,7 +318,7 @@ class _PartidaFormState extends State<_PartidaForm> {
                 controller: controller,
                 //4 de 4: controllerText
                 onChanged: (value) {
-                  diverzcoin = int.parse(value);
+                  diverzcoin = double.parse(value);
                 },
                 /*inputFormatters: [
                   FilteringTextInputFormatter.allow(

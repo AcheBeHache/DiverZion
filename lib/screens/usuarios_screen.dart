@@ -174,24 +174,25 @@ class _UsuarioFormState extends State<_UsuarioForm> {
           autovalidateMode: AutovalidateMode.onUserInteraction,
           child: Column(
             children: [
-              /*Agregar campo de última modificación
+              /*Agregar campo de última modificación*/
               const SizedBox(height: 10),
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
-                initialValue: partida.fechainicio,
-                onChanged: (value) => partida.fechainicio = value,
-                validator: (value) {
+                initialValue: usuario.ultActualizacion,
+                onChanged: (value) => usuario.ultActualizacion = value,
+                keyboardType: TextInputType.text,
+                /*validator: (value) {
                   //if (value == null || value.length < 1) {
                   if (value == null || value.isEmpty) {
-                    return 'La fecha de inicio es obligatoria.';
+                    return 'La fecha de actualización es obligatoria.';
                   }
                   //añadí el return null
                   return null;
-                },
+                },*/
                 decoration: InputDecorations.authInputDecoration(
-                    hintText: 'YYYY/MM/DD', labelText: 'Creación:'),
-              ),*/
+                    hintText: 'YYYY/MM/DD', labelText: 'Últ. Modificación:'),
+              ),
               /*const SizedBox(height: 30),
               TextFormField(
                 enabled: false,
@@ -259,6 +260,26 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'Rango del 1 al 99',
                     labelText: 'Poder en juego:'),
+              ),
+              TextFormField(
+                enabled: false,
+                style: deshabilitarTxts,
+                initialValue: '${usuario.bolsaRetenida}',
+                onChanged: (value) {
+                  if (int.tryParse(value) == null) {
+                    //TODO: verificar que el usr tenga poder en su granja
+                    usuario.bolsaRetenida = 0;
+                  } else {
+                    //comenté ésta línea y agregue la de abajo para que desde la gui no permita modificar a BD
+                    //usuario.bolsa = int.parse(value);
+                    //checar tema de que las variables no guarden info entre partidas en bolsa
+                    usuario.bolsaRetenida = usuario.bolsaRetenida;
+                  }
+                },
+                keyboardType: TextInputType.number,
+                decoration: InputDecorations.authInputDecoration(
+                    hintText: 'Rango del 1 al 99',
+                    labelText: 'Bolsa Retenida:'),
               ),
               /*const SizedBox(height: 30),
               TextFormField(

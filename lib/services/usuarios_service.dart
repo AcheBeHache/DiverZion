@@ -1,12 +1,13 @@
+//import 'package:app_game/bloc/peticionesppt_bloc.dart';
+//import 'package:app_game/services/services.dart';
+//import 'package:date_format/date_format.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:app_game/models/models.dart';
-//import 'package:date_format/date_format.dart';
-import 'package:flutter/material.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-//import 'package:app_game/services/services.dart';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-//import 'package:app_game/bloc/peticionesppt_bloc.dart';
 
 class UsuariosService extends ChangeNotifier {
   final String _baseUrl = 'pptgame-d06ee-default-rtdb.firebaseio.com';
@@ -28,6 +29,8 @@ class UsuariosService extends ChangeNotifier {
       email: 'xxxrrvalue',
       masbolsa: 0,
       menosbolsa: 0,
+      bolsaRetenida: 0,
+      ultActualizacion: '00/00/0000 00:00:PM',
       modo: 'xxxtrial',
       padrecodigo: 'xxxDEFAULT',
       status: true);
@@ -101,6 +104,11 @@ class UsuariosService extends ChangeNotifier {
     //únicamente permitimos cambiar dichos campos en la BD
     usuarios[index].avatar = perfil.avatar;
     usuarios[index].apodo = perfil.apodo;
+    //TODO: checar si me guarda la hora correcta
+    usuarios[index].ultActualizacion = formatDate(
+        DateTime.now(), [d, '/', mm, '/', yyyy, ' ', H, ':', m, ':', am]);
+    print(formatDate(
+        DateTime.now(), [d, '/', mm, '/', yyyy, ' ', H, ':', m, ':', am]));
 
     isSaving = false;
     notifyListeners();

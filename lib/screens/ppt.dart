@@ -114,35 +114,37 @@ class _PPTState extends State<PPT> {
 
       controller = StreamController(
         onListen: () async {
-          //await Future<void>.delayed(const Duration(seconds: 1));
-          if (resultado.respoponente == '') {
-            while (
-                resultado.respcreador != '' && resultado.respoponente == '') {
-              //await Future<void>.delayed(const Duration(seconds: 7));
-              await Future.delayed(const Duration(seconds: 7), () async {
-                final List<Ppt> xpartidas = [];
-                //comienza lectura a BD
-                /*isSaving = true;
+          try {
+            //await Future<void>.delayed(const Duration(seconds: 1));
+            if (resultado.respoponente == '') {
+              while (
+                  resultado.respcreador != '' && resultado.respoponente == '') {
+                //await Future<void>.delayed(const Duration(seconds: 7));
+                await Future.delayed(const Duration(seconds: 7), () async {
+                  final List<Ppt> xpartidas = [];
+                  //comienza lectura a BD
+                  /*isSaving = true;
               notifyListeners();*/
-                final url = Uri.https(_baseUrl, 'partidas_ppt.json');
-                final resp = await http.get(url);
-                final Map<String, dynamic> partidasMap = json.decode(resp.body);
+                  final url = Uri.https(_baseUrl, 'partidas_ppt.json');
+                  final resp = await http.get(url);
+                  final Map<String, dynamic> partidasMap =
+                      json.decode(resp.body);
 
-                partidasMap.forEach((key, value) {
-                  final tempPartidas = Ppt.fromMap(value);
-                  //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
-                  tempPartidas.id = key;
-                  xpartidas.add(tempPartidas);
-                });
-                final index = xpartidas
-                    .indexWhere((element) => element.id == resultado.id);
-                resultado.respoponente = xpartidas[index].respoponente;
-                /*print(xpartidas.length);*/
-                //resultado.respoponente = xpartidas[0].respoponente;
-                print('$i : ${resultado.respoponente}');
-                //Comienza bolsa del oponente
+                  partidasMap.forEach((key, value) {
+                    final tempPartidas = Ppt.fromMap(value);
+                    //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
+                    tempPartidas.id = key;
+                    xpartidas.add(tempPartidas);
+                  });
+                  final index = xpartidas
+                      .indexWhere((element) => element.id == resultado.id);
+                  resultado.respoponente = xpartidas[index].respoponente;
+                  /*print(xpartidas.length);*/
+                  //resultado.respoponente = xpartidas[0].respoponente;
+                  print('$i : ${resultado.respoponente}');
+                  //Comienza bolsa del oponente
 
-                /*if (xpartidas[index].usridwin != '' &&
+                  /*if (xpartidas[index].usridwin != '' &&
                     xpartidas[index].usridwin != usuariosLista.email) {
                   final xurl =
                       Uri.https(_baseUrl, 'usuarios/games/${usuariosLista.id}.json');
@@ -156,24 +158,24 @@ class _PPTState extends State<PPT> {
                   print("Modifica bolsa del ganador de la partida");
                 }*/
 
-                //Finaliza bolsa del oponente
-                /*isSaving = false;
+                  //Finaliza bolsa del oponente
+                  /*isSaving = false;
               notifyListeners();*/
-                //termina lectura a BD
-                //if(partidaService.obtenerPartida.respoponente)
-                //bandera = partidaService.obtenerPartida(partida);
-                controller.add(i++);
-                //setState(() {});
-              });
+                  //termina lectura a BD
+                  //if(partidaService.obtenerPartida.respoponente)
+                  //bandera = partidaService.obtenerPartida(partida);
+                  controller.add(i++);
+                  //setState(() {});
+                });
+              }
+              bandera = true;
+              print("2Ya respondió, canijo");
+            } else {
+              print("Ya respondió, canijo");
             }
-            bandera = true;
-            print("2Ya respondió, canijo");
-          } else {
-            print("Ya respondió, canijo");
-          }
 
-          //controller.add("HUgoooo");
-          /*await Future<void>.delayed(const Duration(seconds: 1));
+            //controller.add("HUgoooo");
+            /*await Future<void>.delayed(const Duration(seconds: 1));
         controller.add(2);
         await Future<void>.delayed(const Duration(seconds: 1));
         controller.add(3);
@@ -183,12 +185,15 @@ class _PPTState extends State<PPT> {
         controller.add(5);
         await Future<void>.delayed(const Duration(seconds: 1));
         controller.add(6);*/
-          //micodigo
-          /*await widget.partidaService.saveOrCreatePartida(
+            //micodigo
+            /*await widget.partidaService.saveOrCreatePartida(
             partida, tarjeta, enviousrcreador);*/
-          /*await widget.partidaService
+            /*await widget.partidaService
             .updateTarjeta(partida, tarjeta, enviousrcreador);*/
-          await controller.close();
+            await controller.close();
+          } catch (e) {
+            print('error en stream, esperando respuesta de usr oponente: $e');
+          }
         },
       );
       return controller.stream;
