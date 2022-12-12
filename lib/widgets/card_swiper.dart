@@ -3,6 +3,7 @@
 import 'dart:async';
 
 import 'package:app_game/providers/partida_form_provider.dart';
+import 'package:app_game/screens/partida_pptscreen.dart';
 //import 'package:app_game/screens/partida_pptscreen.dart';
 //import 'package:app_game/services/partidas_services.dart';
 import 'package:app_game/services/services.dart';
@@ -11,6 +12,8 @@ import 'package:flutter/material.dart';
 //import 'package:flutter_card_swipper/flutter_card_swiper.dart';
 import 'package:app_game/models/models.dart';
 import 'package:provider/provider.dart';
+
+//int bandera = 0;
 /*int _counter = 13;
   Timer? _timer;*/
 
@@ -50,6 +53,7 @@ class _CardSwiperState extends State<CardSwiper> {
     //2 de 4
     mostrarusr() async {
       try {
+        print('Entró a mostrar info de usr en screen de card_swiper.dart');
         String? rrvalue = await authService.storage.read(key: 'usremail');
         enviousrcreador = rrvalue!;
         usuario = await usuariosService.obtenerUsuario(enviousrcreador);
@@ -64,7 +68,9 @@ class _CardSwiperState extends State<CardSwiper> {
     }
 
     //3de4 para mostrar usr
-    mostrarusr();
+    if (enviousrcreador == '') {
+      mostrarusr();
+    }
     //final tarjetasProvider = Provider.of<OpcionesPPTProvider>(context);
     /*return ChangeNotifierProvider(
       //create: (_) => PartidaFormProvider(partidaService.selectedPartidas, tarjetasProvider.selectedTarjetas),
@@ -74,7 +80,7 @@ class _CardSwiperState extends State<CardSwiper> {
 
     final partidaForm = Provider.of<PartidaFormProvider>(context);
     final partida = partidaForm.partida;
-
+    //print('status partida 1: ${partida.status}');
     //print(usuariosService.);
     final usuariosLista = usuariosService.usuarios[usuario];
     //print('usuario: ${usuariosLista.email}');
@@ -187,12 +193,14 @@ class _CardSwiperState extends State<CardSwiper> {
                           .apartaPartida(partida, tarjeta, enviousrcreador);
                     }*/
                     //do del oponente
+                    //print('status partida 2: ${partida.status}');
                     if (partida.usridoponente == enviousrcreador) {
                       do {
                         //Future.delayed(const Duration(seconds: 4), () async {
-                        if ((partida.respoponente == null ||
-                                partida.respoponente == '') &&
-                            partida.respcreador != '') {
+                        if (((partida.respoponente == null ||
+                                    partida.respoponente == '') &&
+                                partida.respcreador != '') &&
+                            partida.status == 2) {
                           await widget.partidaService.updateTarjeta(
                               partida,
                               tarjeta,
@@ -212,7 +220,7 @@ class _CardSwiperState extends State<CardSwiper> {
                           }); //}
                         } else {
                           //implementar un msj en gui de espere, deshabilitando el botón de enviar respuesta...
-                          print("Espere...");
+                          print("Espere..., llegastes tarde");
                         }
                         //});
                       } while ((partida.respoponente == '' &&
@@ -223,6 +231,7 @@ class _CardSwiperState extends State<CardSwiper> {
                       //print("se tienen ambas respuestas, redirigiendo---");
                       /*Navigator.pushNamed(context, 'ppt',
                           arguments: [partida, tarjeta]);*/
+                      //bandera = 0;
                       Navigator.pushNamed(context, 'ppt', arguments: partida);
                     });
                   }

@@ -14,7 +14,10 @@ import 'package:app_game/screens/pagina1.dart';
 import 'package:app_game/services/services.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
+
+//int bandera = 0;
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -29,15 +32,16 @@ class _HomeScreen extends State<HomeScreen> {
   //Para poner la primera letra en mayúscula de una palabra
   String get inCaps => '$this[0].toUpperCase()$this.substring(1)';
   String rrvalue = '';
-  int? infoUsr = 0;
+  int? infoUsr;
   double? diverzcoin = 0;
+  String? poderValue;
   List<UsrGame> daUsr = [];
   static const _chars =
       'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
   Random _rnd = Random.secure();
   @override
   Widget build(BuildContext context) {
-    final partidasService = Provider.of<PartidasServices>(context);
+    //final partidasService = Provider.of<PartidasServices>(context);
     final usuariosService = Provider.of<UsuariosService>(context);
     final daUsr = usuariosService.usuarios;
     //creamos código de inv de 5 dígitos, le pondremos aún parte de su email, más abajo
@@ -72,6 +76,8 @@ class _HomeScreen extends State<HomeScreen> {
     //print(perfil.getOndisplayUsuarios);
     //creamos una instancia para utilizar el localstorage, mostrar usr 1de4
     final authService = Provider.of<AuthService>(context, listen: false);
+    //1 de 3: Para guadar id de la bolsa del usuario actual en el storage
+    const storage = FlutterSecureStorage();
 
     /*if (mounted) {
       //String _noDataText;
@@ -83,6 +89,7 @@ class _HomeScreen extends State<HomeScreen> {
       //String? rrvalue = await AuthService().readEmail();
       //String? valor = await authService.storage.read(key: 'usremail');
       try {
+        //bandera = 1;
         rrvalue = (await authService.storage.read(key: 'usremail'))!;
         /*obtenemos el nombre del usuario tomando como referencia su email, lo que va antes del @ con split:
       ${rrvalue!.split('@')[0]}*/
@@ -94,7 +101,14 @@ class _HomeScreen extends State<HomeScreen> {
         //Las siguientes 2 líneas me sirven para obtener info del objeto USRGame para la bolsa
         infoUsr = await usuariosService.obtenerUsuario(rrvalue);
         diverzcoin = daUsr[infoUsr!].bolsa;
+        print('Valor de DiverZcoin: $diverzcoin');
+        //Para no sobreescribir en el dispositivo del usr
+        /*await storage.write(key: 'idBolsa', value: usuarios[index].id);
+        String? bolsaValue = await storage.read(key: 'idBolsa');*/
 
+        //escribo el poder en bolsa del usr:
+        await storage.write(key: 'poderBolsa', value: '$diverzcoin');
+        poderValue = await storage.read(key: 'poderBolsa');
         //ponemos el if mounted para detener el error en el widget en tiempo de ejecución.
         if (mounted) {
           // check whether the state object is in tree
@@ -108,8 +122,39 @@ class _HomeScreen extends State<HomeScreen> {
       }
     }
 
+    visualizaBolsa() async {
+      await Future.delayed(const Duration(seconds: 15), () async {
+        poderValue = await storage.read(key: 'poderBolsa');
+
+        if (mounted) {
+          // check whether the state object is in tree
+          setState(() {
+            // make changes here
+          });
+        }
+      });
+      return poderValue;
+    }
+
     //ejecutamos la función para mostrar usrname, mostrar usr 3de4
-    mostrarusr();
+    if (rrvalue == '' ||
+        enviomsj == '' ||
+        diverzcoin == 0.0 ||
+        infoUsr == null) {
+      mostrarusr();
+    }
+    /*if (poderValue != '') {
+      print('entró al else de diverzcoin');
+
+      if (mounted) {
+        // check whether the state object is in tree
+        setState(() {
+          // make changes here*/
+    visualizaBolsa();
+    /*  });
+      }
+    }*/
+
     /*bolsa() async {
       //Las siguientes 2 líneas me sirven para obtener info del objeto USRGame para la bolsa
       infoUsr = await usuariosService.obtenerUsuario(rrvalue);
@@ -142,6 +187,7 @@ class _HomeScreen extends State<HomeScreen> {
               //Imprimimos para revisar los valores del storage
               //print(await authService.storage.read(key: 'usremail'));
               //print(await authService.storage.read(key: 'idBolsa'));
+              //bandera = 0;
               try {
                 //aquí el código para obtener el index del usr y pintar lo correspondiente a su sesión
                 infoUsr = await usuariosService.obtenerUsuario(rrvalue);
@@ -171,7 +217,7 @@ class _HomeScreen extends State<HomeScreen> {
                 } else {
                   //print('infousr: $infoUsr');
                   //usuariosService.obtenerUsuario(rrvalue);
-
+                  //print('histogramas');
                   usuariosService.selectedUsuarios = UsrGame(
                       id: daUsr[infoUsr!].id,
                       usrId: daUsr[infoUsr!].usrId, //validar
@@ -190,6 +236,7 @@ class _HomeScreen extends State<HomeScreen> {
                       modo: daUsr[infoUsr!].modo,
                       padrecodigo: daUsr[infoUsr!].padrecodigo,
                       status: daUsr[infoUsr!].status);
+                  //setState(() {});
                 }
                 Navigator.pushNamed(context, 'perfil');
                 /*ListView.builder(
@@ -263,7 +310,13 @@ class _HomeScreen extends State<HomeScreen> {
               String? xvalue = await AuthService().readEmail();
               print('xvalue: ' + xvalue);
               print(mostrarusr().toString());
-              authService.logout();*/
+              */
+              rrvalue = '';
+              enviomsj = '';
+              diverzcoin = 0.0;
+              infoUsr = null;
+              authService.logout();
+              //bandera = 0;
               //TODO: authService.storage.deleteAll();
               Navigator.pushReplacementNamed(context, 'login');
             },
@@ -405,7 +458,7 @@ class _HomeScreen extends State<HomeScreen> {
                 style: subtitulosTxt,
               ),
               Text(
-                'DiverZcoin: $diverzcoin',
+                'DiverZcoin: $poderValue',
                 style: subtitulosTxt,
               ),
               DataTable(
@@ -511,9 +564,12 @@ class _HomeScreen extends State<HomeScreen> {
             child: const Icon(Icons.account_balance_rounded),
           ),
           FloatingActionButton(
-            heroTag: "btnColiseo",
-            onPressed: () => {Navigator.push(context, _crearRuta())},
-            tooltip: 'Coliseo',
+            heroTag: "btnGames",
+            onPressed: () {
+              //bandera = 0;
+              Navigator.push(context, _crearRuta());
+            },
+            tooltip: 'Games',
             //child: const Icon(Icons.add_reaction_rounded),
             //child: const Icon(Icons.agriculture_rounded),
             //child: const Icon(Icons.app_shortcut_sharp),

@@ -44,6 +44,8 @@ class PartidasServices extends ChangeNotifier {
 
   //TODO: <List<Partidasppt>>
   Future loadPartidas() async {
+    print(
+        'se cargan partidas desde partidas_services, consulta a Firebase desde partidas_services');
     isLoading = true;
     notifyListeners();
 
@@ -82,12 +84,14 @@ class PartidasServices extends ChangeNotifier {
   Future loadUsuarios() async {
     isLoading = true;
     notifyListeners();
+    print(
+        'se cargan Usuarios desde partidas_services, consulta a Firebase desde partidas_services');
 
     final url = Uri.https(_baseUrl, 'usuarios/games.json');
     final resp = await http.get(url);
 
     final Map<String, dynamic> usuariosMap = json.decode(resp.body);
-
+    usuarios.clear();
     usuariosMap.forEach((key, value) {
       final tempUsuarios = UsrGame.fromMap(value);
       //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
@@ -160,6 +164,8 @@ class PartidasServices extends ChangeNotifier {
       //print("entro al creador");
       await createPartida(partida);
       await updatePartida(partida);
+      print(
+          'se ejecutan 2 consultas a Firebase al crear y actualizar la partida creada desde partidas_services.');
       //3de3-Para poner contexto para navegar entre rutas al editar las cards
       //Navigator.pushNamed(context, 'partidas_ppt');
     } else {
@@ -178,6 +184,7 @@ class PartidasServices extends ChangeNotifier {
   Future<String> createPartida(Ppt partida) async {
     isSaving = true;
     notifyListeners();
+    print('entra a crear partida desde partidas_services');
     final url = Uri.https(_baseUrl, 'partidas_ppt.json');
     final resp = await http.post(url, body: partida.toJson());
     final decodedData = json.decode(resp.body);
@@ -196,6 +203,8 @@ class PartidasServices extends ChangeNotifier {
     final url = Uri.https(_baseUrl, 'partidas_ppt.json');
     final resp = await http.get(url);
     final decodedData = json.decode(resp.body);
+    print(
+        'Consulta a Firebase cuando se obtiene la partida desde partidas_services');
 
     partida.id = decodedData['name'];
     partidas.add(partida);
@@ -235,6 +244,8 @@ class PartidasServices extends ChangeNotifier {
     try {
       isSaving = true;
       notifyListeners();
+      print(
+          'se actualiza tarjeta desde updateTarjeta, 3 consultas a Firebase desde partidas_services');
       //print('4recibe updateTarjeta updateTarjeta: $enviousrcreador');
       print('valor vuelta: $vuelta');
       final url = Uri.https(_baseUrl, 'partidas_ppt/${partida.id}.json');
@@ -411,6 +422,7 @@ class PartidasServices extends ChangeNotifier {
           //TODO: Falta calculo comisión, convertir a double la variable
           usuarios[xindex].comisionbolsa =
               ((usuarios[xindex].comisionbolsa! + bpartidacomision));
+          notifyListeners();
         } else {
           double? bganador = 0.0;
           double? bpartidacomision = 0.0;
@@ -455,6 +467,7 @@ class PartidasServices extends ChangeNotifier {
           xbolsapartida = (partida.montototal).toDouble();
           xbolsapartida = xbolsapartida;
           usuarios[yindex].bolsa = (xbperdedor! - xbolsapartida!);
+          notifyListeners();
         } else {
           double? xbperdedor = 0.0;
           double? xbolsapartida = 0.0;
@@ -559,6 +572,7 @@ class PartidasServices extends ChangeNotifier {
     //final authService = Provider.of<AuthService>(context, listen: false);
     isSaving = true;
     notifyListeners();
+    print('se aparta partida, 1 consulta a Firebase desde partidas_services');
     //print('4recibe updateTarjeta updateTarjeta: $enviousrcreador');
     final url = Uri.https(_baseUrl, 'partidas_ppt/${partida.id}.json');
     final resp = await http.put(url, body: partida.toJson());
@@ -581,6 +595,7 @@ class PartidasServices extends ChangeNotifier {
       //partidas[index].respoponente = 'eleccionoponente';
       partidas[index].usridoponente = enviousrcreador;
       partidas[index].status = 2;
+      notifyListeners();
     } else {
       /*final index =
           partidas.indexWhere((element) => (element.id == partida.id));*/
@@ -646,6 +661,8 @@ class PartidasServices extends ChangeNotifier {
   Future<String> updateUsuario(UsrGame usuario) async {
     isSaving = true;
     notifyListeners();
+    print(
+        'se actualiza info de usr, 1 consulta a Firebase desde partidas_services');
     final url = Uri.https(_baseUrl, 'usuarios/games/${usuario.usrId}.json');
     final resp = await http.put(url, body: usuario.toJson());
     final decodedData = json.decode(resp.body);

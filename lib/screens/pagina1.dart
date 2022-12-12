@@ -13,12 +13,14 @@ class Pagina1 extends StatefulWidget {
 
 class _Pagina1State extends State<Pagina1> {
   String enviomsj = '';
+  String rrvalue = '';
 
   //Para poner la primera letra en mayúscula de una palabra
   String get inCaps => '$this[0].toUpperCase()$this.substring(1)';
 
   @override
   Widget build(BuildContext context) {
+    //int bandera = 0;
     //TextStyle titulosTxt = const TextStyle(fontSize: 27);
     //TextStyle subtitulosTxt = const TextStyle(fontSize: 22);
     //TextStyle numerosTxt = const TextStyle(fontSize: 25);
@@ -33,21 +35,41 @@ class _Pagina1State extends State<Pagina1> {
     mostrarusr() async {
       //String? rrvalue = await AuthService().readEmail();
       //String? valor = await authService.storage.read(key: 'usremail');
-      String? rrvalue = await authService.storage.read(key: 'usremail');
-      /*obtenemos el nombre del usuario tomando como referencia su email, lo que va antes del @ con split:
+      try {
+        //bandera = 1;
+        //do {
+        rrvalue = (await authService.storage.read(key: 'usremail'))!;
+        /*obtenemos el nombre del usuario tomando como referencia su email, lo que va antes del @ con split:
       ${rrvalue!.split('@')[0]}*/
-      /* Obtenemos la primera letra y la convertimos en mayúscula:
+        /* Obtenemos la primera letra y la convertimos en mayúscula:
         ${rrvalue![0].toUpperCase()}${rrvalue.substring(1)}
       */
-      enviomsj =
-          '${rrvalue![0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}';
-      //print(enviomsj);
-      setState(() {});
-      return enviomsj;
+        enviomsj =
+            '\n${rrvalue[0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}';
+        //Las siguientes 2 líneas me sirven para obtener info del objeto USRGame para la bolsa
+        /*infoUsr = await usuariosService.obtenerUsuario(rrvalue);
+          diverzcoin = daUsr[infoUsr!].bolsa;
+          print('Valor de DiverZcoin: $diverzcoin');*/
+        print('entró a mostrar usr');
+        //ponemos el if mounted para detener el error en el widget en tiempo de ejecución.
+        if (mounted) {
+          // check whether the state object is in tree
+          setState(() {
+            // make changes here
+          });
+        }
+        //} while (rrvalue.isEmpty || enviomsj.isEmpty);
+        return enviomsj;
+      } catch (error) {
+        print("???Try-Finally:Function Mostrar usr. $error");
+      }
     }
 
     //ejecutamos la función para mostrar usrname
-    mostrarusr();
+    if (rrvalue == '' || enviomsj == '') {
+      mostrarusr();
+    }
+
     return /*WillPopScope(
       onWillPop: () async {
         //return true; principalmente estaba con éste código comentado
@@ -188,6 +210,7 @@ class _Pagina1State extends State<Pagina1> {
                           ),
                         ),
                         onPressed: () {
+                          //bandera = 0;
                           Navigator.push(context, _crearRuta1());
                         },
                         child: const Text('PPT'))),
@@ -210,6 +233,7 @@ class _Pagina1State extends State<Pagina1> {
                           ),
                         ),
                         onPressed: () {
+                          //bandera = 0;
                           Navigator.push(context, _crearRuta2());
                         },
                         child: const Text('Voladito'))),
@@ -262,6 +286,7 @@ class _Pagina1State extends State<Pagina1> {
                           ),
                         ),
                         onPressed: () {
+                          //bandera = 0;
                           Navigator.push(context, _crearRuta1());
                         },
                         child: const Text('LETRAS'))),
@@ -284,6 +309,7 @@ class _Pagina1State extends State<Pagina1> {
                           ),
                         ),
                         onPressed: () {
+                          //bandera = 0;
                           Navigator.push(context, _crearRuta2());
                         },
                         child: const Text('Dirección'))),
@@ -337,6 +363,7 @@ class _Pagina1State extends State<Pagina1> {
                           ),
                         ),
                         onPressed: () {
+                          //bandera = 0;
                           Navigator.push(context, _crearRuta1());
                         },
                         child: const Text('LISTA'))),
@@ -359,6 +386,7 @@ class _Pagina1State extends State<Pagina1> {
                           ),
                         ),
                         onPressed: () {
+                          //bandera = 0;
                           Navigator.push(context, _crearRuta2());
                         },
                         child: const Text('Elementos'))),
@@ -413,6 +441,7 @@ class _Pagina1State extends State<Pagina1> {
                           ),
                         ),
                         onPressed: () {
+                          //bandera = 0;
                           Navigator.push(context, _crearRuta1());
                         },
                         child: const Text('RAYUELA'))),
@@ -435,6 +464,7 @@ class _Pagina1State extends State<Pagina1> {
                           ),
                         ),
                         onPressed: () {
+                          //bandera = 0;
                           Navigator.push(context, _crearRuta2());
                         },
                         child: const Text('Carreras'))),

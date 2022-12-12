@@ -18,7 +18,7 @@ class AuthService extends ChangeNotifier {
       'password': password,
       'returnSecureToken': true
     };
-
+    print('consulta a firebase al crear usuario desde auth_service.dart');
     final url =
         Uri.https(_baseUrl, '/v1/accounts:signUp', {'key': _firebaseToken});
 
@@ -55,7 +55,7 @@ class AuthService extends ChangeNotifier {
 
     final resp = await http.post(url, body: json.encode(authData));
     final Map<String, dynamic> decodedResp = json.decode(resp.body);
-
+    print('consulta a firebase para loggearse desde auth_service.dart');
     if (decodedResp.containsKey('idToken')) {
       // Token hay que guardarlo en un lugar seguro
       // decodedResp['idToken'];
@@ -71,10 +71,13 @@ class AuthService extends ChangeNotifier {
   }
 
   Future logout() async {
+    print('se ejecuta LOGOUT, se destruyen variables en el storage');
     await storage.delete(key: 'token');
     //agregué los siguientes 2 deletes
     await storage.delete(key: 'usremail');
     await storage.delete(key: 'idBolsa');
+    await storage.delete(key: 'poderBolsa');
+    //TODO: VER SI ES NECESARIO DESTRUIR VALORES DE LAS LISTAS QUE TENGAMOS, ej: la de loadUsuarios en usuarios_service.dart para permitir viauslizar los nuevos.
     return;
   }
 

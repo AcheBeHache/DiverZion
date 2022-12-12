@@ -71,7 +71,7 @@ class _LoginFormState extends State<_LoginForm> {
             autocorrect: false,
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecorations.authInputDecoration(
-                hintText: 'xemail@gmail.com',
+                hintText: 'email@gmail.com',
                 labelText: 'Correo electrónico',
                 prefixIcon: Icons.alternate_email_rounded),
             onChanged: (value) => loginForm.email = value,

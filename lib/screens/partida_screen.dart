@@ -13,12 +13,14 @@ import 'package:app_game/providers/partida_form_provider.dart';
 import 'package:app_game/services/services.dart';
 //import 'package:app_game/ui/input_decorations.dart';
 import 'package:app_game/widgets/card_swiper.dart';
-import 'package:card_swiper/card_swiper.dart';
+//import 'package:card_swiper/card_swiper.dart';
 //import 'package:app_game/widgets/widgets.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
+//import 'package:flutter/widgets.dart';
 //import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
+
+int bandera = 0;
 
 //color textos deshabilitados
 TextStyle deshabilitarTxts =
@@ -69,7 +71,7 @@ class _PartidaScreenBody extends StatefulWidget {
 class _PartidaScreenBodyState extends State<_PartidaScreenBody> {
   @override
   Widget build(BuildContext context) {
-    final partidaForm = Provider.of<PartidaFormProvider>(context);
+    //final partidaForm = Provider.of<PartidaFormProvider>(context);
 
     //final tarjetasProvider = Provider.of<OpcionesPPTProvider>(context);
     //final partida = partidaForm.partida;
@@ -205,7 +207,8 @@ class _PartidaFormState extends State<_PartidaForm> {
             if (_counter > 0) {
               _counter--;
             } else {
-              print('ejecuto función');
+              print(
+                  'ejecuto función al finalizar cronómetro, DETENERLA CUANDO NO ESTÉ EN SCREEN');
               //asignarle un valor ramdom a tarjeta elejida porque detecta variable nula
               //agregué libreria del screen card_swiper, crear los objetos para ver si así sí ejecuta la función con datos duros.
               /*CardSwiper(
@@ -215,6 +218,7 @@ class _PartidaFormState extends State<_PartidaForm> {
               ).partidaService.updateTarjeta(partida,
                             tarjeta, 'x@gm.cm', '-NGLgXmPFTE-8ONMTksB', usuariosLista);*/ //partida, tarjeta, enviousrcreador, idBolsaS, usuariosLista
               _counter = 13;
+              bandera = 1;
               _timer?.cancel();
             }
           });
@@ -223,7 +227,9 @@ class _PartidaFormState extends State<_PartidaForm> {
     }
 
     //Termina funciones del cronómetro
-    _startTimer();
+    if (bandera == 0) {
+      _startTimer();
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Container(
@@ -452,7 +458,6 @@ class _PartidaFormState extends State<_PartidaForm> {
               /*const SizedBox(height: 30),
               SwitchListTile.adaptive(
                   //NO APLICA - enabled: false,
-                  //TODO: falta habilitar el timeReal del modo
                   value: partida.modojuego,
                   //title: Text('Modo: ${partida.modojuego}'),
                   title: const Text('Activar modo automático:'),

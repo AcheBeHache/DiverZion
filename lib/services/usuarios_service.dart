@@ -38,21 +38,29 @@ class UsuariosService extends ChangeNotifier {
   bool isLoading = true;
   bool isSaving = false;
   UsuariosService() {
-    loadUsuarios();
+    if (usuarios.isNotEmpty) {
+      //usuarios.clear();
+      loadUsuarios();
+    } else {
+      //usuarios.clear();
+      loadUsuarios();
+    }
   }
   Future loadUsuarios() async {
     isLoading = true;
+    //usuarios.clear();
     notifyListeners();
-
+    print('se cargan usuarios desde usuarios_Services, 1 consulta get');
     final url = Uri.https(_baseUrl, 'usuarios/games.json');
     final resp = await http.get(url);
 
     final Map<String, dynamic> usuariosMap = json.decode(resp.body);
-
+    usuarios.clear();
     usuariosMap.forEach((key, value) {
       final tempUsuarios = UsrGame.fromMap(value);
       //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
       tempUsuarios.id = key;
+
       usuarios.add(tempUsuarios);
     });
     //print(usuarios[1].email);
@@ -72,9 +80,11 @@ class UsuariosService extends ChangeNotifier {
       //print("entro al creador");
       //await createPartida(partida);
       await updateUsuario(perfil);
+      print('se updateUsuario, 1 consulta a Firebase desde usuarios_services');
       //3de3-Para poner contexto para navegar entre rutas al editar las cards
       //Navigator.pushNamed(context, 'partidas_ppt');
     } else {
+      //TODO: posiblemente aqui aplique el loadUsuarios
       // Actualizar
       //await updatePartida(partida);
       //print('3Recibe el await de saveorcreatepartida: $enviousrcreador');
@@ -101,6 +111,8 @@ class UsuariosService extends ChangeNotifier {
     final decodedData = json.decode(resp.body);
     //TODO: Actualizar el listado de productos
     final index = usuarios.indexWhere((element) => element.id == perfil.id);
+    print(
+        'entra a actualizar usuario desde usuarios_services, ya considerada anteriormente desde que se invoca la funcion.');
     //únicamente permitimos cambiar dichos campos en la BD
     usuarios[index].avatar = perfil.avatar;
     usuarios[index].apodo = perfil.apodo;
@@ -127,7 +139,8 @@ class UsuariosService extends ChangeNotifier {
 
     isSaving = true;
     notifyListeners();
-
+    print(
+        'entra a actualizar img a cloudinary desde usuarios_services, 1 solicitud.');
     final url = Uri.parse(
         'https://api.cloudinary.com/v1_1/dqtjgerwt/image/upload?upload_preset=wjh87pn9');
 
@@ -161,11 +174,18 @@ class UsuariosService extends ChangeNotifier {
     /*isSaving = true;
     notifyListeners();*/
     try {
-      final url = Uri.https(_baseUrl, 'usuarios/games.json');
+      //usuarios.clear();
+      /*final url = Uri.https(_baseUrl, 'usuarios/games.json');
       final resp = await http.get(url);
-      final decodedData = json.decode(resp.body);
+      final decodedData = json.decode(resp.body);*/
+      if (usuarios == []) {
+        loadUsuarios();
+      }
+
+      print('entra a obtenerUsuario desde usuarios_services, 1 solicitud.');
 
       final index = usuarios.indexWhere((element) => element.email == rrvalor);
+      print('usrs Treal: $usuarios');
       if (index == -1 || index == null) {
         print('crearle tarjeta');
         //await storage.write(key: 'idBolsa', value: decodedData['name']);
@@ -177,13 +197,21 @@ class UsuariosService extends ChangeNotifier {
         //print('info usuarios[index]: ${usuarios[index].email}');
         //usuarios[index] = usuarios[index];
         //print('usuarios retornados: ${usuarios[index]}');
+        print(
+            'Escribo en localstorage el idBolsa del usr y el poder en bolsa. Al obtener usr');
 
         //TODO: crearle la validación de que si es el email de firebase igual al del email del Storage se ejecuta la siguente línea sino no.
         //Para no sobreescribir en el dispositivo del usr
         await storage.write(key: 'idBolsa', value: usuarios[index].id);
         String? bolsaValue = await storage.read(key: 'idBolsa');
+
+        //escribo el poder en bolsa del usr:
+        await storage.write(
+            key: 'poderBolsa', value: usuarios[index].bolsa.toString());
+        String? poderValue = await storage.read(key: 'poderBolsa');
         //Todo: Descomentar este print para optimizar la app
-        //print('idBolsa al obtener usr: $bolsaValue');
+        print(
+            'idBolsa al obtener usr: $bolsaValue, poder: $poderValue desde usuarios_service.');
 
         return index;
       }
@@ -207,6 +235,8 @@ class UsuariosService extends ChangeNotifier {
     final url = Uri.https(_baseUrl, 'usuarios/games.json');
     final resp = await http.post(url, body: usr.toJson());
     final decodedData = json.decode(resp.body);
+    print(
+        '1 consulta a firebase desde usuarios_service al crearUsuario, también escribo el idbolsa y poder al crear usuario');
 
     usr.id = decodedData['name'];
     usuarios.add(usr);
@@ -218,7 +248,10 @@ class UsuariosService extends ChangeNotifier {
     await storage.write(key: 'idBolsa', value: decodedData['name]);*/
     //3 de 3: imprimimos valor de variable del storage
     String? idBolsa = await storage.read(key: 'idBolsa');
-    //print('idBolsa al crear usr: $idBolsa');
+    await storage.write(key: 'poderBolsa', value: usr.bolsa.toString());
+    String? poderValue = await storage.read(key: 'poderBolsa');
+    print(
+        'idBolsa al crear usr: $idBolsa, poder: $poderValue desde usuarios_service.dart');
     isSaving = false;
     notifyListeners();
     return usr.id!;

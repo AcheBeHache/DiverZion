@@ -76,11 +76,11 @@ class _PPTState extends State<PPT> {
   }
 
   //Funciones del cronómetro
-  int _counter = 10;
+  int _counter = 13;
   Timer? _timer;
 
   void _startTimer() {
-    _counter = 10;
+    _counter = 13;
     if (_timer != null) {
       _timer?.cancel();
     }
@@ -107,20 +107,23 @@ class _PPTState extends State<PPT> {
 
     //StreamBuilder
     int i = 0;
-    bool bandera = false;
+    bool xbandera = false;
     final Stream _resultados = (() {
       late final StreamController controller;
       //final partidaService = Provider.of<PartidasServices>(context);
-
+      int contadorStream = 0;
       controller = StreamController(
         onListen: () async {
           try {
             //await Future<void>.delayed(const Duration(seconds: 1));
             if (resultado.respoponente == '') {
-              while (
-                  resultado.respcreador != '' && resultado.respoponente == '') {
+              while ((resultado.respcreador != '' &&
+                      resultado.respoponente == '') ||
+                  contadorStream <= 60) {
                 //await Future<void>.delayed(const Duration(seconds: 7));
-                await Future.delayed(const Duration(seconds: 7), () async {
+                contadorStream = contadorStream + 20;
+                await Future.delayed(const Duration(seconds: 20), () async {
+                  print(contadorStream);
                   final List<Ppt> xpartidas = [];
                   //comienza lectura a BD
                   /*isSaving = true;
@@ -168,10 +171,15 @@ class _PPTState extends State<PPT> {
                   //setState(() {});
                 });
               }
-              bandera = true;
-              print("2Ya respondió, canijo");
+              //contadorStream = 0;
+              xbandera = true;
+              //await controller.close();
+              print(
+                  "Ya respondió, o simplemente finalizó el tiempo del stream para no ejecutarse.");
             } else {
-              print("Ya respondió, canijo");
+              controller.add(i++);
+              print(
+                  "Excepción, ya no esperamos la respOponente por que ya se tiene en BD o terminó el tiempo de ejecución del while.");
             }
 
             //controller.add("HUgoooo");
@@ -319,7 +327,7 @@ class _PPTState extends State<PPT> {
                                 Padding(
                                   padding: const EdgeInsets.only(top: 16),
                                   child: Text(
-                                      'Esperando respuestas de ambos jugadores... $bandera'),
+                                      'Esperando respuestas de ambos jugadores... $xbandera'),
                                 ),
                               ];
                               break;
@@ -336,7 +344,7 @@ class _PPTState extends State<PPT> {
                                   padding: const EdgeInsets.only(top: 16),
                                   //mostrar segundos para leer respuesta de ambos contrincantes.
                                   //En teoría debería ser el mismo tiempo.
-                                  child: Text('\$${snapshot.data} $bandera'),
+                                  child: Text('\$${snapshot.data} $xbandera'),
                                 ),
                                 Text(
                                   '\nMuestra fichas de usuarios. \n',

@@ -14,6 +14,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
+//int bandera = 0;
 //color textos deshabilitados
 TextStyle deshabilitarTxts =
     const TextStyle(fontSize: 13, color: Color.fromARGB(255, 228, 226, 226));
@@ -162,8 +163,12 @@ class _PartidaFormState extends State<_PartidaForm> {
     final daUsr = usuariosService.usuarios;
     //Para consultar el localstorage
     final authService = Provider.of<AuthService>(context, listen: false);
+    //bandera = 0;
     mostrarBolsa() async {
       try {
+        //bandera = 1;
+        print(
+            'Entró a mostrar info de usr en screen de partida_pptscreen.dart');
         rrvalue = (await authService.storage.read(key: 'usremail'))!;
         /*obtenemos el nombre del usuario tomando como referencia su email, lo que va antes del @ con split:
       ${rrvalue!.split('@')[0]}*/
@@ -172,6 +177,7 @@ class _PartidaFormState extends State<_PartidaForm> {
       */
         enviomsj =
             '\n${rrvalue[0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}';
+        //TODO: Quitar el monto aquí. Respaldar funcionalidad del controllerText, de preferencia obtener el valor del localstorage
         infoUsr = await usuariosService.obtenerUsuario(rrvalue);
         diverzcoin = daUsr[infoUsr!].bolsa;
         //2 de 4: controllerText
@@ -189,8 +195,9 @@ class _PartidaFormState extends State<_PartidaForm> {
       }
     }
 
-    mostrarBolsa();
-
+    if (controller.text == '' || controller.text == '0') {
+      mostrarBolsa();
+    }
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 10),
       child: Container(
