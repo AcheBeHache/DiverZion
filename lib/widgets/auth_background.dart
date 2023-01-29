@@ -38,8 +38,8 @@ class _HeaderIconLoginState extends State<_HeaderIconLogin> {
     return SafeArea(
       child: Container(
         width: double.infinity,
-        margin: const EdgeInsets.only(top: 30),
-        child: const Icon(Icons.person_pin, color: Colors.white, size: 100),
+        margin: const EdgeInsets.only(top: 60),
+        child: const Icon(Icons.person_pin, color: Colors.white, size: 130),
       ),
     );
   }
@@ -56,7 +56,8 @@ class _AmberBoxState extends State<_AmberBox> {
     final size = MediaQuery.of(context).size;
     return Container(
       width: double.infinity,
-      height: size.height * 0.4,
+      //height: size.height * 0.4,
+      height: size.height,
       decoration: amberDecoration(),
       child: Stack(
         children: [
@@ -71,10 +72,17 @@ class _AmberBoxState extends State<_AmberBox> {
   }
 
   BoxDecoration amberDecoration() => const BoxDecoration(
-          gradient: LinearGradient(colors: [
-        Color.fromRGBO(63, 63, 156, 1),
-        Color.fromRGBO(90, 70, 178, 1)
-      ]));
+          gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              stops: [
+            0.4,
+            0.9
+          ],
+              colors: [
+            Color.fromRGBO(192, 115, 237, 1),
+            Color.fromRGBO(56, 177, 234, 1)
+          ]));
 }
 
 class _Bubble extends StatefulWidget {

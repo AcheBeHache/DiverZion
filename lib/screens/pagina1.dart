@@ -1,5 +1,6 @@
 import 'package:app_game/screens/partidas_ppt.dart';
 import 'package:app_game/services/auth_service.dart';
+import 'package:app_game/services/services.dart';
 import 'package:flutter/material.dart';
 //import 'package:transicion_app/pages/pagina2_page.dart';
 //import 'package:app_game/screens/ppt.dart';
@@ -16,7 +17,7 @@ class _Pagina1State extends State<Pagina1> {
   String rrvalue = '';
 
   //Para poner la primera letra en mayúscula de una palabra
-  String get inCaps => '$this[0].toUpperCase()$this.substring(1)';
+  //String get inCaps => '$this[0].toUpperCase()$this.substring(1)';
 
   @override
   Widget build(BuildContext context) {
@@ -24,7 +25,8 @@ class _Pagina1State extends State<Pagina1> {
     //TextStyle titulosTxt = const TextStyle(fontSize: 27);
     //TextStyle subtitulosTxt = const TextStyle(fontSize: 22);
     //TextStyle numerosTxt = const TextStyle(fontSize: 25);
-    TextStyle parrafosTxt = const TextStyle(fontSize: 17);
+    TextStyle parrafosTxt =
+        const TextStyle(fontSize: 17, color: Color.fromRGBO(0, 38, 76, 1));
     //estilos para aplicar al nombre de usr
     //aplicamos estilos al nombre de usr
     final Shader linearGradient = const LinearGradient(
@@ -61,7 +63,7 @@ class _Pagina1State extends State<Pagina1> {
         //} while (rrvalue.isEmpty || enviomsj.isEmpty);
         return enviomsj;
       } catch (error) {
-        print("???Try-Finally:Function Mostrar usr. $error");
+        print("Excepción en función Mostrar usr, desde Pagina1.dart. $error");
       }
     }
 
@@ -81,7 +83,7 @@ class _Pagina1State extends State<Pagina1> {
       appBar: AppBar(
         title: const Text('Regresa a tu almacén'),
       ),
-      backgroundColor: Colors.red.shade100,
+      backgroundColor: const Color.fromRGBO(251, 160, 254, 1),
       body: SingleChildScrollView(
         child: Center(
           //TODO incluir en el registro el ávatar del usr
@@ -92,31 +94,27 @@ class _Pagina1State extends State<Pagina1> {
                 textAlign: TextAlign.center,
                 text: TextSpan(
                   text: '\n',
-                  style: TextStyle(
-                    fontSize: 25,
-                    foreground: Paint()
-                      ..style = PaintingStyle.stroke
-                      ..strokeWidth = 1
-                      ..color = Colors.black87,
-                  ),
+                  style: GoogleFonts.montserrat(
+                      /*textStyle: const TextStyle(
+                          color: Colors.blue, letterSpacing: .5),*/
+                      color: const Color.fromRGBO(0, 38, 76, 1),
+                      fontSize: 14.5),
                   children: <TextSpan>[
                     TextSpan(
                         text: enviomsj,
                         //style: const TextStyle(fontSize: 27, color: Colors.black45),
                         style: TextStyle(
-                            fontSize: 23,
+                            fontSize: 27.0,
                             fontWeight: FontWeight.bold,
                             foreground: Paint()..shader = linearGradient)),
                     TextSpan(
                         //establecemos variable para mostrar el msj del usr, mostrar usr 4de4
                         text: ', \nelige un momento:',
-                        style: TextStyle(
-                          fontSize: 25,
-                          foreground: Paint()
-                            ..style = PaintingStyle.stroke
-                            ..strokeWidth = 1
-                            ..color = Colors.black87,
-                        )),
+                        style: GoogleFonts.montserrat(
+                            /*textStyle: const TextStyle(
+                                color: Colors.blue, letterSpacing: .5),*/
+                            color: const Color.fromRGBO(0, 38, 76, 1),
+                            fontSize: 27.5)),
                   ],
                 ),
               ),
@@ -138,9 +136,9 @@ class _Pagina1State extends State<Pagina1> {
                 sortColumnIndex: 1,
                 sortAscending: false,
                 headingRowColor: MaterialStateColor.resolveWith(
-                    (states) => Colors.red.shade200),
+                    (states) => const Color.fromRGBO(137, 25, 161, 0.5)),
                 dataRowColor: MaterialStateColor.resolveWith(
-                    (states) => Colors.deepOrange.shade50),
+                    (states) => const Color.fromRGBO(137, 25, 161, 0.2)),
                 /*border: TableBorder.all(width: 5.0, color: Colors.red.shade200),*/
                 //border: TableBorder.all(borderRadius: BorderRadius.zero),
                 //showBottomBorder: true,
@@ -154,56 +152,66 @@ class _Pagina1State extends State<Pagina1> {
                   ),*/
                 columns: const [
                   DataColumn(
-                      label: Text("Elije tu \nfortaleza",
-                          textAlign: TextAlign.center)),
+                    label: Text(
+                      "Elije tu \nfortaleza",
+                      style: TextStyle(
+                          fontSize: 15, color: Color.fromRGBO(0, 38, 76, 1)),
+                    ),
+                  ),
                   DataColumn(
-                      label: Text("y adquiere \npoder.",
-                          textAlign: TextAlign.center)),
+                      label: Text(
+                    "y adquiere \npoder.",
+                    style: TextStyle(
+                        fontSize: 15, color: Color.fromRGBO(0, 38, 76, 1)),
+                  )),
                 ],
                 rows: [
                   DataRow(selected: true, cells: [
                     DataCell(Container(
+                      /*width: 75.0,
+                      height: 150.0,*/
                       padding: const EdgeInsets.all(8.0),
-                      color: Colors.teal.shade700,
+                      //color: Colors.indigo.shade400,
                       alignment: Alignment.center,
                       foregroundDecoration: const BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage("assets/images/ppt1.JPG"),
+                          //scale: 2.5,
+                          image: AssetImage("assets/images/pptcomida.png"),
                           centerSlice:
-                              Rect.fromLTRB(270.0, 180.0, 1360.0, 730.0),
+                              Rect.fromLTRB(270.0, 80.0, 1360.0, 730.0),
                         ),
                       ),
                       transform: Matrix4.rotationZ(0.0),
                     )),
                     DataCell(Container(
                       padding: const EdgeInsets.all(8.0),
-                      color: Colors.teal.shade700,
+                      color: const Color.fromRGBO(0, 38, 76, 1),
                       alignment: Alignment.center,
                       foregroundDecoration: const BoxDecoration(
                         image: DecorationImage(
-                          image: NetworkImage(
-                              "https://echaloasuerte.com/_next/static/media/coin_og_image.c103683a.png"),
+                          image: AssetImage("assets/images/conejovolado.png"),
+                          opacity: 0.2,
                           centerSlice:
                               Rect.fromLTRB(270.0, 180.0, 1360.0, 730.0),
                         ),
                       ),
-                      transform: Matrix4.rotationZ(0.0),
+                      transform: Matrix4.rotationZ(0.30),
                     )),
                   ]),
                   DataRow(selected: true, cells: [
                     DataCell(TextButton(
                         style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.blue),
+                          foregroundColor: MaterialStateProperty.all<Color>(
+                              Colors.amber.shade300),
                           overlayColor:
                               MaterialStateProperty.resolveWith<Color?>(
                             (Set<MaterialState> states) {
                               if (states.contains(MaterialState.hovered)) {
-                                return Colors.blue.withOpacity(0.04);
+                                return Colors.amber.shade400.withOpacity(0.04);
                               }
                               if (states.contains(MaterialState.focused) ||
                                   states.contains(MaterialState.pressed)) {
-                                return Colors.blue.withOpacity(0.12);
+                                return Colors.amber.shade400.withOpacity(0.12);
                               }
                               return null; // Defer to the widget's default.
                             },
@@ -213,20 +221,23 @@ class _Pagina1State extends State<Pagina1> {
                           //bandera = 0;
                           Navigator.push(context, _crearRuta1());
                         },
-                        child: const Text('PPT'))),
+                        child: const Text(
+                          'PPT',
+                          style: TextStyle(fontWeight: FontWeight.bold),
+                        ))),
                     DataCell(TextButton(
                         style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.blue),
+                          foregroundColor: MaterialStateProperty.all<Color>(
+                              const Color.fromRGBO(137, 25, 161, 0.5)),
                           overlayColor:
                               MaterialStateProperty.resolveWith<Color?>(
                             (Set<MaterialState> states) {
                               if (states.contains(MaterialState.hovered)) {
-                                return Colors.blue.withOpacity(0.04);
+                                return Colors.amber.shade400.withOpacity(0.04);
                               }
                               if (states.contains(MaterialState.focused) ||
                                   states.contains(MaterialState.pressed)) {
-                                return Colors.blue.withOpacity(0.12);
+                                return Colors.amber.shade400.withOpacity(0.12);
                               }
                               return null; // Defer to the widget's default.
                             },
@@ -234,52 +245,55 @@ class _Pagina1State extends State<Pagina1> {
                         ),
                         onPressed: () {
                           //bandera = 0;
-                          Navigator.push(context, _crearRuta2());
+                          //Navigator.push(context, _crearRuta2());
+                          NotificationsService.showSnackbar('Próximanente...');
                         },
                         child: const Text('Voladito'))),
                   ]),
                   DataRow(selected: true, cells: [
                     DataCell(Container(
                       padding: const EdgeInsets.all(8.0),
-                      color: Colors.pink[200],
+                      color: const Color.fromRGBO(0, 38, 76, 1),
                       alignment: Alignment.center,
                       foregroundDecoration: const BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage("assets/images/abc.png"),
+                          opacity: 0.2,
                           centerSlice:
                               Rect.fromLTRB(270.0, 180.0, 1360.0, 730.0),
                         ),
                       ),
-                      transform: Matrix4.rotationZ(0.0),
+                      transform: Matrix4.rotationZ(0.30),
                     )),
                     DataCell(Container(
                       padding: const EdgeInsets.all(8.0),
-                      color: Colors.brown[200],
+                      color: const Color.fromRGBO(0, 38, 76, 1),
                       alignment: Alignment.center,
                       foregroundDecoration: const BoxDecoration(
                         image: DecorationImage(
                           image: AssetImage("assets/images/flecha.png"),
+                          opacity: 0.2,
                           centerSlice:
                               Rect.fromLTRB(270.0, 180.0, 1360.0, 730.0),
                         ),
                       ),
-                      transform: Matrix4.rotationZ(0.0),
+                      transform: Matrix4.rotationZ(0.30),
                     )),
                   ]),
                   DataRow(selected: true, cells: [
                     DataCell(TextButton(
                         style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.blue),
+                          foregroundColor: MaterialStateProperty.all<Color>(
+                              const Color.fromRGBO(137, 25, 161, 0.5)),
                           overlayColor:
                               MaterialStateProperty.resolveWith<Color?>(
                             (Set<MaterialState> states) {
                               if (states.contains(MaterialState.hovered)) {
-                                return Colors.blue.withOpacity(0.04);
+                                return Colors.amber.shade400.withOpacity(0.04);
                               }
                               if (states.contains(MaterialState.focused) ||
                                   states.contains(MaterialState.pressed)) {
-                                return Colors.blue.withOpacity(0.12);
+                                return Colors.amber.shade400.withOpacity(0.12);
                               }
                               return null; // Defer to the widget's default.
                             },
@@ -287,22 +301,24 @@ class _Pagina1State extends State<Pagina1> {
                         ),
                         onPressed: () {
                           //bandera = 0;
-                          Navigator.push(context, _crearRuta1());
+                          //Navigator.push(context, _crearRuta1());
+                          NotificationsService.showSnackbar(
+                              'Módulo en desarrollo, inténtalo más tarde...');
                         },
-                        child: const Text('LETRAS'))),
+                        child: const Text('Letras'))),
                     DataCell(TextButton(
                         style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.blue),
+                          foregroundColor: MaterialStateProperty.all<Color>(
+                              const Color.fromRGBO(137, 25, 161, 0.5)),
                           overlayColor:
                               MaterialStateProperty.resolveWith<Color?>(
                             (Set<MaterialState> states) {
                               if (states.contains(MaterialState.hovered)) {
-                                return Colors.blue.withOpacity(0.04);
+                                return Colors.amber.shade400.withOpacity(0.04);
                               }
                               if (states.contains(MaterialState.focused) ||
                                   states.contains(MaterialState.pressed)) {
-                                return Colors.blue.withOpacity(0.12);
+                                return Colors.amber.shade400.withOpacity(0.12);
                               }
                               return null; // Defer to the widget's default.
                             },
@@ -310,53 +326,56 @@ class _Pagina1State extends State<Pagina1> {
                         ),
                         onPressed: () {
                           //bandera = 0;
-                          Navigator.push(context, _crearRuta2());
+                          //Navigator.push(context, _crearRuta2());
+                          NotificationsService.showSnackbar(
+                              'No disponible, por el momento...');
                         },
                         child: const Text('Dirección'))),
                   ]),
                   DataRow(selected: true, cells: [
                     DataCell(Container(
                       padding: const EdgeInsets.all(8.0),
-                      color: Colors.teal.shade700,
+                      color: const Color.fromRGBO(0, 38, 76, 1),
                       alignment: Alignment.center,
                       foregroundDecoration: const BoxDecoration(
                         image: DecorationImage(
-                          image: AssetImage("assets/images/lista.png"),
+                          image: AssetImage("assets/images/listaelementos.png"),
+                          opacity: 0.2,
                           centerSlice:
                               Rect.fromLTRB(270.0, 180.0, 1360.0, 730.0),
                         ),
                       ),
-                      transform: Matrix4.rotationZ(0.0),
+                      transform: Matrix4.rotationZ(0.30),
                     )),
                     DataCell(Container(
                       padding: const EdgeInsets.all(8.0),
-                      color: Colors.teal.shade700,
+                      color: const Color.fromRGBO(0, 38, 76, 1),
                       alignment: Alignment.center,
                       foregroundDecoration: const BoxDecoration(
                         image: DecorationImage(
-                          image: NetworkImage(
-                              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS-BFwOsrVwxQo73FuiwQy-u92JYeId2DA97Kw19_2Z_hHFyEEZtR29UzPHz3UpDqTKL4k&usqp=CAU"),
+                          image: AssetImage("assets/images/xlista.png"),
+                          opacity: 0.3,
                           centerSlice:
                               Rect.fromLTRB(270.0, 180.0, 1360.0, 730.0),
                         ),
                       ),
-                      transform: Matrix4.rotationZ(0.0),
+                      transform: Matrix4.rotationZ(0.30),
                     )),
                   ]),
                   DataRow(selected: true, cells: [
                     DataCell(TextButton(
                         style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.blue),
+                          foregroundColor: MaterialStateProperty.all<Color>(
+                              const Color.fromRGBO(137, 25, 161, 0.5)),
                           overlayColor:
                               MaterialStateProperty.resolveWith<Color?>(
                             (Set<MaterialState> states) {
                               if (states.contains(MaterialState.hovered)) {
-                                return Colors.blue.withOpacity(0.04);
+                                return Colors.amber.shade400.withOpacity(0.04);
                               }
                               if (states.contains(MaterialState.focused) ||
                                   states.contains(MaterialState.pressed)) {
-                                return Colors.blue.withOpacity(0.12);
+                                return Colors.amber.shade400.withOpacity(0.12);
                               }
                               return null; // Defer to the widget's default.
                             },
@@ -364,22 +383,24 @@ class _Pagina1State extends State<Pagina1> {
                         ),
                         onPressed: () {
                           //bandera = 0;
-                          Navigator.push(context, _crearRuta1());
+                          //Navigator.push(context, _crearRuta1());
+                          NotificationsService.showSnackbar(
+                              'Intenta más tarde...');
                         },
-                        child: const Text('LISTA'))),
+                        child: const Text('Lista'))),
                     DataCell(TextButton(
                         style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.blue),
+                          foregroundColor: MaterialStateProperty.all<Color>(
+                              const Color.fromRGBO(137, 25, 161, 0.5)),
                           overlayColor:
                               MaterialStateProperty.resolveWith<Color?>(
                             (Set<MaterialState> states) {
                               if (states.contains(MaterialState.hovered)) {
-                                return Colors.blue.withOpacity(0.04);
+                                return Colors.amber.shade400.withOpacity(0.04);
                               }
                               if (states.contains(MaterialState.focused) ||
                                   states.contains(MaterialState.pressed)) {
-                                return Colors.blue.withOpacity(0.12);
+                                return Colors.amber.shade400.withOpacity(0.12);
                               }
                               return null; // Defer to the widget's default.
                             },
@@ -387,54 +408,56 @@ class _Pagina1State extends State<Pagina1> {
                         ),
                         onPressed: () {
                           //bandera = 0;
-                          Navigator.push(context, _crearRuta2());
+                          //Navigator.push(context, _crearRuta2());
+                          NotificationsService.showSnackbar(
+                              'Opción no activa...');
                         },
                         child: const Text('Elementos'))),
                   ]),
                   DataRow(selected: true, cells: [
                     DataCell(Container(
                       padding: const EdgeInsets.all(8.0),
-                      color: Colors.teal.shade700,
+                      color: const Color.fromRGBO(0, 38, 76, 1),
                       alignment: Alignment.center,
                       foregroundDecoration: const BoxDecoration(
                         image: DecorationImage(
-                          image: NetworkImage(
-                              "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ2RsfDypuUVYzZs5OTWjvR8MkJmRKwj7wOTFbVCDwgxTIe54lbPtenbPKKLGdKZ40F-Bk&usqp=CAU"),
+                          image: AssetImage("assets/images/rayuela.png"),
+                          opacity: 0.2,
                           centerSlice:
                               Rect.fromLTRB(270.0, 180.0, 1360.0, 730.0),
                         ),
                       ),
-                      transform: Matrix4.rotationZ(0.0),
+                      transform: Matrix4.rotationZ(0.30),
                     )),
                     DataCell(Container(
                       padding: const EdgeInsets.all(8.0),
-                      color: Colors.teal.shade700,
+                      color: const Color.fromRGBO(0, 38, 76, 1),
                       alignment: Alignment.center,
                       foregroundDecoration: const BoxDecoration(
                         image: DecorationImage(
-                          image: NetworkImage(
-                              "https://png.pngtree.com/png-clipart/20210128/ourlarge/pngtree-racecourse-horse-color-silhouette-png-image_2822715.jpg"),
+                          image: AssetImage("assets/images/caballitos.png"),
+                          opacity: 0.4,
                           centerSlice:
                               Rect.fromLTRB(270.0, 180.0, 1360.0, 730.0),
                         ),
                       ),
-                      transform: Matrix4.rotationZ(0.0),
+                      transform: Matrix4.rotationZ(0.30),
                     )),
                   ]),
                   DataRow(selected: true, cells: [
                     DataCell(TextButton(
                         style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.blue),
+                          foregroundColor: MaterialStateProperty.all<Color>(
+                              const Color.fromRGBO(137, 25, 161, 0.5)),
                           overlayColor:
                               MaterialStateProperty.resolveWith<Color?>(
                             (Set<MaterialState> states) {
                               if (states.contains(MaterialState.hovered)) {
-                                return Colors.blue.withOpacity(0.04);
+                                return Colors.amber.shade400.withOpacity(0.04);
                               }
                               if (states.contains(MaterialState.focused) ||
                                   states.contains(MaterialState.pressed)) {
-                                return Colors.blue.withOpacity(0.12);
+                                return Colors.amber.shade400.withOpacity(0.12);
                               }
                               return null; // Defer to the widget's default.
                             },
@@ -442,22 +465,24 @@ class _Pagina1State extends State<Pagina1> {
                         ),
                         onPressed: () {
                           //bandera = 0;
-                          Navigator.push(context, _crearRuta1());
+                          //Navigator.push(context, _crearRuta1());
+                          NotificationsService.showSnackbar(
+                              'En construcción...');
                         },
-                        child: const Text('RAYUELA'))),
+                        child: const Text('Rayuela'))),
                     DataCell(TextButton(
                         style: ButtonStyle(
-                          foregroundColor:
-                              MaterialStateProperty.all<Color>(Colors.blue),
+                          foregroundColor: MaterialStateProperty.all<Color>(
+                              const Color.fromRGBO(137, 25, 161, 0.5)),
                           overlayColor:
                               MaterialStateProperty.resolveWith<Color?>(
                             (Set<MaterialState> states) {
                               if (states.contains(MaterialState.hovered)) {
-                                return Colors.blue.withOpacity(0.04);
+                                return Colors.amber.shade400.withOpacity(0.04);
                               }
                               if (states.contains(MaterialState.focused) ||
                                   states.contains(MaterialState.pressed)) {
-                                return Colors.blue.withOpacity(0.12);
+                                return Colors.amber.shade400.withOpacity(0.12);
                               }
                               return null; // Defer to the widget's default.
                             },
@@ -465,7 +490,8 @@ class _Pagina1State extends State<Pagina1> {
                         ),
                         onPressed: () {
                           //bandera = 0;
-                          Navigator.push(context, _crearRuta2());
+                          //Navigator.push(context, _crearRuta2());
+                          NotificationsService.showSnackbar('Próximanente...');
                         },
                         child: const Text('Carreras'))),
                   ]),

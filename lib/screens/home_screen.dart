@@ -17,7 +17,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 
-//int bandera = 0;
+int bandera = 0;
+int contador = 0;
+var decodedData = [];
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -32,18 +34,29 @@ class _HomeScreen extends State<HomeScreen> {
   //Para poner la primera letra en mayúscula de una palabra
   String get inCaps => '$this[0].toUpperCase()$this.substring(1)';
   String rrvalue = '';
+  String? usrId = '';
   int? infoUsr;
-  double? diverzcoin = 0;
-  String? poderValue;
+  String? diverzcoin = '0';
+  String? poderValue = '0';
   List<UsrGame> daUsr = [];
   static const _chars =
       'AaBbCcDdEeFfGgHhIiJjKkLlMmNnOoPpQqRrSsTtUuVvWwXxYyZz1234567890';
   Random _rnd = Random.secure();
+  //1 de 4: controllerText
+  //var controller = TextEditingController();
   @override
+  //TODO: PUSE EL DISPOSE
+  /*void dispose() {
+    // Limpia el controlador cuando el widget se elimine del árbol de widgets
+    // Esto también elimina el listener _printLatestValue
+    controller.dispose();
+    super.dispose();
+  }*/
+
   Widget build(BuildContext context) {
     //final partidasService = Provider.of<PartidasServices>(context);
-    final usuariosService = Provider.of<UsuariosService>(context);
-    final daUsr = usuariosService.usuarios;
+    var usuariosService = Provider.of<UsuariosService>(context);
+    daUsr = usuariosService.usuarios;
     //creamos código de inv de 5 dígitos, le pondremos aún parte de su email, más abajo
     String getRandomString(int length) =>
         String.fromCharCodes(Iterable.generate(
@@ -59,7 +72,7 @@ class _HomeScreen extends State<HomeScreen> {
       foreground: Paint()
         ..style = PaintingStyle.stroke
         ..strokeWidth = 1
-        ..color = Colors.deepPurple,
+        ..color = const Color.fromRGBO(0, 38, 76, 1),
     );
     //TextStyle numerosTxt = const TextStyle(fontSize: 25);
     TextStyle parrafosTxt = const TextStyle(fontSize: 17);
@@ -85,30 +98,75 @@ class _HomeScreen extends State<HomeScreen> {
     }*/
     //BorrarString? mm = AuthService().storage.read(key: 'usremail').toString();
     //generamos la función, mostrar usr 2de4
+    //1-Inicia análisis de bolsa y usr inicial
+
     mostrarusr() async {
-      //String? rrvalue = await AuthService().readEmail();
-      //String? valor = await authService.storage.read(key: 'usremail');
       try {
+        //1-asigno valor a bandera
         //bandera = 1;
+        //await usuariosService.loadUsuarios();
+        //daUsr = usuariosService.usuarios;
+        //2-obtengo el email
         rrvalue = (await authService.storage.read(key: 'usremail'))!;
-        /*obtenemos el nombre del usuario tomando como referencia su email, lo que va antes del @ con split:
-      ${rrvalue!.split('@')[0]}*/
-        /* Obtenemos la primera letra y la convertimos en mayúscula:
-        ${rrvalue![0].toUpperCase()}${rrvalue.substring(1)}
-      */
+        //3-depuro la cadena email para obtener el usr son el arroba
         enviomsj =
             '\n${rrvalue[0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}';
-        //Las siguientes 2 líneas me sirven para obtener info del objeto USRGame para la bolsa
+        //4-obtengo el id de la lista del usuario con base al email
+        //await usuariosService.loadUsuarios();
         infoUsr = await usuariosService.obtenerUsuario(rrvalue);
-        diverzcoin = daUsr[infoUsr!].bolsa;
-        print('Valor de DiverZcoin: $diverzcoin');
-        //Para no sobreescribir en el dispositivo del usr
-        /*await storage.write(key: 'idBolsa', value: usuarios[index].id);
-        String? bolsaValue = await storage.read(key: 'idBolsa');*/
+        //con base al obj daUsr que tiene los la info de usuarios, obtengo la bolsa y el id
+        //posiblemente aplicarle un delay
+        //5-obtengo idy bolsa del usuario con su valor actual.
+        //se calculan o se tienen de referencia para verificar el loadUsuarios, subí un nivel el usrId para asignarlo a variable.
+        usrId = daUsr[infoUsr!].id;
+        final decodedData =
+            await usuariosService.xloadUsuario(daUsr[infoUsr!].id!);
 
-        //escribo el poder en bolsa del usr:
-        await storage.write(key: 'poderBolsa', value: '$diverzcoin');
-        poderValue = await storage.read(key: 'poderBolsa');
+        await authService.storage
+            .write(key: 'poderBolsa', value: '${decodedData['bolsa']}');
+        diverzcoin = (await authService.storage.read(key: 'poderBolsa'))!;
+        //6-se evalúa que no contenga el email a continuación.
+        if (usrId != rrvalue && usrId != '') {
+          print(
+              'diverzcoin del loadUsuarios en home_screen: $diverzcoin,usrId: $usrId. Se muestra info del USRs en un primer momento.');
+          //7-escribo el poder en bolsa del usr:
+          /*PN-4await authService.storage
+              .write(key: 'poderBolsa', value: '${daUsr[infoUsr!].bolsa}');*/
+          //lo asigno a una variable de referencia
+          //PN5-poderValue = await authService.storage.read(key: 'poderBolsa');
+          //testing de variables de bolsas
+          print(
+              'Bolsa al salir de mostrarUsr en home_screen, diverzcoin firebase: $diverzcoin, poderValue local: $poderValue.');
+          //8 evalúo que tenga poder en la bolsa.
+          if (double.parse(diverzcoin!) < 1) {
+            //le aplico el cierre, pero en realidad hay que enviarlo a otra página que únicamente sea informativa. sin consultas a firebase.
+            print("cerrar sesión por falta de poder.");
+            usrId = '';
+            bandera = 0;
+            rrvalue = '';
+            enviomsj = '';
+            infoUsr = null;
+            diverzcoin = '0';
+            poderValue = '0';
+            contador = 0;
+            decodedData.clear();
+            usuariosService.xusuarios.clear();
+            //controller.dispose();
+            usuariosService.usuarios.clear();
+            authService.logout();
+            Navigator.pushReplacementNamed(context, 'login');
+          }
+        } else {
+          print(
+              'Cambia tu ávatar, para mejorar tu experiencia. Desde mostrarUsr.');
+          //mostrar popup
+        }
+        contador++;
+        //cargo info únicamente el usr actual, nó de toooda la lista de usrs, con base a su id
+        /*
+          final decodedData = await usuariosService.xloadUsuario(usrId!);
+          print('bolsa usr actual, únicamente: ${decodedData['bolsa']}.');
+          */
         //ponemos el if mounted para detener el error en el widget en tiempo de ejecución.
         if (mounted) {
           // check whether the state object is in tree
@@ -118,31 +176,153 @@ class _HomeScreen extends State<HomeScreen> {
         }
         return enviomsj;
       } catch (error) {
-        print("???Try-Finally:Function Mostrar usr. $error");
+        print("Catch en mostrarUsuario: HomeScreen. $error");
+      }
+    }
+
+    xvisualizaBolsa() async {
+      //lo asigno a una variable de referencia
+      diverzcoin = await authService.storage.read(key: 'poderBolsa');
+      if (mounted) {
+        // check whether the state object is in tree
+        setState(() {
+          // make changes here
+        });
       }
     }
 
     visualizaBolsa() async {
-      await Future.delayed(const Duration(seconds: 15), () async {
-        poderValue = await storage.read(key: 'poderBolsa');
-
-        if (mounted) {
-          // check whether the state object is in tree
-          setState(() {
-            // make changes here
-          });
+      try {
+        print('Contador de visualizaBolsa, tester: $contador.');
+        /*if (infoUsr.toString() != '' || infoUsr != null) {
+          
+          throw Exception(
+              'No se tiene infoUsr del usr desde el obj principal, llega a visualizaBolsa.');
+        }*/
+        //1-cargo obj únicamente del usr que inicia sesión
+        final decodedData = await usuariosService.xloadUsuario(usrId!);
+        //aqui if(decodedData['bolsa'] != poderValue)
+        poderValue = await authService.storage.read(key: 'poderBolsa');
+        //print(poderValue);
+        if (decodedData['bolsa'].toString() != poderValue) {
+          //ésta línea ya no la ejecuta, a partir de aqui ya no ejecuta el código, arreglar ifs y quitar else.
+          print(
+              'IIIXXXXnfo únicamente del usr: $decodedData, desde visualizaBolsa');
+          throw Exception(
+              'No ha cambiado en nada los valores, no ejecuto nada. ;)');
         }
-      });
-      return poderValue;
+        //2-verifico que se tenga cadena de id del usr para su Bolsa
+        if (decodedData['id'] != usrId) {
+          throw Exception(
+              "No se obtiene el id del usr. Ocupa un guardado en su perfil. Desde visualizaBolsa");
+        }
+        //3-verifico que tenga poder en bolsa
+        if (double.parse(decodedData['bolsa'].toString()) < 1) {
+          //le aplico el cierre, pero en realidad hay que enviarlo a otra página que únicamente sea informativa. sin consultas a firebase.
+          print("CCCCCCCcerrar sesión por falta de poder.");
+          usrId = '';
+          bandera = 0;
+          rrvalue = '';
+          enviomsj = '';
+          infoUsr = null;
+          diverzcoin = '0';
+          poderValue = '0';
+          contador = 0;
+          await authService.logout();
+          await decodedData.clear();
+          usuariosService.xusuarios.clear();
+          //controller.dispose();
+          usuariosService.usuarios.clear();
+          await Navigator.pushReplacementNamed(context, 'login');
+        } else {
+          //4-escribo en el localStorage la info obtenida desde firebase
+          //7-escribo el poder en bolsa del usr:
+          await authService.storage
+              .write(key: 'poderBolsa', value: '${decodedData['bolsa']}');
+          //lo asigno a una variable local para referencia
+          poderValue = await authService.storage.read(key: 'poderBolsa');
+          //actualizo variable diverzcoin con valor real de firebase, para testing
+          diverzcoin = decodedData['bolsa'];
+          /*throw Exception(
+              'Bolsa al salir de visualizaBolsa, diverzcoin firebase: $diverzcoin, poderValue local: $poderValue.');*/
+        }
+        //aqui
+        //aqui pongo el código
+        //poderValue = await storage.read(key: 'poderBolsa');
+        //}
+        /*poderValue = await storage.read(key: 'poderBolsa');
+          diverzcoin = daUsr[infoUsr!].bolsa;*/
+        //});
+        contador++;
+      } catch (e) {
+        print('catch en visualizaBolsa: en HomeScreen: $e');
+      }
     }
 
-    //ejecutamos la función para mostrar usrname, mostrar usr 3de4
-    if (rrvalue == '' ||
-        enviomsj == '' ||
-        diverzcoin == 0.0 ||
-        infoUsr == null) {
-      mostrarusr();
+    /*visualizaBolsa() async {
+      try {
+        /*await Future.delayed(const Duration(seconds: 13), () async {
+          usuariosService.loadUsuarios();
+        });*/
+        await Future.delayed(const Duration(seconds: 15), () async {
+          //Las siguientes 2 líneas me sirven para obtener info del objeto USRGame para la bolsa
+          infoUsr = await usuariosService.obtenerUsuario(rrvalue);
+          diverzcoin = daUsr[infoUsr!].bolsa;
+          if (mounted) {
+            // check whether the state object is in tree
+            setState(() {
+              // make changes here
+              if (diverzcoin!.toString() == '' ||
+                  (diverzcoin!.toString() != poderValue!)) {
+                usuariosService.loadUsuarios();
+              }
+              diverzcoin = double.parse(poderValue!);
+            });
+            //TODO: en teoría esta visualización de la bolsa se borra
+            poderValue = await storage.read(key: 'poderBolsa');
+          }
+        });
+        return poderValue!;
+      } catch (e) {
+        print(e);
+      }
     }
+*/
+    //ejecutamos la función para mostrar usrname, mostrar usr 3de4
+    //&& (diverzcoin != double.tryParse(poderValue!))
+    //&& controller.text == '' || (controller.text != diverzcoin.toString())
+    // || (diverzcoin != double.tryParse(poderValue!))
+    /*if (rrvalue == '' ||
+        enviomsj == '' ||
+        diverzcoin == 0.1 ||
+        infoUsr == null ||
+        (diverzcoin != double.tryParse(poderValue!))) {
+      mostrarusr();
+    }*/
+    if (infoUsr == null || bandera == 0) {
+      print('entro a mostrarUSR(): bandera: $bandera');
+      bandera = 1;
+      Future.delayed(const Duration(seconds: 1), () async {
+        await usuariosService.loadUsuarios();
+        await mostrarusr();
+      });
+    }
+
+    Future.delayed(const Duration(seconds: 10), () async {
+      //await mostrarusr();
+      //&& (diverzcoin != double.tryParse(poderValue!))
+      //iniciaPrueba
+      await xvisualizaBolsa();
+      //termina prueba
+      /*if (bandera >= 1 && (usrId != rrvalue && usrId != '')) {
+        await xvisualizaBolsa();
+      } else {
+        print(
+            'Es necesario que cambies tu ávatar, para mejorar tu experiencia. Desde visualizaBolsa.');
+      }*/
+    });
+
+    //2-Temina análisis de bolsa y usr inicial
     /*if (poderValue != '') {
       print('entró al else de diverzcoin');
 
@@ -150,7 +330,7 @@ class _HomeScreen extends State<HomeScreen> {
         // check whether the state object is in tree
         setState(() {
           // make changes here*/
-    visualizaBolsa();
+
     /*  });
       }
     }*/
@@ -190,22 +370,23 @@ class _HomeScreen extends State<HomeScreen> {
               //bandera = 0;
               try {
                 //aquí el código para obtener el index del usr y pintar lo correspondiente a su sesión
-                infoUsr = await usuariosService.obtenerUsuario(rrvalue);
+                bandera = 0;
+                await usuariosService.loadUsuarios();
+
                 if (infoUsr == null || infoUsr == -1) {
                   usuariosService.createUsuario(UsrGame(
                       id: rrvalue,
                       usrId: rrvalue, //validar
                       apodo: 'AVATAR',
-                      avatar:
-                          'https://res.cloudinary.com/dqtjgerwt/image/upload/v1665216453/cld-sample-2.jpg', //validar
-                      bolsa: 0.1,
+                      avatar: 'assets/images/no-image.png', //validar
+                      bolsa: 0,
                       cinvbolsa: 0,
                       //Genera un código con función random y algo que extraiga de su email
                       codigoinv:
                           '${rrvalue[0]}${getRandomString(5)}${rrvalue[1]}',
-                      comisionbolsa: 0.1,
+                      comisionbolsa: 0,
                       email: rrvalue,
-                      masbolsa: 0.1,
+                      masbolsa: 0,
                       menosbolsa: 0,
                       bolsaRetenida: 0,
                       ultActualizacion: formatDate(DateTime.now(),
@@ -215,14 +396,28 @@ class _HomeScreen extends State<HomeScreen> {
                       status: true));
                   //Aquí al final puedo lanzar un msj al usr nuevo de construyendo su perfil, intente ingresar en 1 minuto.
                 } else {
-                  //print('infousr: $infoUsr');
+                  //var usuarios = [];
+                  //UsuariosService().loadUsuarios();
+                  /*usuariosService =
+                      Provider.of<UsuariosService>(context, listen: false);*/
+                  daUsr = await UsuariosService().loadUsuarios();
+                  if (mounted) {
+                    setState(() {});
+                  }
+                  print('daUsr: ${daUsr[infoUsr!].bolsa}');
                   //usuariosService.obtenerUsuario(rrvalue);
                   //print('histogramas');
+                  //infoUsr = await usuariosService.obtenerUsuario(rrvalue);
+                  /*diverzcoin =
+                      await authService.storage.read(key: 'poderBolsa');*/
+                  /*var decodedData =
+                      await usuariosService.xloadUsuario(daUsr[infoUsr!].id!);*/
                   usuariosService.selectedUsuarios = UsrGame(
                       id: daUsr[infoUsr!].id,
                       usrId: daUsr[infoUsr!].usrId, //validar
                       apodo: daUsr[infoUsr!].apodo, //validar
                       avatar: daUsr[infoUsr!].avatar, //validar
+                      //bolsa: decodedData['bolsa'],
                       bolsa: daUsr[infoUsr!].bolsa,
                       cinvbolsa: daUsr[infoUsr!].cinvbolsa,
                       codigoinv: daUsr[infoUsr!].codigoinv,
@@ -236,7 +431,9 @@ class _HomeScreen extends State<HomeScreen> {
                       modo: daUsr[infoUsr!].modo,
                       padrecodigo: daUsr[infoUsr!].padrecodigo,
                       status: daUsr[infoUsr!].status);
-                  //setState(() {});
+                  /*if (mounted) {
+                    setState(() {});
+                  }*/
                 }
                 Navigator.pushNamed(context, 'perfil');
                 /*ListView.builder(
@@ -311,10 +508,19 @@ class _HomeScreen extends State<HomeScreen> {
               print('xvalue: ' + xvalue);
               print(mostrarusr().toString());
               */
+              print('------------------\n oprimo log out.');
+              usrId = '';
+              bandera = 0;
               rrvalue = '';
               enviomsj = '';
-              diverzcoin = 0.0;
               infoUsr = null;
+              diverzcoin = '0';
+              poderValue = '0';
+              contador = 0;
+              decodedData.clear();
+              usuariosService.xusuarios.clear();
+              //controller.dispose();
+              usuariosService.usuarios.clear();
               authService.logout();
               //bandera = 0;
               //TODO: authService.storage.deleteAll();
@@ -340,199 +546,227 @@ class _HomeScreen extends State<HomeScreen> {
             icon: const Icon(Icons.logout_rounded)
             ),*/
       ),
-      backgroundColor: Colors.lightBlue.shade100,
+      //backgroundColor: Colors.lightBlue.shade100,
       body: SingleChildScrollView(
         //TODO incluir en el registro el ávatar del usr
         child: Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              ConstrainedBox(
-                constraints: BoxConstraints(
-                    maxHeight: MediaQuery.of(context).size.width),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
+          child: Container(
+            decoration: const BoxDecoration(
+                gradient: LinearGradient(
+              begin: Alignment.topRight,
+              end: Alignment.bottomLeft,
+              stops: [0.4, 0.9],
+              colors: [
+                Color.fromRGBO(192, 115, 237, 1),
+                Color.fromRGBO(56, 177, 234, 1)
+              ],
+            )),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: <Widget>[
+                ConstrainedBox(
+                  constraints: BoxConstraints(
+                      maxHeight: MediaQuery.of(context).size.width),
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: const <Widget>[
+                      Expanded(
+                        child: Image(
+                          image: AssetImage('assets/images/no-image.png'),
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                /*Me marcó error - checarlo, sólo es una referencia del widget
+                GridView.count(
+                  crossAxisCount: 2,
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
                   children: const <Widget>[
                     Expanded(
                       child: Image(
                         image: NetworkImage(
                             'https://xtremeretro.com/wp-content/uploads/2021/05/Theme-Park-Electronic-Arts-Bullfrog-Productions-Strategy-Tactics-1994-3DO-Amiga-DOS-FM-Towns-Jaguar-PlayStation-SEGA-Saturn-PC-Xtreme-Retro-5.png'),
-                        fit: BoxFit.cover,
+                        fit: BoxFit.scaleDown,
                       ),
                     ),
                   ],
-                ),
-              ),
-              /*Me marcó error - checarlo, sólo es una referencia del widget
-              GridView.count(
-                crossAxisCount: 2,
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-                children: const <Widget>[
-                  Expanded(
-                    child: Image(
-                      image: NetworkImage(
-                          'https://xtremeretro.com/wp-content/uploads/2021/05/Theme-Park-Electronic-Arts-Bullfrog-Productions-Strategy-Tactics-1994-3DO-Amiga-DOS-FM-Towns-Jaguar-PlayStation-SEGA-Saturn-PC-Xtreme-Retro-5.png'),
-                      fit: BoxFit.scaleDown,
-                    ),
+                ),*/
+                /*ListView.builder(
+                  itemCount: 10,
+                  itemBuilder: (context, index) {
+                    return const Text("test");
+                  },
+                  physics: const NeverScrollableScrollPhysics(),
+                  shrinkWrap: true,
+                ),*/
+                RichText(
+                  textAlign: TextAlign.center,
+                  text: TextSpan(
+                    text: '\n¡Te damos la bienvenida, ',
+                    //style: const TextStyle(fontSize: 27, color: Colors.black45),
+                    style: GoogleFonts.montserrat(
+                        textStyle: const TextStyle(
+                            color: Colors.blue, letterSpacing: .5),
+                        color: const Color.fromRGBO(0, 38, 76, 1),
+                        fontSize: 27.5),
+                    children: <TextSpan>[
+                      TextSpan(
+                          //establecemos variable para mostrar el msj del usr, mostrar usr 4de4
+                          text: enviomsj,
+                          style: TextStyle(
+                              fontSize: 27,
+                              fontWeight: FontWeight.bold,
+                              foreground: Paint()..shader = linearGradient)),
+                      const TextSpan(text: ' !'),
+                    ],
                   ),
-                ],
-              ),*/
-              /*ListView.builder(
-                itemCount: 10,
-                itemBuilder: (context, index) {
-                  return const Text("test");
-                },
-                physics: const NeverScrollableScrollPhysics(),
-                shrinkWrap: true,
-              ),*/
-              RichText(
-                textAlign: TextAlign.center,
-                text: TextSpan(
-                  text: '\n¡Te damos la bienvenida, ',
-                  //style: const TextStyle(fontSize: 27, color: Colors.black45),
-                  style: TextStyle(
-                    fontSize: 25,
-                    foreground: Paint()
-                      ..style = PaintingStyle.stroke
-                      ..strokeWidth = 1
-                      ..color = Colors.blue[700]!,
-                  ),
-                  children: <TextSpan>[
-                    TextSpan(
-                        //establecemos variable para mostrar el msj del usr, mostrar usr 4de4
-                        text: enviomsj,
-                        style: TextStyle(
-                            fontSize: 33,
-                            fontWeight: FontWeight.bold,
-                            foreground: Paint()..shader = linearGradient)),
-                    const TextSpan(text: ' !'),
-                  ],
                 ),
-              ),
-              /*FutureBuilder<String?>(
-                  future: authService.storage.read(key: 'usremail'),
-                  builder: (context, snapshot) {
-                    // Logica...
-                    Future<String> xvalue = AuthService().readEmail();
-                    print(xvalue);
-                    return Text(xvalue.toString());
-                    print(mm);
-                  }),*/
-              /*FutureBuilder(
-                  future: authService.readEmail(),
-                  builder:
-                      (BuildContext context, AsyncSnapshot<String> snapshot) {
-                    if (!snapshot.hasData) return const Text('msj1');
-                    if (snapshot.data == '') {
-                      print(AuthService().storage.read(key: 'usremail'));
-                      return const Text('msj2');
-                    } else {
+                /*FutureBuilder<String?>(
+                    future: authService.storage.read(key: 'usremail'),
+                    builder: (context, snapshot) {
+                      // Logica...
                       Future<String> xvalue = AuthService().readEmail();
-                      print('msj3: $xvalue');
+                      print(xvalue);
                       return Text(xvalue.toString());
                       print(mm);
-                    }
-                  }),*/
-              /*Text(
-                //authService.readEmail().toString(),
-                //authService.storage.read(key: 'usremail').toString(),
-                //authService.readEmail().then((value) => 'usremail').toString(),
-                //storage.read(key: 'usremail').toString(),
-                mostrarusr().toString(),
-                style: subtitulosTxt,
-              ),*/
-              /*Text(
-                '¡Te damos la bienvenida, $enviomsj!',
-                style: titulosTxt,
-                textAlign: TextAlign.center,
-              ),*/
-              Text(
-                '\nEste espacio muestra el contenido de tu almacén, aquí se verán reflejados, todos los víveres que tienes hasta el momento, con estos elementos puedes divertirte dentro de la comunidad en DiverZión para ponerlos en juego a través de momentos divertidísimos. Posteriormente, puedes solicitar tu despensa a domicilio, a partir de tu primer desafío.\n',
-                style: parrafosTxt,
-                textAlign: TextAlign.center,
-              ),
-              Text(
-                'Almacén actual:',
-                style: subtitulosTxt,
-              ),
-              Text(
-                'DiverZcoin: $poderValue',
-                style: subtitulosTxt,
-              ),
-              DataTable(
-                sortColumnIndex: 2,
-                sortAscending: false,
-                columns: const [
-                  DataColumn(label: Text("Cant.")),
-                  DataColumn(label: Text("Elemento")),
-                  DataColumn(label: Text("Poder"), numeric: true),
-                ],
-                rows: const [
-                  DataRow(selected: true, cells: [
-                    DataCell(Text("1"), showEditIcon: true),
-                    DataCell(Text("Pez")),
-                    DataCell(Text("1"))
-                  ]),
-                  DataRow(cells: [
-                    DataCell(Text("1")),
-                    DataCell(Text("Dátil")),
-                    DataCell(Text("2"))
-                  ]),
-                  DataRow(selected: true, cells: [
-                    DataCell(Text("1"), showEditIcon: true),
-                    DataCell(Text("Tina")),
-                    DataCell(Text("3"))
-                  ]),
-                  DataRow(cells: [
-                    DataCell(Text("1")),
-                    DataCell(Text("Cachorro")),
-                    DataCell(Text("4"))
-                  ]),
-                  DataRow(selected: true, cells: [
-                    DataCell(Text("1"), showEditIcon: true),
-                    DataCell(Text("Cuchara")),
-                    DataCell(Text("5"))
-                  ]),
-                  DataRow(cells: [
-                    DataCell(Text("1")),
-                    DataCell(Text("Serpiente")),
-                    DataCell(Text("6"))
-                  ]),
-                  /*DataRow(selected: true, cells: [
-                    DataCell(Text("1"), showEditIcon: true),
-                    DataCell(Text("Trinche")),
-                    DataCell(Text("3"))
-                  ]),
-                  DataRow(cells: [
-                    DataCell(Text("1")),
-                    DataCell(Text("Rábano")),
-                    DataCell(Text("4"))
-                  ]),
-                  DataRow(selected: true, cells: [
-                    DataCell(Text("1"), showEditIcon: true),
-                    DataCell(Text("Abeja")),
-                    DataCell(Text("5"))
-                  ]),
-                  DataRow(cells: [
-                    DataCell(Text("1")),
-                    DataCell(Text("Borrego")),
-                    DataCell(Text("6"))
-                  ]),
-                  DataRow(selected: true, cells: [
-                    DataCell(Text("1"), showEditIcon: true),
-                    DataCell(Text("Perro")),
-                    DataCell(Text("7"))
-                  ]),
-                  DataRow(cells: [
-                    DataCell(Text("1")),
-                    DataCell(Text("Chivo")),
-                    DataCell(Text("8"))
-                  ]),*/
-                ],
-              ),
-            ],
+                    }),*/
+                /*FutureBuilder(
+                    future: authService.readEmail(),
+                    builder:
+                        (BuildContext context, AsyncSnapshot<String> snapshot) {
+                      if (!snapshot.hasData) return const Text('msj1');
+                      if (snapshot.data == '') {
+                        print(AuthService().storage.read(key: 'usremail'));
+                        return const Text('msj2');
+                      } else {
+                        Future<String> xvalue = AuthService().readEmail();
+                        print('msj3: $xvalue');
+                        return Text(xvalue.toString());
+                        print(mm);
+                      }
+                    }),*/
+                /*Text(
+                  //authService.readEmail().toString(),
+                  //authService.storage.read(key: 'usremail').toString(),
+                  //authService.readEmail().then((value) => 'usremail').toString(),
+                  //storage.read(key: 'usremail').toString(),
+                  mostrarusr().toString(),
+                  style: subtitulosTxt,
+                ),*/
+                /*Text(
+                  '¡Te damos la bienvenida, $enviomsj!',
+                  style: titulosTxt,
+                  textAlign: TextAlign.center,
+                ),*/
+
+                Text(
+                  '\nEste espacio muestra el contenido de tu almacén, aquí se verán reflejados, todos los víveres que tienes hasta el momento, con estos elementos puedes divertirte dentro de la comunidad en DiverZión para ponerlos en juego a través de momentos divertidísimos. Posteriormente, puedes solicitar tu despensa a domicilio, a partir de tu primer desafío.\n',
+                  style: parrafosTxt,
+                  textAlign: TextAlign.center,
+                ),
+                const Text(
+                  '\nPoder en juego',
+                  style: TextStyle(
+                      fontWeight: FontWeight.bold,
+                      //fontFamily: ,
+                      fontSize: 12,
+                      color: Color.fromRGBO(239, 184, 16, 0.9)),
+                ),
+                (diverzcoin != null)
+                    ? Text(
+                        'DiverZcoin: $diverzcoin \n\n\n\n\n\n',
+                        style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            decoration: TextDecoration.underline,
+                            decorationStyle: TextDecorationStyle.double,
+                            color: Color.fromRGBO(239, 184, 16, 0.9)),
+                      )
+                    : const Text('DiverZcoin: 0 \n\n\n\n\n\n',
+                        style: TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 12,
+                            decoration: TextDecoration.underline,
+                            decorationStyle: TextDecorationStyle.double,
+                            color: Color.fromRGBO(239, 184, 16, 0.9))),
+                /*
+                DataTable(
+                  sortColumnIndex: 2,
+                  sortAscending: false,
+                  columns: const [
+                    DataColumn(label: Text("Cant.")),
+                    DataColumn(label: Text("Elemento")),
+                    DataColumn(label: Text("Poder"), numeric: true),
+                  ],
+                  rows: const [
+                    DataRow(selected: true, cells: [
+                      DataCell(Text("1"), showEditIcon: true),
+                      DataCell(Text("Pez")),
+                      DataCell(Text("1"))
+                    ]),
+                    DataRow(cells: [
+                      DataCell(Text("1")),
+                      DataCell(Text("Dátil")),
+                      DataCell(Text("2"))
+                    ]),
+                    DataRow(selected: true, cells: [
+                      DataCell(Text("1"), showEditIcon: true),
+                      DataCell(Text("Tina")),
+                      DataCell(Text("3"))
+                    ]),
+                    DataRow(cells: [
+                      DataCell(Text("1")),
+                      DataCell(Text("Cachorro")),
+                      DataCell(Text("4"))
+                    ]),
+                    DataRow(selected: true, cells: [
+                      DataCell(Text("1"), showEditIcon: true),
+                      DataCell(Text("Cuchara")),
+                      DataCell(Text("5"))
+                    ]),
+                    DataRow(cells: [
+                      DataCell(Text("1")),
+                      DataCell(Text("Serpiente")),
+                      DataCell(Text("6"))
+                    ]),
+                    /*DataRow(selected: true, cells: [
+                      DataCell(Text("1"), showEditIcon: true),
+                      DataCell(Text("Trinche")),
+                      DataCell(Text("3"))
+                    ]),
+                    DataRow(cells: [
+                      DataCell(Text("1")),
+                      DataCell(Text("Rábano")),
+                      DataCell(Text("4"))
+                    ]),
+                    DataRow(selected: true, cells: [
+                      DataCell(Text("1"), showEditIcon: true),
+                      DataCell(Text("Abeja")),
+                      DataCell(Text("5"))
+                    ]),
+                    DataRow(cells: [
+                      DataCell(Text("1")),
+                      DataCell(Text("Borrego")),
+                      DataCell(Text("6"))
+                    ]),
+                    DataRow(selected: true, cells: [
+                      DataCell(Text("1"), showEditIcon: true),
+                      DataCell(Text("Perro")),
+                      DataCell(Text("7"))
+                    ]),
+                    DataRow(cells: [
+                      DataCell(Text("1")),
+                      DataCell(Text("Chivo")),
+                      DataCell(Text("8"))
+                    ]),*/
+                  ],
+                ),*/
+              ],
+            ),
           ),
         ),
       ),
@@ -545,20 +779,48 @@ class _HomeScreen extends State<HomeScreen> {
             heroTag: "btnRecargar",
             onPressed: () => {
               showDialog(
-                  context: context,
-                  builder: (context) => AlertDialog(
-                        backgroundColor: Colors.lightBlue.shade100,
-                        title: const Text("Adquiere más elementos."),
-                        content: const SingleChildScrollView(
+                context: context,
+                builder: (context) => AlertDialog(
+                  backgroundColor: const Color.fromRGBO(200, 201, 230, 0.9),
+                  title: Text(
+                    "Adquiere más elementos.",
+                    textAlign: TextAlign.center,
+                    style: GoogleFonts.montserrat(
+                      color: const Color.fromRGBO(0, 38, 76, 1),
+                      fontSize: 17.5,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  content: const SingleChildScrollView(
+                    child: Text(
+                      "¡Es muy fácil! Sólo acude al oxxo de tu preferencia y realiza el aporte (a partir de 10mxn) a la siguiente cuenta: xxxx-xxxx-xxxx-xxxx, es a banco Banregio. Guarda tu comprobante (ticket), compártelo vía whatsapp al número oficial de DiverZión: \n(+52) 473-139-95-77.\n \n¡Y listo! Dentro de las próximas 2 horas, podrás adquirir víveres dentro de DiverZión para divertirte al máximo.",
+                      textAlign: TextAlign.justify,
+                      style: TextStyle(
+                          fontSize: 17, color: Color.fromRGBO(0, 38, 76, 1)),
+                    ),
+                  ),
+                  actions: [
+                    TextButton(
+                        onPressed: () => Navigator.pop(context),
+                        style: TextButton.styleFrom(
+                            backgroundColor:
+                                const Color.fromRGBO(112, 90, 254, 0.1)),
+                        child: Align(
+                          alignment: Alignment.center,
                           child: Text(
-                              "¡Es muy fácil! Sólo acude al oxxo de tu preferencia y realiza el aporte (a partir de 10mxn) a la siguiente cuenta: xxxx-xxxx-xxxx-xxxx, es a banco Banregio. Guarda tu comprobante (ticket), compártelo vía whatsapp al número oficial de DiverZión: \n(+52) 473-139-95-77.\n \n¡Y listo! Dentro de las próximas 2 horas, podrás adquirir víveres dentro de DiverZión para divertirte al máximo."),
-                        ),
-                        actions: [
-                          TextButton(
-                              onPressed: () => Navigator.pop(context),
-                              child: const Text("Entendido"))
-                        ],
-                      ))
+                            "Entendido",
+                            textAlign: TextAlign.center,
+                            style: GoogleFonts.montserrat(
+                              color: const Color.fromRGBO(112, 90, 254, 1),
+                              fontSize: 17.5,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ))
+                  ],
+                ),
+                barrierDismissible: false,
+              )
             },
             tooltip: 'Recargar',
             child: const Icon(Icons.account_balance_rounded),

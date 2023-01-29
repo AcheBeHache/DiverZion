@@ -12,9 +12,10 @@ import 'package:app_game/widgets/card_swiper.dart';
 //import 'package:app_game/widgets/widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:provider/provider.dart';
 
-//int bandera = 0;
+//int cont_ppt = 0;
 //color textos deshabilitados
 TextStyle deshabilitarTxts =
     const TextStyle(fontSize: 13, color: Color.fromARGB(255, 228, 226, 226));
@@ -23,9 +24,9 @@ TextStyle deshabilitarTxts =
 late Ppt selectedPartidas;
 //para mostrar bolsa del usr
 int? infoUsr = 0;
-double? diverzcoin = 0;
+String? diverzcoin = '0';
 String rrvalue = '';
-String enviomsj = '';
+//String enviomsj = '';
 
 class PartidaPPTScreen extends StatefulWidget {
   @override
@@ -150,38 +151,55 @@ class _PartidaForm extends StatefulWidget {
 
 class _PartidaFormState extends State<_PartidaForm> {
   //1 de 4: controllerText
-  final controller = TextEditingController();
+  var controller = TextEditingController();
+  var xcontroller = TextEditingController();
   @override
+  //TODO: PUSE EL DISPOSE
+  void dispose() {
+    // Limpia el controlador cuando el widget se elimine del árbol de widgets
+    // Esto también elimina el listener _printLatestValue
+    controller.dispose();
+    xcontroller.dispose();
+    super.dispose();
+  }
+
   Widget build(BuildContext context) {
+    final storage = const FlutterSecureStorage();
     final partidaForm = Provider.of<PartidaFormProvider>(context);
     final partida = partidaForm.partida;
-    //para carrusel de img ppt
+    //TODO: cambiarlas a ambiente Local, respaldar la info de aplicación. Ésto es para carrusel de img ppt
     final partidaService = Provider.of<PartidasServices>(context);
     final tarjetasProvider = Provider.of<OpcionesPPTProvider>(context);
     //1 de : Para consultar bolsa del usr
     final usuariosService = Provider.of<UsuariosService>(context);
-    final daUsr = usuariosService.usuarios;
+    /*final daUsr = usuariosService.usuarios;*/
     //Para consultar el localstorage
     final authService = Provider.of<AuthService>(context, listen: false);
     //bandera = 0;
     mostrarBolsa() async {
       try {
-        //bandera = 1;
+        //cont_ppt = 1;
+        //1-cargo obj únicamente del usr que inicia sesión
+        rrvalue = (await authService.storage.read(key: 'usremail'))!;
+        String? bolsaValue = await authService.storage.read(key: 'idBolsa');
+        final decodedData = await usuariosService.xloadUsuario(bolsaValue!);
+
         print(
             'Entró a mostrar info de usr en screen de partida_pptscreen.dart');
-        rrvalue = (await authService.storage.read(key: 'usremail'))!;
+
         /*obtenemos el nombre del usuario tomando como referencia su email, lo que va antes del @ con split:
       ${rrvalue!.split('@')[0]}*/
         /* Obtenemos la primera letra y la convertimos en mayúscula:
         ${rrvalue![0].toUpperCase()}${rrvalue.substring(1)}
       */
-        enviomsj =
-            '\n${rrvalue[0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}';
+        /*enviomsj =
+            '\n${rrvalue[0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}';*/
         //TODO: Quitar el monto aquí. Respaldar funcionalidad del controllerText, de preferencia obtener el valor del localstorage
-        infoUsr = await usuariosService.obtenerUsuario(rrvalue);
-        diverzcoin = daUsr[infoUsr!].bolsa;
+        //infoUsr = await usuariosService.obtenerUsuario(rrvalue);
+        diverzcoin = decodedData['bolsa'].toString();
         //2 de 4: controllerText
         controller.text = '$diverzcoin';
+        xcontroller.text = rrvalue;
         //ponemos el if mounted para detener el error en el widget en tiempo de ejecución.
         if (mounted) {
           // check whether the state object is in tree
@@ -195,7 +213,8 @@ class _PartidaFormState extends State<_PartidaForm> {
       }
     }
 
-    if (controller.text == '' || controller.text == '0') {
+    if ((controller.text == '' || controller.text == '0') ||
+        (xcontroller.text == '' || xcontroller.text == '0')) {
       mostrarBolsa();
     }
     return Padding(
@@ -325,7 +344,7 @@ class _PartidaFormState extends State<_PartidaForm> {
                 controller: controller,
                 //4 de 4: controllerText
                 onChanged: (value) {
-                  diverzcoin = double.parse(value);
+                  diverzcoin = value;
                 },
                 /*inputFormatters: [
                   FilteringTextInputFormatter.allow(
@@ -342,28 +361,29 @@ class _PartidaFormState extends State<_PartidaForm> {
                 },*/
                 keyboardType: TextInputType.number,
                 decoration: InputDecorations.authInputDecoration(
-                    hintText: 'Numérico en Mxn', labelText: 'Poder en Bolsa:'),
+                    hintText: 'Numérico en Mxn',
+                    labelText: 'Poder en Bolsa:',
+                    prefixIcon: (Icons.dashboard)),
               ),
               //TODO: mostrar el monto en bolsa actual, y que el usr visualice el monto en tiempo real cada que cree partida.
               const SizedBox(height: 10),
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
-                initialValue: partida.usridcreador,
-                onChanged: (value) => partida.usridcreador = value,
-                validator: (value) {
-                  //if (value == null || value.length < 1) {
-                  if (value == null || value.length < 1) {
-                    return 'El usrid es obligatorio.';
-                  }
-                  //añadí el return null
-                  return null;
+                controller: xcontroller,
+                //4 de 4: controllerText
+                onChanged: (value) {
+                  partida.usridcreador == value;
                 },
                 decoration: InputDecorations.authInputDecoration(
-                    hintText: 'usridDeFirebase', labelText: 'Creadora/or: '),
+                    hintText: 'usridDeFirebase',
+                    labelText: 'Creadora/or: ',
+                    prefixIcon: (Icons.email_outlined)),
               ),
               const SizedBox(height: 30),
               TextFormField(
+                enabled: false,
+                style: deshabilitarTxts,
                 initialValue: '${partida.montototal}',
                 inputFormatters: [
                   FilteringTextInputFormatter.allow(
@@ -375,13 +395,13 @@ class _PartidaFormState extends State<_PartidaForm> {
                   //Ya verifiqué que no ingrese información que no tenga en bolsa
                   if (int.tryParse(value) == null ||
                       int.tryParse(value) == 0 ||
-                      int.tryParse(value)! > diverzcoin!) {
+                      int.tryParse(value)! > int.parse(diverzcoin!)) {
                     //TODO: verificar que el usr tenga poder en su granja
                     partida.montototal = 0;
                     print(
                         'Es null, cero o supera el monto de tu bolsa. Se reestablece a 0, falta validación de que no acepte 0.');
                     //validar que no puedan poner 0, una partida de 0 pesos.
-                  } else if (partida.montototal <= diverzcoin!) {
+                  } else if (partida.montototal <= int.parse(diverzcoin!)) {
                     print(partida.montototal);
                     print(
                         'Se guarda el dato del monto ya que entra en el rango.');
@@ -395,7 +415,8 @@ class _PartidaFormState extends State<_PartidaForm> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'Rango del 1 al 99',
-                    labelText: 'Poder en juego:'),
+                    labelText: 'Poder en juego:',
+                    prefixIcon: (Icons.balance_rounded)),
               ),
               /*const SizedBox(height: 10),
               TextFormField(
@@ -434,7 +455,11 @@ class _PartidaFormState extends State<_PartidaForm> {
                     labelText: 'Recibe poder: '),
               ),*/
               const SizedBox(height: 30),
-              const Text('<< Desliza para seleccionar tu respuesta >>'),
+              const Text('<< Desliza para seleccionar tu respuesta >>',
+                  style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                      color: Color.fromRGBO(0, 38, 76, 1))),
               const SizedBox(height: 10),
               CardSwiper(
                 tarjetas: tarjetasProvider.tarjetas,
@@ -447,9 +472,18 @@ class _PartidaFormState extends State<_PartidaForm> {
                   //TODO: falta habilitar en automatico, que muestre las tarjetasw para seleccionar o bien, un random que lo asigne dicho sistema.
                   value: partida.modojuego,
                   //title: Text('Modo: ${partida.modojuego}'),
-                  title: const Text('Activar modo automático:'),
-                  subtitle: Text('${partida.modojuego}.'),
-                  activeColor: Colors.indigo,
+                  title: const Text(
+                    'Activar modo automático:',
+                    style: TextStyle(
+                      fontWeight: FontWeight.w600,
+                      fontSize: 14,
+                      color: Color.fromRGBO(0, 38, 76, 1),
+                    ),
+                  ),
+                  subtitle: (partida.modojuego)
+                      ? const Text('si.')
+                      : const Text('no.'),
+                  activeColor: const Color.fromRGBO(112, 90, 254, 1),
                   onChanged: partidaForm.updateModojuego),
               const SizedBox(height: 30),
             ],
@@ -460,14 +494,16 @@ class _PartidaFormState extends State<_PartidaForm> {
   }
 
   BoxDecoration _buildBoxDecoration() => BoxDecoration(
-          color: Colors.white,
+          color: const Color.fromRGBO(193, 115, 237, 1),
           borderRadius: const BorderRadius.only(
+              topRight: Radius.circular(25),
+              topLeft: Radius.circular(25),
               bottomRight: Radius.circular(25),
               bottomLeft: Radius.circular(25)),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                offset: const Offset(0, 5),
-                blurRadius: 5)
+                color: Colors.purple.shade500,
+                offset: const Offset(0, 7),
+                blurRadius: 10)
           ]);
 }

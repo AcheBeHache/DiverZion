@@ -1,33 +1,57 @@
 //import 'package:app_game/bloc/peticionesppt_bloc.dart';
+//import 'package:app_game/screens/partida_pptscreen.dart';
+//import 'package:app_game/screens/partidas_ppt.dart';
 //import 'package:app_game/services/services.dart';
-//import 'package:app_game/services/services.dart';
+import 'package:app_game/navigator_key.dart';
 //import 'package:provider/provider.dart';
 //import 'package:provider/provider.dart';
 import 'dart:convert';
 import 'dart:io';
 import 'package:app_game/models/models.dart';
+import 'package:app_game/services/notifications_service.dart';
+import 'package:app_game/services/services.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+int pncontador = 0;
+
 class PartidasServices extends ChangeNotifier {
+  /*@override
+  Widget build(BuildContext context) {
+    return const Text('PN');
+  }
+  late BuildContext context;*/
+
   final String _baseUrl = 'pptgame-d06ee-default-rtdb.firebaseio.com';
-  final List<Ppt> partidas = [];
+  List<Ppt> partidas = [];
+  final List<Ppt> xpartida = [];
+  Map<String, dynamic> pnpartidasMap = {};
   late Ppt selectedPartidas;
   File? newPictureFile;
   String enviousrcreador = '';
   //para tarjetas ppt
   final List<Opcion> tarjetas = [];
   late Opcion selectedTarjetas;
-  //para usuarios
-  final List<UsrGame> usuarios = [];
+  //objeto para info de usuarios generales
+  List<UsrGame> usuarios = [];
+  List<UsrGame> usuariosPartida = [];
+  List<UsrGame> usuarioCreador = [];
+  List<UsrGame> usuarioOponente = [];
+  var pnusuarios = {};
+  //guarda info del creador
+  var xusuario = {};
+  //guarda info del oponente
+  var yusuario = {};
   late UsrGame selectedUsuarios;
   late UsrGame selectUsr;
   bool isLoading = true;
   bool isSaving = false;
   String idBolsaS = '';
   String xidBolsaSOponente = '';
+  String? xusr1Id = '';
+  String? yusr2Id = '';
   //1 de 3: Para guadar id de la bolsa del usuario actual en el storage
   static const storage = FlutterSecureStorage();
 
@@ -38,35 +62,50 @@ class PartidasServices extends ChangeNotifier {
   void refrescaTarjetas() {
     //dispose();
     partidas.clear();
+    //usuarios.clear();
     loadPartidas();
+    //loadUsuarios();
+    notifyListeners();
+  }
+
+  void refrescaUsuarios() {
+    //dispose();
+    usuarios.clear();
+    //usuarios.clear();
+    loadUsuarios();
+    //loadUsuarios();
     notifyListeners();
   }
 
   //TODO: <List<Partidasppt>>
   Future loadPartidas() async {
-    print(
-        'se cargan partidas desde partidas_services, consulta a Firebase desde partidas_services');
-    isLoading = true;
-    notifyListeners();
+    try {
+      print(
+          'se cargan partidas desde partidas_services, consulta a Firebase desde partidas_services');
+      isLoading = true;
+      notifyListeners();
 
-    final url = Uri.https(_baseUrl, 'partidas_ppt.json');
-    final resp = await http.get(url);
+      final url = Uri.https(_baseUrl, 'partidas_ppt.json');
+      final resp = await http.get(url);
 
-    final Map<String, dynamic> partidasMap = json.decode(resp.body);
+      final Map<String, dynamic> partidasMap = json.decode(resp.body);
 
-    partidasMap.forEach((key, value) {
-      final tempPartidas = Ppt.fromMap(value);
-      //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
-      if ((tempPartidas.status == 1 && tempPartidas.respcreador != '') ||
-          (tempPartidas.status == 2 && tempPartidas.respcreador != '')) {
-        tempPartidas.id = key;
-        partidas.add(tempPartidas);
-      }
-    });
+      partidasMap.forEach((key, value) {
+        final tempPartidas = Ppt.fromMap(value);
+        //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
+        if ((tempPartidas.status == 1 && tempPartidas.respcreador != '') ||
+            (tempPartidas.status == 2 && tempPartidas.respcreador != '')) {
+          tempPartidas.id = key;
+          partidas.add(tempPartidas);
+        }
+      });
 
-    isLoading = false;
-    notifyListeners();
-    //return partidas;
+      isLoading = false;
+      notifyListeners();
+      return partidas;
+    } catch (e) {
+      print('catch del loadpartidas: $e');
+    }
     /*print(partidasMap);
     print(partidasMap.length);*/
     /*print(partidas[1].toMap());
@@ -81,7 +120,7 @@ class PartidasServices extends ChangeNotifier {
     print('${partidas[1].id} ${partidas[1].fechainicio}');*/
   }
 
-  Future loadUsuarios() async {
+  Future<List<UsrGame>> loadUsuarios() async {
     isLoading = true;
     notifyListeners();
     print(
@@ -91,7 +130,7 @@ class PartidasServices extends ChangeNotifier {
     final resp = await http.get(url);
 
     final Map<String, dynamic> usuariosMap = json.decode(resp.body);
-    usuarios.clear();
+    //usuarios.clear();
     usuariosMap.forEach((key, value) {
       final tempUsuarios = UsrGame.fromMap(value);
       //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
@@ -101,7 +140,7 @@ class PartidasServices extends ChangeNotifier {
 
     isLoading = false;
     notifyListeners();
-    //return partidas;
+    return usuarios;
     /*print(partidasMap);
     print(partidasMap.length);*/
     /*print(partidas[1].toMap());
@@ -114,6 +153,117 @@ class PartidasServices extends ChangeNotifier {
     print('${partidas[0].id} ${partidas[0].fechainicio}');
     print("---");
     print('${partidas[1].id} ${partidas[1].fechainicio}');*/
+  }
+
+  Future<List<UsrGame>> loadUsuariosPartida(
+      String xusr1Id, String xusr2Id) async {
+    isLoading = true;
+    notifyListeners();
+    print(
+        'se cargan Usuarios desde partidas_services, consulta a Firebase desde partidas_services');
+
+    final url = Uri.https(_baseUrl, 'usuarios/games.json');
+    final resp = await http.get(url);
+
+    final Map<String, dynamic> xusuariosMap = json.decode(resp.body);
+    usuariosPartida.clear();
+    xusuariosMap.forEach((key, value) {
+      final xtempUsuarios = UsrGame.fromMap(value);
+      //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
+      if (xtempUsuarios.id == xusr1Id || xtempUsuarios.id == xusr2Id) {
+        xtempUsuarios.id = key;
+        usuariosPartida.add(xtempUsuarios);
+      }
+    });
+
+    isLoading = false;
+    notifyListeners();
+    print('UsuariosEnJuego: $usuariosPartida');
+    return usuariosPartida;
+    /*print(partidasMap);
+    print(partidasMap.length);*/
+    /*print(partidas[1].toMap());
+    print('------');
+    print(partidas[1].id);
+    return partidas;*/
+
+/*    print(partidasMap);
+    print("---");
+    print('${partidas[0].id} ${partidas[0].fechainicio}');
+    print("---");
+    print('${partidas[1].id} ${partidas[1].fechainicio}');*/
+  }
+
+  Future x1loadUsuario(String xusr1Id) async {
+    try {
+      isLoading = true;
+      notifyListeners();
+      usuarioCreador.clear();
+      print(
+          'se carga únicamente el usr1, creador. Desde partidas_Services, 1 consulta get');
+      final xurl = Uri.https(_baseUrl, 'usuarios/games.json');
+      final xresp = await http.get(xurl);
+      final Map<String, dynamic> xdecodedData = json.decode(xresp.body);
+      xdecodedData.forEach((key, value) {
+        final creadortempUsuario = UsrGame.fromMap(value);
+        //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
+        if (creadortempUsuario.id == xusr1Id) {
+          creadortempUsuario.id = key;
+          usuarioCreador.add(creadortempUsuario);
+        }
+      });
+
+      print(
+          'Usuario creador desde partidas_service.dart, aplico para usr: ${usuarioCreador[0].email}, tiene en bolsa: ${usuarioCreador[0].bolsa}');
+      //escribo el poder en bolsa del usr:
+      await storage.write(
+          key: 'poderBolsa', value: usuarioCreador[0].bolsa.toString());
+      await storage.write(
+          key: 'idBolsa', value: usuarioCreador[0].id.toString());
+      //String? bolsaValue = await storage.read(key: 'idBolsa');
+      //String? poderValue = await storage.read(key: 'poderBolsa');
+      isLoading = false;
+      notifyListeners();
+      return usuarioCreador;
+    } catch (e) {
+      print('try del catch xloadUsuarios: $e');
+    }
+  }
+
+  Future y2loadUsuario(String yusr2Id) async {
+    try {
+      isLoading = true;
+      notifyListeners();
+      print(
+          'se carga únicamente el usr2, oponente. Desde partidas_Services, 1 consulta get');
+      print(
+          'se carga el usr oponente, desde partidas_Services, 1 consulta get');
+      usuarioOponente.clear();
+      final yurl = Uri.https(_baseUrl, 'usuarios/games.json');
+      final yresp = await http.get(yurl);
+      final Map<String, dynamic> ydecodedData = json.decode(yresp.body);
+      ydecodedData.forEach((key, value) {
+        final oponentetempUsuario = UsrGame.fromMap(value);
+        //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
+        if (oponentetempUsuario.id == yusr2Id) {
+          oponentetempUsuario.id = key;
+          usuarioOponente.add(oponentetempUsuario);
+        }
+      });
+
+      //escribo el poder en bolsa del usr:
+      await storage.write(
+          key: 'poderBolsa', value: usuarioOponente[0].bolsa.toString());
+      await storage.write(
+          key: 'idBolsa', value: usuarioOponente[0].id.toString());
+      //String? bolsaValue = await storage.read(key: 'idBolsa');
+      //String? poderValue = await storage.read(key: 'poderBolsa');
+      isLoading = false;
+      notifyListeners();
+      return usuarioOponente;
+    } catch (e) {
+      print('try del catch yloadUsuarios: $e');
+    }
   }
 
   //para cargar tarjetas
@@ -246,6 +396,10 @@ class PartidasServices extends ChangeNotifier {
       notifyListeners();
       print(
           'se actualiza tarjeta desde updateTarjeta, 3 consultas a Firebase desde partidas_services');
+      /*await Future.delayed(const Duration(seconds: 3), () async {
+        refrescaTarjetas();
+      });*/
+      //await Future.delayed(const Duration(seconds: 2), () async {
       //print('4recibe updateTarjeta updateTarjeta: $enviousrcreador');
       print('valor vuelta: $vuelta');
       final url = Uri.https(_baseUrl, 'partidas_ppt/${partida.id}.json');
@@ -258,87 +412,30 @@ class PartidasServices extends ChangeNotifier {
       String fechaFin = formatDate(
           DateTime.now(), [d, '/', mm, '/', yyyy, ' ', H, ':', m, ':', am]);
       //selectedTarjetas = tarj;
+      //-----------
+      //obtengo objeto del usuario oponente al que se le resta
+      /*usuarioCreador = await x1loadUsuario(idBolsaS);
+      print('usuarioCreadorJAJAJA: ${usuarioCreador[0].id}');*/
+      //TODO: aplicarle un DelayFuture, porque a veces al ejecutar las siguientes líneas marca error de espera en transacción. obtengo obj del oponente
+      //usuarioOponente = await y2loadUsuario(idBolsaS);
+      //----------
+
+      //1
+      /*print('1-Pasa obtención de url con idusr: $xurl');
+      //calculo index del ganador
+      //final xusuario = json.encode(usuarios[xindex]);
+      //2
+      print('2-obtiene usr de función: $xresp');
+      //final xresp = await http.put(xurl, body: xusuario);
+      //2.1
+      print('2.1-aplica al obj usr el decode: $xdecodedData');*/
 
       //print('Tarj: $tarj');
       //TODO: Actualizar el listado de productos
       if (partida.usridcreador == enviousrcreador) {
-        //partidas[index] = partida;
-        //print(partidas[index].respcreador);
         partidas[index].respcreador = eleccioncreador;
-        //print(partidas[index].respcreador);
-        //partidas[index].fechafin = fechaFin;
-        //partidas[index].respoponente = 'eleccionoponente';
       } else {
-        //Aqui me quedé, me di cuenta que al guardar el dato en bolsa, se copia el perfil del usr creador
-        //en firebase, checar casteo de objetos.
-        //Resuelto el punto anterior, resulta que el creador de la partida debe ser hugo0589 y el oponente es es x@gm.cm
-        //Ya que se llama el obj con los corchetes [0]
-        //Lo interesante que si realiza la resta a la bolsa copiada.
-        //traerme el objeto seleccionado del card_swiper...
-        //Para ESCRIBIR DATOS EN BOLSA ES AQUÍIII
-        //Calculamos el/los valores en bolsa, en este caso se define desde la respuesta del usr que cierra la partida (oponente)
-        //primero establecemos el ganador, que en este caso ya nos lo da el campo usrwin
-        //imprimimos prueba del campo y bolsa del usrcreador y le asignamos valor
-        //variabledelobjMontoBolsaCreador = variabledelobjMontoBolsaCreador +/- partidas[index].montototal;
-
-        //obtenemos info del usrperdedor
-        //descontamos lo correspondiente
-
-        //OJO CON LA PARTIDA DE EMPATE. En este caso, sólo hay registro
-        //Ver la forma de lanzar el desempate
-        //Inicia modificación en bolsa 1
-        //prueba1
-        //idBolsaS = (await storage.read(key: 'idBolsa'))!;
-
-        //print(idBolsaS);
-        //Actualización1
-        //selectUsr = UsuariosService().obtenerUsuario(enviousrcreador);
-
-        //Termina prueba 1
-        //print(xdecodedData);
-        //print(usuarios.email);
-        //Éstas dos líneas se integran dentro de los ifs para actualizar únicamene lo del usr correspondiente
-        //Ya sea creador u oponente.
-
-        //print("encuentro ID de bolsa");
-        //DESCOMENTAR:
-        /*print(xindex);
-      print(usuariosLista[xindex].email);
-      print('bolsa del usr actual: ${usuariosLista[index].bolsa}');*/
-        //usuariosLista[index].bolsa = usuariosLista[index].bolsa - 10;
-        /*BORRARfinal resp = await http.put(url, body: idBolsaS.toJson());
-      final decodedData = json.decode(resp.body);*/
-        //TODO: Actualizar el listado de productos
-        //print('Usuarios: $usuariosLista');
-        //print(usuarios);
-        /*1final index =
-          usuarios.indexWhere((element) => element.id == decodedData['name']);*/
-        //únicamente permitimos cambiar dichos campos en la BD
-        //2usuarios[index].cinvbolsa = 1111;
-        //usuarios[index].apodo = perfil.apodo;
-
-        /*BuildContext context;
-        int? infoUsr = 0;
-        int? diverzcoin = 0;
-        final usuariosService = Provider.of<UsuariosService>(context);
-        final daUsr = usuariosService.usuarios;
-        infoUsr = await usuariosService.obtenerUsuario(enviousrcreador);
-        diverzcoin = daUsr[infoUsr!].bolsa;
-    */
-        //Finaliza edición bolsa 2
-        /*final index =
-          partidas.indexWhere((element) => (element.id == partida.id));*/
-
-        //partidas[index] = partida;
-        //partidas[index].respcreador = 'eleccioncreador';
-        //print(partidas[index].respoponente);
-        //print('idBolsa del usuarioActual: $idBolsaS');
-        //tendría que realizar un if para saber si la idBolsaS es del usrcreador o del oponente para realizar la operación correspondiente en su bolsa.
-
-        //Ejecución de la actualización de la Tarjeta
         partidas[index].respoponente = eleccioncreador;
-        //print(partidas[index].respoponente);
-        //programé para que el oponente cierre con fecha la partida, es el que la establece
         partidas[index].fechafin = fechaFin;
         partidas[index].status = 3;
 
@@ -384,49 +481,70 @@ class PartidasServices extends ChangeNotifier {
       //print('UsrCreador: ${partida.usridcreador}');
       //print('UsrOponente: ${partida.usridoponente}');
       //print('UsrWin-Ganador: ${partida.usridwin}');
+      //inicia respaldo
 
-      //if para manejo de bolsa SUMA
+      //if para manejo de bolsa SUMA, si el oponente es el ganador
       if (partida.usridwin == enviousrcreador) {
-        if (vuelta == 1) {
-          final xurl = Uri.https(_baseUrl, 'usuarios/games/$idBolsaS.json');
-          //calculo index del ganador
-          final xindex =
-              usuarios.indexWhere((xelement) => (xelement.id == idBolsaS));
-          final xresp = await http.put(xurl, body: usuarios[xindex].toJson());
-          final xdecodedData = json.decode(xresp.body);
-          //Inicia variables para manejar Bolsa
-          double? bganador = 0.0;
-          double? bpartidacomision = 0.0;
-          double? bolsapartida = 0.0;
-          //Terminan variables para manejar bolsa
+        if (vuelta == 1 || vuelta == 2) {
+          //loPuse para refrescar obj de usuario
+          //usuarios = await UsuariosService().loadUsuarios();
+          // -------------
+          Future.delayed(const Duration(seconds: 3), () async {
+            //Inicia variables para manejar Bolsa
+            int? bganador = 0;
+            int? bpartidacomision = 0;
+            int? bolsapartida = 0;
+            //Terminan variables para manejar bolsa
+            final xindex =
+                usuarios.indexWhere((xelement) => (xelement.id == idBolsaS));
+            final xurl = Uri.https(_baseUrl, 'usuarios/games/$idBolsaS.json');
+            final xresp =
+                await http.put(xurl, body: (usuarios[xindex].toJson()));
+            final xdecodedData = json.decode(xresp.body);
 
-          //print('xdecodedData infoGanador: $xdecodedData');
-          //calculo index del perdedor CHECAR HOJA BLANCA
-          /**/
+            //3
+            //print('iiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiint.1');
+            //No funcionó: xdecodedData['bolsa'] = 666.5;
+            //No funciona: xdecodedData.bolsa = 666.7;
+            //xdecodedData["bolsa"] = 667.8;
+            /*print(
+              '3-aplica al obj usr el decode: $xdecodedData, ${xdecodedData['bolsa']}');*/
 
-          bganador = (usuarios[xindex].bolsa);
-          //TODO: en la siguiente aplico la comisión del 34%
-          bpartidacomision = (partidas[index].montototal).toDouble() * 0.50;
-          bolsapartida =
-              (partidas[index].montototal).toDouble() - bpartidacomision;
-          /*print('partidas valor: ${partidas[index].montototal}');
+            //print('xdecodedData infoGanador: $xdecodedData');
+            //calculo index del perdedor CHECAR HOJA BLANCA
+            /**/
+            /*print(
+              'ÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑÑobj usr1 solo: $xdecodedData, ${xdecodedData['bolsa']}');*/
+            /*bganador = xdecodedData[
+                'bolsa'];*/ //double.parse(xusuario['bolsa'].toString());
+            //print('vvvvvvvvvvvvvvvvaaalorrrr: $bganador');
+            //TODO: en la siguiente aplico la comisión del 34%
+            //bpartidacomision = (partidas[index].montototal).toDouble() * 0.50;
+            bpartidacomision = ((partidas[index].montototal) * 60) ~/ 100;
+            bolsapartida = (partidas[index].montototal) - bpartidacomision;
+            /*print('partidas valor: ${partidas[index].montototal}');
           print('partidas valor:  ${partida.montototal}');
           print('bganador, bolsa actual: $bganador');
           print('bolsa partida - comisión:  $bolsapartida');*/
+            //paso0Bolsa
+            usuarios[xindex].bolsaRetenida = (partidas[index].montototal);
+            //paso1Bolsa
+            usuarios[xindex].bolsa = usuarios[xindex].bolsa! +
+                bpartidacomision; //(usuarios[xindex].bolsa! - 10)
+            // pongo ganancia al límite máximo por día $300
+            usuarios[xindex].masbolsa =
+                (usuarios[xindex].masbolsa! + bpartidacomision);
+            //TODO: Falta calculo comisión, convertir a double la variable
+            usuarios[xindex].comisionbolsa =
+                (usuarios[xindex].comisionbolsa! + bolsapartida);
+            //refrescaUsuarios();
 
-          usuarios[xindex].bolsa =
-              bganador! + bolsapartida; //(usuarios[xindex].bolsa! - 10)
-          // pongo ganancia al límite máximo por día $300
-          usuarios[xindex].masbolsa =
-              ((usuarios[xindex].masbolsa! + bolsapartida));
-          //TODO: Falta calculo comisión, convertir a double la variable
-          usuarios[xindex].comisionbolsa =
-              ((usuarios[xindex].comisionbolsa! + bpartidacomision));
-          notifyListeners();
+            notifyListeners();
+          });
         } else {
-          double? bganador = 0.0;
-          double? bpartidacomision = 0.0;
-          double? bolsapartida = 0.0;
+          int? bganador = 0;
+          int? bpartidacomision = 0;
+          int? bolsapartida = 0;
           print("No se ejecuta vuelta 2");
         }
         //el conteo de la pérdida del día, la manejamos aparte
@@ -447,35 +565,78 @@ class PartidasServices extends ChangeNotifier {
           xidBolsaSOponente = partida.usridcreador;
           //print('perdedor el creador: $xidBolsaSOponente');
         }
-        if (vuelta == 1) {
-          double? xbperdedor = 0.0;
-          double? xbolsapartida = 0.0;
+
+        //TODO: RESTA DEL CREADOR
+        if (vuelta == 1 || vuelta == 2) {
+          //loPuse para refrescar obj de usuario
+          //usuarios =
+          /*Future.delayed(const Duration(seconds: 1), () async {
+            await loadUsuarios();
+          });*/
+          //pnusuarios.clear();
+          //pnusuarios = await loadUsuarios();
+
+          //TODO:Subir aqui el Delayed
           final yindex = usuarios
               .indexWhere((yelement) => (yelement.email == xidBolsaSOponente));
           //obtengo idBolsa del adversario
           final yidBolsaindex = usuarios
               .indexWhere((yelement) => (yelement.id == usuarios[yindex].id));
-          //print(
-          //'index del perdedor: $yindex, idName: ${usuarios[yidBolsaindex].id}');
-          final yurl = Uri.https(
-              _baseUrl, 'usuarios/games/${usuarios[yidBolsaindex].id}.json');
+          yusr2Id = usuarios[yidBolsaindex].id;
+          //loadUsuariosPartida(usuariosLista.id, yusr2Id!);
+          //TODO: borrar el llamado de éste método ya que escribo en el storage el monto del creador en el dispositivo del usr oponente
+          //pnusuarios = await y2loadUsuario(yusr2Id!);
+          usuarioCreador = await x1loadUsuario(yusr2Id!);
+          print('usuarioCreadorJAJAJA: ${usuarioCreador[0].id}');
+          Future.delayed(const Duration(seconds: 5), () async {
+            //Future.delayed(const Duration(seconds: 10), () async {
+            final yurl = Uri.https(
+                _baseUrl, 'usuarios/games/${usuarioCreador[0].id}.json');
+            //calculo index del ganador
+            /*final xindex =
+              usuarios.indexWhere((xelement) => (xelement.id == idBolsaS));*/
+            //final yusuario = json.encode(usuarios[yidBolsaindex]);
+            final yresp =
+                await http.put(yurl, body: usuarioCreador[0].toJson());
+
+            final ydecodedData = json.decode(yresp.body);
+            int? xbperdedor = 0;
+            int? xbolsapartida = 0;
+            /*print(
+                'MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMobj usr2 solo: $ydecodedData, objt2: ${ydecodedData['bolsa']}');*/
+            //print(
+            //'index del perdedor: $yindex, idName: ${usuarios[yidBolsaindex].id}');
+            /*final yurl = Uri.https(
+              _baseUrl, 'usuarios/games/$yusuario.json');
           final yresp = await http.put(yurl, body: usuarios[yindex].toJson());
-          final ydecodedData = json.decode(yresp.body);
-          //print('ydecodedData infoPerdedor: $ydecodedData');
-          xbperdedor = (usuarios[yindex].bolsa);
-          //partidas[index].montototal = partida.montototal;
-          xbolsapartida = (partida.montototal).toDouble();
-          xbolsapartida = xbolsapartida;
-          usuarios[yindex].bolsa = (xbperdedor! - xbolsapartida!);
-          notifyListeners();
+          final ydecodedData = json.decode(yresp.body);*/
+            //print('ydecodedData infoPerdedor: $ydecodedData');
+            //xbperdedor = (ydecodedData['bolsa']);
+            //partidas[index].montototal = partida.montototal;
+            xbolsapartida = (partida.montototal);
+            //PN-xbolsapartida = xbolsapartida;
+            //ydecodedData['bolsa'] = (xbperdedor! - xbolsapartida!);
+            usuarioCreador[0].bolsa =
+                (usuarioCreador[0].bolsa! - xbolsapartida!);
+            /*print(
+                'IRIIIIIII_ pnusuarios: $pnusuarios,\n valor2_pnusuarios[0].bolsa: ${pnusuarios['bolsa']}\n valor3_ydecodedData[bolsa]: ${ydecodedData['bolsa']} \n valor4_usuarios[yidBolsaindex].bolsa: ${usuarios[yidBolsaindex].bolsa}');*/
+            usuarioCreador[0].menosbolsa =
+                (usuarioCreador[0].menosbolsa! + xbolsapartida);
+            //});
+            notifyListeners();
+          });
         } else {
-          double? xbperdedor = 0.0;
-          double? xbolsapartida = 0.0;
+          int? xbperdedor = 0;
+          int? xbolsapartida = 0;
           print("No se ejecuta vuelta 2");
         }
+      }
+      /*if (partida.usridwin == enviousrcreador) {
+      
       } else {
         //TODO: quitar el else y poner un if para repetir el código, pero ésta vez es para aplicar cuando el creador pierda(partida.usridwin == enviousrcreador)
-      }
+        //del creador->usuarios[xindex].menosbolsa = ((xdecodedData['menosbolsa'] + bolsapartida));
+      }*/
       //Falta validar: partida.usridwin != '' dentro de un if
       //if (partida.usridwin != enviousrcreador && partida.usridwin != 'empate' && partida.usridwin != '')
       /*if (partida.usridwin != enviousrcreador && partida.usridwin != '') {
@@ -557,28 +718,33 @@ class PartidasServices extends ChangeNotifier {
       //Termina if para manejo de bolsa
       //notifyListeners();
       isSaving = false;
+      //refrescaTarjetas();PartidasServices().PartidasServices().
       notifyListeners();
+      /*Future.delayed(const Duration(seconds: 1), () async {
+        refrescaTarjetas();
+        refrescaUsuarios();
+      });*/
+      //});
       return tarjetas.id!;
     } catch (e) {
       print('Error en updateTarjeta: $e');
       return tarjetas.id!;
     }
   }
+  //finaliza respaldo
 
   //inicio apartar partida
   Future<String> apartaPartida(partida, tarjetas, enviousrcreador) async {
-    //creamos una instancia para utilizar el localstorage, mostrar usr 1de4
-    //BuildContext context;
-    //final authService = Provider.of<AuthService>(context, listen: false);
     isSaving = true;
     notifyListeners();
     print('se aparta partida, 1 consulta a Firebase desde partidas_services');
+    //TODO: Aqui es necesario cargar info de partida actual info, para verificar estatus.
     //print('4recibe updateTarjeta updateTarjeta: $enviousrcreador');
     final url = Uri.https(_baseUrl, 'partidas_ppt/${partida.id}.json');
     final resp = await http.put(url, body: partida.toJson());
     final decodedData = json.decode(resp.body);
     final index = partidas.indexWhere((element) => (element.id == partida.id));
-
+    //Future.delayed(const Duration(seconds: 3), () async {
     //final eleccioncreador = tarjetas.nombre;
     /*String fechaFin = formatDate(
         DateTime.now(), [d, '/', mm, '/', yyyy, ' ', H, ':', m, ':', am]);*/
@@ -586,17 +752,83 @@ class PartidasServices extends ChangeNotifier {
 
     //print('Tarj: $tarj');
     //TODO: Actualizar el listado de productos
-    if (partida.usridoponente == '') {
-      //partidas[index] = partida;
-      //print(partidas[index].respcreador);
-      /*partidas[index].respcreador = eleccioncreador;*/
-      //print(partidas[index].respcreador);
-      //partidas[index].fechafin = fechaFin;
-      //partidas[index].respoponente = 'eleccionoponente';
+    if (partida.usridoponente == '' && partida.status == 1) {
+      //Inicia verificación de status en partida
+      pncontador = 0;
       partidas[index].usridoponente = enviousrcreador;
       partidas[index].status = 2;
+      while (pncontador <= 1) {
+        pncontador++;
+        await Future.delayed(const Duration(seconds: 3), () async {
+          final pnurl = Uri.https(_baseUrl, 'partidas_ppt.json');
+          final pnresp = await http.get(pnurl);
+          pnpartidasMap = json.decode(pnresp.body);
+          //});
+          //}
+
+          pnpartidasMap.forEach((key, value) {
+            final pntempPartidas = Ppt.fromMap(value);
+            //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
+            if (pntempPartidas.id == partida.id && pntempPartidas.status == 2) {
+              NotificationsService.showSnackbar(
+                  "1Creador finalizó partida! Refresca y busca o crea una nueva.");
+            }
+            //if (pntempPartidas.id == partida.id && pntempPartidas.status == 1) {
+            pntempPartidas.id = key;
+            xpartida.add(pntempPartidas);
+            //}
+          });
+          //Termina verificación de status en partida
+          //ejecuta de volada
+          //partidas[index].usridoponente = enviousrcreador;
+          if (xpartida[index].usridoponente == '' &&
+              partida.usridoponente == '') {
+            partidas[index].usridoponente = enviousrcreador;
+            partidas[index].status = 2;
+            notifyListeners();
+          }
+          if (xpartida[0].usridoponente != '' && partida.usridoponente == '') {
+            NotificationsService.showSnackbar(
+                "2Creador finalizó partida! Refresca y busca o crea una nueva.");
+          }
+          if (xpartida[0].usridoponente != '' && partida.usridoponente != '') {
+            if (pncontador == 1) {
+              NotificationsService.showSnackbar(
+                  "3Creador finalizó partida! Refresca y busca o crea una nueva.");
+              print('PPPPPNNNNNcontador: $pncontador, vez.');
+              //refrescaTarjetas();
+
+              await Future.delayed(const Duration(seconds: 3), () async {
+                //BuildContext context;
+                //Navigator.pushNamed(context, 'partidas_ppt');
+                //TODO: en lugar del BuildContext context, usamos navigatorKey.currentContext
+                //Es importante importar la librería.
+                Navigator.of(navigatorKey.currentContext!)
+                    .pushNamed('partidas_ppt');
+                partidas.clear();
+                partidas = await loadPartidas();
+              });
+            }
+          }
+        });
+      }
+      //pncontador = 0;
       notifyListeners();
+    }
+    if (partida.status == 2 && partida.usridoponente == enviousrcreador) {
+      var partidas = await PartidasServices().loadPartidas();
+      Future.delayed(const Duration(seconds: 4), () async {
+        if (partida.usridoponente == enviousrcreador) {
+          partidas[index].usridoponente = enviousrcreador;
+        } else {
+          NotificationsService.showSnackbar(
+              "ZZzzzzzYa finalizó! Refresca y busca nueva partida. O crea una.");
+        }
+      });
     } else {
+      print('ya se encuentra apartada, lanzar excepción a GUI.');
+      NotificationsService.showSnackbar(
+          "xxxxxYa finalizó! Refresca y busca nueva partida. O crea una.");
       /*final index =
           partidas.indexWhere((element) => (element.id == partida.id));*/
 
@@ -610,6 +842,8 @@ class PartidasServices extends ChangeNotifier {
       //TODO: enviar msj de que ya se la ganaron a la GUI
 
     }
+    pncontador = 0;
+    //});
     //notifyListeners();
     isSaving = false;
     notifyListeners();

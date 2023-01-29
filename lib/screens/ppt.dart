@@ -5,12 +5,17 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:app_game/models/models.dart';
-//import 'package:app_game/services/services.dart';
+import 'package:app_game/services/services.dart';
 //import 'package:app_game/providers/partida_form_provider.dart';
 import 'package:flutter/material.dart';
 //import 'package:provider/provider.dart';
 import 'package:http/http.dart' as http;
+
 //import 'package:provider/provider.dart';
+//List<UsrGame> usuarios = [];
+String? yusr2Id = '';
+//int resta = 0;
+bool isSaving = false;
 
 class PPT extends StatefulWidget {
   const PPT({Key? key}) : super(key: key);
@@ -116,10 +121,12 @@ class _PPTState extends State<PPT> {
         onListen: () async {
           try {
             //await Future<void>.delayed(const Duration(seconds: 1));
+            isSaving = true;
             if (resultado.respoponente == '') {
+              //usuarios = await UsuariosService().loadUsuarios();
               while ((resultado.respcreador != '' &&
-                      resultado.respoponente == '') ||
-                  contadorStream <= 60) {
+                      resultado.respoponente == '') &&
+                  contadorStream <= 20) {
                 //await Future<void>.delayed(const Duration(seconds: 7));
                 contadorStream = contadorStream + 20;
                 await Future.delayed(const Duration(seconds: 20), () async {
@@ -170,14 +177,79 @@ class _PPTState extends State<PPT> {
                   controller.add(i++);
                   //setState(() {});
                 });
+
+                //TODO: DEAQUIBORRAR
+                /*if (resultado.respcreador != '' &&
+                    resultado.respoponente != '' &&
+                    resta == 0) {
+                  //loPuse para refrescar obj de usuario
+                  await UsuariosService().loadUsuarios();
+                  Future.delayed(const Duration(seconds: 7), () async {
+                    //TODO:Subir aqui el Delayed
+                    final yindex = usuarios.indexWhere((yelement) =>
+                        (yelement.email == resultado.usridcreador));
+                    //obtengo idBolsa del adversario
+                    final yidBolsaindex = usuarios.indexWhere(
+                        (yelement) => (yelement.id == usuarios[yindex].id));
+                    yusr2Id = usuarios[yidBolsaindex].id;
+                    final yurl =
+                        Uri.https(_baseUrl, 'usuarios/games/$yusr2Id.json');
+                    //calculo index del ganador
+                    /*final xindex =
+              usuarios.indexWhere((xelement) => (xelement.id == idBolsaS));*/
+                    //final yusuario = json.encode(usuarios[yidBolsaindex]);
+                    final yresp = await http.put(yurl,
+                        body: usuarios[yidBolsaindex].toJson());
+
+                    final ydecodedData = json.decode(yresp.body);
+                    int? xbperdedor = 0;
+                    int? xbolsapartida = 0;
+                    /*print(
+                'MMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMMobj usr2 solo: $ydecodedData, objt2: ${ydecodedData['bolsa']}');*/
+                    //print(
+                    //'index del perdedor: $yindex, idName: ${usuarios[yidBolsaindex].id}');
+                    /*final yurl = Uri.https(
+              _baseUrl, 'usuarios/games/$yusuario.json');
+          final yresp = await http.put(yurl, body: usuarios[yindex].toJson());
+          final ydecodedData = json.decode(yresp.body);*/
+                    //print('ydecodedData infoPerdedor: $ydecodedData');
+                    //xbperdedor = (ydecodedData['bolsa']);
+                    //partidas[index].montototal = partida.montototal;
+                    xbolsapartida = (resultado.montototal);
+                    //PN-xbolsapartida = xbolsapartida;
+                    //ydecodedData['bolsa'] = (xbperdedor! - xbolsapartida!);
+                    usuarios[yidBolsaindex].bolsa =
+                        (usuarios[yidBolsaindex].bolsa! - xbolsapartida);
+                    usuarios[yidBolsaindex].menosbolsa =
+                        (usuarios[yidBolsaindex].menosbolsa! + xbolsapartida);
+                    //resta == 0;
+                    //notifyListeners();
+                  });
+                  resultado.respoponente = '';
+                  //resultado.respcreador = '';
+                }*/
+                //TODO: DEAQUITERMINABORRAR
+
               }
+              //resta++;
               //contadorStream = 0;
               xbandera = true;
               //await controller.close();
               print(
                   "Ya respondió, o simplemente finalizó el tiempo del stream para no ejecutarse.");
+              //isSaving = false;
+              await controller.close();
+              /*PartidasServices().refrescaTarjetas();
+              PartidasServices().refrescaUsuarios();
+              isSaving = false;*/
+              Navigator.pushNamed(context, 'partidas_ppt');
             } else {
               controller.add(i++);
+              await controller.close();
+              /*PartidasServices().refrescaTarjetas();
+              PartidasServices().refrescaUsuarios();
+              isSaving = false;*/
+              Navigator.pushNamed(context, 'partidas_ppt');
               print(
                   "Excepción, ya no esperamos la respOponente por que ya se tiene en BD o terminó el tiempo de ejecución del while.");
             }
@@ -199,6 +271,9 @@ class _PPTState extends State<PPT> {
             /*await widget.partidaService
             .updateTarjeta(partida, tarjeta, enviousrcreador);*/
             await controller.close();
+            /*PartidasServices().refrescaTarjetas();
+            PartidasServices().refrescaUsuarios();*/
+            isSaving = false;
           } catch (e) {
             print('error en stream, esperando respuesta de usr oponente: $e');
           }

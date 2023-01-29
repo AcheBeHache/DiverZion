@@ -25,12 +25,12 @@ class AdminusrGame1 {
 
   String? avatar;
   String? apodo;
-  double? bolsa;
+  int? bolsa;
   int? cinvbolsa;
   String? codigoinv;
-  double? comisionbolsa;
+  int? comisionbolsa;
   String email;
-  double? masbolsa;
+  int? masbolsa;
   int? menosbolsa;
   int? bolsaRetenida;
   String? ultActualizacion;
@@ -104,12 +104,12 @@ class UsrGame {
 
   String? avatar;
   String? apodo;
-  double? bolsa;
+  int? bolsa;
   int? cinvbolsa;
   String? codigoinv;
-  double? comisionbolsa;
+  int? comisionbolsa;
   String email;
-  double? masbolsa;
+  int? masbolsa;
   int? menosbolsa;
   int? bolsaRetenida;
   String? ultActualizacion;

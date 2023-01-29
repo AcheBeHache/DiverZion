@@ -6,15 +6,24 @@ class InputDecorations {
       required String labelText,
       IconData? prefixIcon}) {
     return InputDecoration(
-        enabledBorder: const UnderlineInputBorder(
-          borderSide: BorderSide(color: Colors.deepPurple),
+        filled: true,
+        fillColor: const Color.fromRGBO(112, 90, 254, 1),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(25.0),
         ),
-        focusedBorder: const UnderlineInputBorder(
-            borderSide: BorderSide(color: Colors.deepPurple, width: 2)),
+        enabledBorder: UnderlineInputBorder(
+          borderSide: const BorderSide(color: Colors.deepPurple),
+          borderRadius: BorderRadius.circular(25.0),
+        ),
+        focusedBorder: UnderlineInputBorder(
+          borderSide: const BorderSide(
+              color: Color.fromRGBO(192, 115, 237, 1), width: 2),
+          borderRadius: BorderRadius.circular(25.0),
+        ),
         hintText: hintText,
         labelText: labelText,
-        labelStyle: const TextStyle(color: Colors.grey),
+        labelStyle: const TextStyle(color: Colors.white),
         prefixIcon:
-            const Icon(Icons.alternate_email_sharp, color: Colors.deepPurple));
+            prefixIcon != null ? Icon(prefixIcon, color: Colors.white) : null);
   }
 }

@@ -13,10 +13,18 @@ import 'package:provider/provider.dart';
 //import 'package:app_game/screens/ppt.dart';
 import 'package:app_game/screens/screens.dart';
 import 'package:app_game/services/services.dart';
+import 'package:app_game/navigator_key.dart';
 
 //import 'package:app_game/screens/home_screen.dart';
 
-void main() => runApp(AppState());
+void main() {
+  //Tengo que agregar la licencia de mi tipografía Montserrat
+  /*LicenseRegistry.addLicense(() async* {
+    final license = await rootBundle.loadString('google_fonts/OFL.txt');
+    yield LicenseEntryWithLineBreaks(['google_fonts'], license);
+  });*/
+  runApp(AppState());
+}
 
 class AppState extends StatefulWidget {
   @override
@@ -50,6 +58,7 @@ class _MyAppState extends State<MyApp> {
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Productos App (usrs: xx)',
+      navigatorKey: navigatorKey,
       initialRoute: 'login',
       routes: {
         'checking': (_) => CheckAuthScreen(),
@@ -66,10 +75,25 @@ class _MyAppState extends State<MyApp> {
       },
       scaffoldMessengerKey: NotificationsService.messengerKey,
       theme: ThemeData.light().copyWith(
-          scaffoldBackgroundColor: Colors.grey[300],
-          appBarTheme: const AppBarTheme(elevation: 0, color: Colors.indigo),
+          //brightness: Brightness.dark,
+          //primaryColor: Colors.red,
+          /*inputDecorationTheme: const InputDecorationTheme(
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(width: 3, color: Colors.greenAccent),
+            ),
+            focusedBorder: OutlineInputBorder(
+              borderSide: BorderSide(width: 3, color: Colors.amberAccent),
+            ),
+          ),*/
+          textTheme:
+              GoogleFonts.montserratTextTheme(Theme.of(context).textTheme),
+          scaffoldBackgroundColor: const Color.fromRGBO(251, 160, 254, 0.9),
+          appBarTheme: const AppBarTheme(
+              elevation: 0, color: Color.fromRGBO(112, 90, 254, 1)),
           floatingActionButtonTheme: const FloatingActionButtonThemeData(
-              backgroundColor: Colors.indigo, elevation: 0)),
+              backgroundColor: Color.fromRGBO(112, 90, 254, 1), elevation: 0),
+          colorScheme:
+              ColorScheme.fromSwatch().copyWith(secondary: Colors.cyan[600])),
     );
   }
 }

@@ -145,7 +145,7 @@ class _TerminoState extends State<_Termino> {
 }
 
 class _PriceTag extends StatefulWidget {
-  final double price;
+  final int price;
 
   const _PriceTag(this.price);
 

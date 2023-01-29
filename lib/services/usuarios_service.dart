@@ -4,14 +4,20 @@
 import 'dart:convert';
 import 'dart:io';
 import 'package:app_game/models/models.dart';
+import 'package:app_game/screens/home_screen.dart';
+//PN1-import 'package:app_game/screens/partida_pptscreen.dart';
 import 'package:date_format/date_format.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+int peticiones = 0;
+int cuente = 0;
+
 class UsuariosService extends ChangeNotifier {
   final String _baseUrl = 'pptgame-d06ee-default-rtdb.firebaseio.com';
   List<UsrGame> usuarios = [];
+  List<UsrGame> xusuarios = [];
   //1 de 3: Para guadar id de la bolsa del usuario actual en el storage
   final storage = const FlutterSecureStorage();
 
@@ -40,33 +46,86 @@ class UsuariosService extends ChangeNotifier {
   UsuariosService() {
     if (usuarios.isNotEmpty) {
       //usuarios.clear();
+      print(
+          "CREOBORRAR1: aplica el loadUsuarios en el if true. $contador, usuarios_service.dart.");
       loadUsuarios();
+      //xloadUsuario();
     } else {
       //usuarios.clear();
+      print(
+          "CREOBORRAR2: aplica el loadUsuarios en el if false. $contador, usuarios_service.dart.");
       loadUsuarios();
+      //xloadUsuario();
     }
   }
-  Future loadUsuarios() async {
-    isLoading = true;
-    //usuarios.clear();
-    notifyListeners();
-    print('se cargan usuarios desde usuarios_Services, 1 consulta get');
-    final url = Uri.https(_baseUrl, 'usuarios/games.json');
-    final resp = await http.get(url);
+  Future<List<UsrGame>> loadUsuarios() async {
+    try {
+      cuente++;
+      isLoading = true;
+      notifyListeners();
+      //usuarios = [];
+      peticiones = peticiones++;
+      print('se cargan usuarios desde usuarios_Services, 1 consulta get');
+      final url = Uri.https(_baseUrl, 'usuarios/games.json');
+      final resp = await http.get(url);
 
-    final Map<String, dynamic> usuariosMap = json.decode(resp.body);
-    usuarios.clear();
-    usuariosMap.forEach((key, value) {
-      final tempUsuarios = UsrGame.fromMap(value);
-      //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
-      tempUsuarios.id = key;
+      final Map<String, dynamic> usuariosMap = json.decode(resp.body);
+      //usuarios.clear();
+      usuariosMap.forEach((key, value) {
+        final tempUsuarios = UsrGame.fromMap(value);
+        //hacer prueba con el id normal, en teoría, espero que con eso o hay necesidad de ponerle el null en los ifs
+        tempUsuarios.id = key;
+        usuarios.add(tempUsuarios);
+      });
+      //print(usuarios[1].email);
+      print('vuelta #:$cuente');
+      isLoading = false;
+      notifyListeners();
+      return usuarios;
+    } catch (e) {
+      print('catch de loadUsuarios: $e');
+      return usuarios;
+    }
+  }
 
-      usuarios.add(tempUsuarios);
-    });
-    //print(usuarios[1].email);
-    isLoading = false;
+  //actualizar partida
+  /*Future<String> updatePartida(Ppt partida) async {
+    isSaving = true;
     notifyListeners();
-    return usuarios;
+    final url = Uri.https(_baseUrl, 'partidas_ppt/${partida.id}.json');
+    final resp = await http.put(url, body: partida.toJson());
+    final decodedData = json.decode(resp.body);
+    //TODO: Actualizar el listado de productos
+    final index = partidas.indexWhere((element) => element.id == partida.id);
+    partidas[index] = partida;
+    isSaving = false;
+    notifyListeners();
+    return partida.id!;
+  }*/
+  Future xloadUsuario(String usrId) async {
+    try {
+      isLoading = true;
+      notifyListeners();
+      print('se carga el usr desde usuarios_Services, 1 consulta get');
+      final xurl = Uri.https(_baseUrl, 'usuarios/games/$usrId.json');
+      final xresp = await http.get(xurl);
+      final decodedData = json.decode(xresp.body);
+      print(
+          'Usuario desde usuarios_service.dart, aplico xloadUsuario: $decodedData');
+      print(
+          'se muestra 1 sólo usr desde usuarios_service:\nid: ${decodedData['id']},\n email: ${decodedData['email']}, poder: ${decodedData['bolsa']}');
+      //escribo el poder en bolsa del usr:
+      await storage.write(
+          key: 'poderBolsa', value: decodedData['bolsa'].toString());
+      await storage.write(key: 'idBolsa', value: decodedData['id'].toString());
+      //String? bolsaValue = await storage.read(key: 'idBolsa');
+      //String? poderValue = await storage.read(key: 'poderBolsa');
+      isLoading = false;
+      notifyListeners();
+      return decodedData;
+    } catch (e) {
+      print('try del catch xloadUsuarios: $e');
+    }
   }
 
   Future saveOrCreateUsuario(perfil) async {
@@ -178,41 +237,48 @@ class UsuariosService extends ChangeNotifier {
       /*final url = Uri.https(_baseUrl, 'usuarios/games.json');
       final resp = await http.get(url);
       final decodedData = json.decode(resp.body);*/
-      if (usuarios == []) {
+      /*if (usuarios == []) {
         loadUsuarios();
-      }
+      }*/
 
       print('entra a obtenerUsuario desde usuarios_services, 1 solicitud.');
 
       final index = usuarios.indexWhere((element) => element.email == rrvalor);
-      print('usrs Treal: $usuarios');
+      //print('usrs Treal: $usuarios');
       if (index == -1 || index == null) {
         print('crearle tarjeta');
         //await storage.write(key: 'idBolsa', value: decodedData['name']);
         //print(decodedData['name']);
         //createUsuario();
-        //TODO: Checar el retorno de este obj
+        //TODO: implementar la técnica que realicé en el HomePage para consultar el perfil que completa y crea usr
         //return index;
       } else {
         //print('info usuarios[index]: ${usuarios[index].email}');
         //usuarios[index] = usuarios[index];
         //print('usuarios retornados: ${usuarios[index]}');
-        print(
-            'Escribo en localstorage el idBolsa del usr y el poder en bolsa. Al obtener usr');
+        if (usuarios[index].id != rrvalor || usuarios[index].id != '') {
+          print(
+              'Escribo en localstorage el idBolsa del usr y el poder en bolsa. Al obtener usr');
 
-        //TODO: crearle la validación de que si es el email de firebase igual al del email del Storage se ejecuta la siguente línea sino no.
-        //Para no sobreescribir en el dispositivo del usr
-        await storage.write(key: 'idBolsa', value: usuarios[index].id);
-        String? bolsaValue = await storage.read(key: 'idBolsa');
-
-        //escribo el poder en bolsa del usr:
-        await storage.write(
+          //TODO: crearle la validación de que si es el email de firebase igual al del email del Storage se ejecuta la siguente línea sino no.
+          //Para no sobreescribir en el dispositivo del usr
+          await storage.write(key: 'idBolsa', value: usuarios[index].id);
+          String? bolsaValue = await storage.read(key: 'idBolsa');
+          await storage.write(
+              key: 'poderBolsa', value: usuarios[index].bolsa.toString());
+          String? poderValue = await storage.read(key: 'poderBolsa');
+          //xloadUsuario(bolsaValue!);
+          //escribo el poder en bolsa del usr:
+          /*await storage.write(
             key: 'poderBolsa', value: usuarios[index].bolsa.toString());
-        String? poderValue = await storage.read(key: 'poderBolsa');
-        //Todo: Descomentar este print para optimizar la app
-        print(
-            'idBolsa al obtener usr: $bolsaValue, poder: $poderValue desde usuarios_service.');
-
+        String? poderValue = await storage.read(key: 'poderBolsa');*/
+          //Todo: Descomentar este print para optimizar la app
+          print(
+              'LOCALSTORAGE: idBolsa al obtener idBolsa: $bolsaValue, poderBolsa: $poderValue desde usuarios_service.');
+        } else {
+          print(
+              'Falta que realices el cambio de tu ávatar. Desde obtenerUsr, usuarios:service.dart');
+        }
         return index;
       }
       /*usuarios[index] = usuarios[index];
@@ -225,9 +291,12 @@ class UsuariosService extends ChangeNotifier {
     notifyListeners();*/
       //return usuarios;
     } catch (e) {
-      print("error en función obtener usuario: $e");
+      print("error en función obtener usuario: $e, usuarios_service.dart");
     }
   }
+  //inicia obtención de status en tarjeta
+
+  //finaliza obtención de status en tarjeta
 
   Future<String> createUsuario(UsrGame usr) async {
     isSaving = true;

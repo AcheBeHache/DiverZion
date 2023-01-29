@@ -41,7 +41,7 @@ class _CardSwiperState extends State<CardSwiper> {
   //const CardSwiper({super.key, required this.tarjetas});
   String enviousrcreador = '';
   String idBolsaS = '';
-  int usuario = 0;
+  int usuarioNum = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -56,7 +56,7 @@ class _CardSwiperState extends State<CardSwiper> {
         print('Entró a mostrar info de usr en screen de card_swiper.dart');
         String? rrvalue = await authService.storage.read(key: 'usremail');
         enviousrcreador = rrvalue!;
-        usuario = await usuariosService.obtenerUsuario(enviousrcreador);
+        usuarioNum = await usuariosService.obtenerUsuario(enviousrcreador);
         //print('usuario: $usuario');
         String? bolsaValue = await authService.storage.read(key: 'idBolsa');
         idBolsaS = bolsaValue!;
@@ -68,7 +68,7 @@ class _CardSwiperState extends State<CardSwiper> {
     }
 
     //3de4 para mostrar usr
-    if (enviousrcreador == '') {
+    if (enviousrcreador == '' || idBolsaS == '') {
       mostrarusr();
     }
     //final tarjetasProvider = Provider.of<OpcionesPPTProvider>(context);
@@ -82,7 +82,7 @@ class _CardSwiperState extends State<CardSwiper> {
     final partida = partidaForm.partida;
     //print('status partida 1: ${partida.status}');
     //print(usuariosService.);
-    final usuariosLista = usuariosService.usuarios[usuario];
+    final usuariosLista = usuariosService.usuarios[usuarioNum];
     //print('usuario: ${usuariosLista.email}');
     //print('usuarioLista enviado: $usuariosLista');
     final size = MediaQuery.of(context).size;
@@ -118,6 +118,7 @@ class _CardSwiperState extends State<CardSwiper> {
             onTap: widget.partidaService.isSaving
                 ? null
                 : () async {
+                    //cont_ppt = 0;
                     if (!partidaForm.isValidForm()) return;
 
                     final String? imageUrl =
@@ -181,6 +182,7 @@ class _CardSwiperState extends State<CardSwiper> {
                           _timer?.cancel();
                         }*/
                       }
+                      //PartidasServices().refrescaTarjetas();
                     }
                     //apartar partida
                     //Antes de apartar partida se valida que se tenga efectivo en la bolsa
@@ -244,8 +246,8 @@ class _CardSwiperState extends State<CardSwiper> {
               borderRadius: BorderRadius.circular(20),
               child: FadeInImage(
                 placeholder: const AssetImage('assets/images/no-image.png'),
-                image: NetworkImage(tarjeta.img),
-                //image: AssetImage('assets/images/no-image.png'),
+                image: AssetImage(tarjeta.img),
+                //image: NetworkImage('rutahttp...'),
                 fit: BoxFit.cover,
               ),
             ),

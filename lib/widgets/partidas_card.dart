@@ -21,7 +21,7 @@ class _PartidasCardState extends State<PartidasCard> {
       child: Container(
         margin: const EdgeInsets.only(top: 30, bottom: 50),
         width: double.infinity,
-        height: 400,
+        height: 280,
         decoration: _cardBorders(),
         child: Stack(
           alignment: Alignment.bottomLeft,
@@ -30,9 +30,11 @@ class _PartidasCardState extends State<PartidasCard> {
 
             _ProductDetails(
               finicio: widget.partida.fechainicio,
-              ffin: widget.partida.fechafin,
+              ffin: widget.partida.fechafin!,
               //TODO: Aquí, obtener el creador para poner del objeto USR el apodo del usr
               creador: widget.partida.usridcreador,
+              oponente: widget.partida.usridoponente!,
+              ganador: widget.partida.usridwin!,
             ),
 
             Positioned(
@@ -55,11 +57,13 @@ class _PartidasCardState extends State<PartidasCard> {
   }
 
   BoxDecoration _cardBorders() => BoxDecoration(
-          color: Colors.white,
+          color: Colors.purple.shade100,
           borderRadius: BorderRadius.circular(25),
-          boxShadow: const [
+          boxShadow: [
             BoxShadow(
-                color: Colors.black12, offset: Offset(0, 7), blurRadius: 10)
+                color: Colors.purple.shade500,
+                offset: const Offset(0, 7),
+                blurRadius: 10)
           ]);
 }
 
@@ -74,9 +78,9 @@ class _NotAvailableState extends State<_NotAvailable> {
     return Container(
       width: 100,
       height: 70,
-      decoration: BoxDecoration(
-          color: Colors.yellow[800],
-          borderRadius: const BorderRadius.only(
+      decoration: const BoxDecoration(
+          color: Color.fromRGBO(212, 207, 41, 0.7),
+          borderRadius: BorderRadius.only(
               topLeft: Radius.circular(25), bottomRight: Radius.circular(25))),
       child: const FittedBox(
         fit: BoxFit.contain,
@@ -103,9 +107,9 @@ class _AvailableState extends State<_Available> {
     return Container(
       width: 100,
       height: 70,
-      decoration: BoxDecoration(
-          color: Colors.green[800],
-          borderRadius: const BorderRadius.only(
+      decoration: const BoxDecoration(
+          color: Color.fromRGBO(76, 185, 59, 0.6),
+          borderRadius: BorderRadius.only(
               topLeft: Radius.circular(25), bottomRight: Radius.circular(25))),
       child: const FittedBox(
         fit: BoxFit.contain,
@@ -133,7 +137,7 @@ class _TerminoState extends State<_Termino> {
       width: 100,
       height: 70,
       decoration: BoxDecoration(
-          color: Colors.grey[700],
+          color: Colors.grey[500],
           borderRadius: const BorderRadius.only(
               topLeft: Radius.circular(25), bottomRight: Radius.circular(25))),
       child: const FittedBox(
@@ -167,7 +171,7 @@ class _PriceTagState extends State<_PriceTag> {
       height: 70,
       alignment: Alignment.center,
       decoration: const BoxDecoration(
-          color: Colors.indigo,
+          color: Color.fromRGBO(108, 44, 218, 0.7),
           borderRadius: BorderRadius.only(
               topRight: Radius.circular(25), bottomLeft: Radius.circular(25))),
       child: FittedBox(
@@ -185,9 +189,15 @@ class _ProductDetails extends StatefulWidget {
   final String finicio;
   final String? ffin;
   final String creador;
+  final String? oponente;
+  final String? ganador;
 
   const _ProductDetails(
-      {required this.finicio, this.ffin, required this.creador});
+      {required this.finicio,
+      this.ffin,
+      required this.creador,
+      this.oponente,
+      this.ganador});
 
   @override
   State<_ProductDetails> createState() => _ProductDetailsState();
@@ -201,37 +211,75 @@ class _ProductDetailsState extends State<_ProductDetails> {
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
         width: double.infinity,
-        height: 70,
+        height: 90,
         decoration: _buildBoxDecoration(),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              'Fijada el: ${widget.finicio}',
-              style: const TextStyle(
-                  fontSize: 15,
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold),
-              maxLines: 1,
-              overflow: TextOverflow.ellipsis,
-            ),
-            Text(
-              'Fecha de cierre: ${widget.ffin}',
-              style: const TextStyle(fontSize: 11, color: Colors.white),
-            ),
-            Text(
-              'vs granja de: ${widget.creador[0].toUpperCase()}${widget.creador.substring(1).split('@')[0]}',
-              //${rrvalue![0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}
-              style: const TextStyle(fontSize: 11, color: Colors.white),
-            ),
-          ],
+        child: SingleChildScrollView(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                'Fijada el:     ${widget.finicio}',
+                style: const TextStyle(fontSize: 14, color: Colors.white),
+                maxLines: 1,
+                //overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                'Cerró el:      ${widget.ffin}',
+                style: const TextStyle(fontSize: 14, color: Colors.white),
+                maxLines: 1,
+                //overflow: TextOverflow.ellipsis,
+              ),
+              Text(
+                'Creador:     ${widget.creador[0].toUpperCase()}${widget.creador.substring(1).split('@')[0]}',
+                //${rrvalue![0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}
+                style: const TextStyle(
+                    fontSize: 14,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
+              ),
+              (widget.oponente!.isNotEmpty)
+                  ? Text(
+                      'Oponente:  ${widget.oponente![0].toUpperCase()}${widget.oponente!.substring(1).split('@')[0]}',
+                      //${rrvalue![0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}
+                      style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    )
+                  : const Text(
+                      'Oponente: ',
+                      //${rrvalue![0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    ),
+              (widget.ganador!.isNotEmpty)
+                  ? Text(
+                      'Ganador:    ${widget.ganador![0].toUpperCase()}${widget.ganador!.substring(1).split('@')[0]}',
+                      //${rrvalue![0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}
+                      style: const TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    )
+                  : const Text(
+                      'Ganador: ',
+                      //${rrvalue![0].toUpperCase()}${rrvalue.substring(1).split('@')[0]}
+                      style: TextStyle(
+                          fontSize: 14,
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold),
+                    )
+            ],
+          ),
         ),
       ),
     );
   }
 
   BoxDecoration _buildBoxDecoration() => const BoxDecoration(
-      color: Colors.indigo,
+      color: Color.fromRGBO(108, 44, 218, 0.7),
       borderRadius: BorderRadius.only(
           bottomLeft: Radius.circular(25), topRight: Radius.circular(25)));
 }

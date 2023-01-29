@@ -175,7 +175,7 @@ class _UsuarioFormState extends State<_UsuarioForm> {
           child: Column(
             children: [
               /*Agregar campo de última modificación*/
-              const SizedBox(height: 10),
+              const SizedBox(height: 15),
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
@@ -191,7 +191,9 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                   return null;
                 },*/
                 decoration: InputDecorations.authInputDecoration(
-                    hintText: 'YYYY/MM/DD', labelText: 'Últ. Modificación:'),
+                    hintText: 'YYYY/MM/DD',
+                    labelText: 'Últ. Modificación:',
+                    prefixIcon: (Icons.cloud_sync_outlined)),
               ),
               /*const SizedBox(height: 30),
               TextFormField(
@@ -203,13 +205,16 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'códigoPadre', labelText: 'Padre Código: '),
               ),*/
-              const SizedBox(height: 30),
+              const SizedBox(height: 15),
               TextFormField(
+                style: const TextStyle(color: Colors.white),
                 initialValue: usuario.apodo,
                 onChanged: (value) => usuario.apodo = value,
                 keyboardType: TextInputType.text,
                 decoration: InputDecorations.authInputDecoration(
-                    hintText: 'apodo', labelText: 'Apodo: '),
+                    hintText: 'apodo',
+                    labelText: 'Apodo: ',
+                    prefixIcon: (Icons.add_reaction_rounded)),
               ),
               /*const SizedBox(height: 30),
               TextFormField(
@@ -240,7 +245,7 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'usridFirebase', labelText: 'Usuario: '),
               ),*/
-              const SizedBox(height: 30),
+              const SizedBox(height: 15),
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
@@ -259,8 +264,10 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'Rango del 1 al 99',
-                    labelText: 'Poder en juego:'),
+                    labelText: 'Poder en juego:',
+                    prefixIcon: (Icons.dashboard)),
               ),
+              const SizedBox(height: 15),
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
@@ -279,7 +286,8 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'Rango del 1 al 99',
-                    labelText: 'Bolsa Retenida:'),
+                    labelText: 'Bolsa Retenida:',
+                    prefixIcon: (Icons.dashboard_outlined)),
               ),
               /*const SizedBox(height: 30),
               TextFormField(
@@ -317,7 +325,7 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                     hintText: 'Rango del 1 al 99',
                     labelText: 'Comisión retenida por ganes:'),
               ),*/
-              const SizedBox(height: 30),
+              const SizedBox(height: 15),
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
@@ -334,9 +342,10 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'Máximo 300 al día',
-                    labelText: 'Ganado del día en bolsa:'),
+                    labelText: 'Ganado del día en bolsa:',
+                    prefixIcon: (Icons.dashboard_customize_rounded)),
               ),
-              const SizedBox(height: 30),
+              const SizedBox(height: 15),
               TextFormField(
                 enabled: false,
                 style: deshabilitarTxts,
@@ -353,7 +362,8 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                 keyboardType: TextInputType.number,
                 decoration: InputDecorations.authInputDecoration(
                     hintText: 'Máximo 80 al día',
-                    labelText: 'Pérdida al día en bolsa:'),
+                    labelText: 'Pérdida al día en bolsa:',
+                    prefixIcon: (Icons.dataset_linked_outlined)),
               ),
               /*const SizedBox(height: 30),
               SwitchListTile.adaptive(
@@ -365,7 +375,7 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                   subtitle: Text('${usuario.status}.'),
                   activeColor: Colors.indigo,
                   onChanged: usuarioForm.updateStatus),*/
-              const SizedBox(height: 30),
+              const SizedBox(height: 15),
               //TODO: Falta crearle un código de invitación desde el homescreen
               TextFormField(
                 enabled: false,
@@ -376,7 +386,9 @@ class _UsuarioFormState extends State<_UsuarioForm> {
                 //onChanged: (value) => usuario.codigoinv = value,
                 keyboardType: TextInputType.text,
                 decoration: InputDecorations.authInputDecoration(
-                    hintText: 'código', labelText: 'Tu código de invitación: '),
+                    hintText: 'código',
+                    labelText: 'Tu código de invitación: ',
+                    prefixIcon: (Icons.group_add_rounded)),
               ),
               const SizedBox(height: 30),
             ],
@@ -387,13 +399,13 @@ class _UsuarioFormState extends State<_UsuarioForm> {
   }
 
   BoxDecoration _buildBoxDecoration() => BoxDecoration(
-          color: Colors.white,
+          color: const Color.fromRGBO(137, 25, 161, 0.2),
           borderRadius: const BorderRadius.only(
               bottomRight: Radius.circular(25),
               bottomLeft: Radius.circular(25)),
           boxShadow: [
             BoxShadow(
-                color: Colors.black.withOpacity(0.05),
+                color: Colors.indigo.withOpacity(0.05),
                 offset: const Offset(0, 5),
                 blurRadius: 5)
           ]);

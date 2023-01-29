@@ -1,20 +1,22 @@
 //import 'dart:async';
 //import 'dart:html';
 //import 'package:app_game/bloc/peticionesppt_bloc.dart';
+//import 'package:app_game/bloc/peticionesppt_bloc.dart';
 //import 'package:app_game/screens/ppt.dart';
 //import 'package:flutter_secure_storage/flutter_secure_storage.dart';
-import 'package:app_game/screens/partida_pptscreen.dart';
-import 'package:date_format/date_format.dart';
-//import 'package:app_game/bloc/peticionesppt_bloc.dart';
 import 'package:app_game/models/models.dart';
+import 'package:app_game/screens/partida_pptscreen.dart';
 import 'package:app_game/screens/screens.dart';
 import 'package:app_game/services/services.dart';
 import 'package:app_game/widgets/widgets.dart';
+import 'package:date_format/date_format.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:liquid_pull_to_refresh/liquid_pull_to_refresh.dart';
 
 final List<Opcion> tarjetas = [];
 String usrcreador = '';
+int num_cont = 0;
 
 class PARTIDASPPT extends StatefulWidget {
   const PARTIDASPPT({Key? key}) : super(key: key);
@@ -32,6 +34,9 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
   //Para iniciar la instancia del StreamBuilder, usando nuestro archivo bloc
   //final peticionesBloc = PeticionesPPTBloc();
   //prueba usr
+  void navegar() async {
+    Navigator.of(context).pushNamed('/partidas_ppt');
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -39,6 +44,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
     //Obtenemos el usr - idToken
     final authService = Provider.of<AuthService>(context, listen: false);
     //final PartidasServices partidas;
+
     mostrarusr() async {
       //String? rrvalue = await AuthService().readEmail();
       //String? valor = await authService.storage.read(key: 'usremail');
@@ -68,8 +74,12 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
     }
 
     //ejecutamos la función para mostrar usrname
-    if (usrcreador == '') {
+    if ((usrcreador == '' || usrcreador != '') && num_cont == 0) {
+      num_cont++;
+      //TODO: ESTAif (usrcreador != (rrvalue.toLowerCase())) {
       mostrarusr();
+      print('NNNUM_CONT: $num_cont');
+      //}
     }
     final partidasService = Provider.of<PartidasServices>(context);
     final usuariosService = Provider.of<UsuariosService>(context);
@@ -109,16 +119,26 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
           ),*/
           elevation: 8.0,
         ),
-        backgroundColor: Colors.amber.shade100,
-        body: RefreshIndicator(
-          color: Colors.yellow.shade600,
+        backgroundColor: const Color.fromRGBO(239, 184, 16, 0.9),
+        //body: RefreshIndicator(
+        body: LiquidPullToRefresh(
+          height: 300,
+          showChildOpacityTransition: true,
+          //color: const Color.fromRGBO(212, 207, 41, 0.7),
+          color: Colors.deepPurpleAccent.shade200,
+          borderWidth: 4.0,
+          springAnimationDurationInMilliseconds: 1000,
+          //color: const Color.fromRGBO(151, 195, 240, 1),
+          //backgroundColor: const Color.fromRGBO(200, 201, 230, 0.7),
+          backgroundColor: const Color.fromRGBO(212, 207, 41, 0.8),
+          animSpeedFactor: 10,
           child: ListView.builder(
               //separatorBuilder: ((_, __) => const Divider()),
               //return ListView.builder(
               //NoJalascrollDirection: Axis.horizontal,
               itemCount: partidasService.partidas.length,
               itemBuilder: (BuildContext context, int index) => GestureDetector(
-                  onTap: () {
+                  onTap: () async {
                     //Aquí tenemos que cambiar la funcionalidad "total", pero dirigir con los datos a la ventana (PPT) para comenzar el juego
                     //Me quedé aqui para hacer pruebas de visualizar y copiar únicamente las cards con status 1y2
                     /*partidasService.selectedPartidas =
@@ -145,26 +165,62 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                             partidasService.partidas[index].usridoponente ==
                                 null)) {
                       //TODO: Antes de apartar, checar su bolsa del usr
-                      partidasService.apartaPartida(
-                          partidasService.partidas[index],
-                          tarjetas,
-                          usrcreador);
-                      //se crea el segundo apartaPartida para apartar en firebase. QS
-                      //TODO: FirebaseEjecución
-                      Future.delayed(const Duration(seconds: 2), () {
-                        partidasService.apartaPartida(
-                            partidasService.partidas[index],
-                            tarjetas,
-                            usrcreador);
-                      });
-                      //inicia validación de bolsa y status en T.real
-
-                      //TODO: DarSeguimiento, inicia validación de bolsa y status en T.real
-                      if (partidasService.partidas[index].status == 1) {
-                        Navigator.pushNamed(context, 'partida');
-                      }
-                      if (partidasService.partidas[index].status == 2) {
-                        print("Ya la apartaron");
+                      rrvalue =
+                          (await authService.storage.read(key: 'usremail'))!;
+                      var daUsr = await UsuariosService().loadUsuarios();
+                      infoUsr = await usuariosService.obtenerUsuario(rrvalue);
+                      //2)verifico que tenga poder mayor a 1o pesos en bolsa
+                      //Future.delayed(const Duration(seconds: 2), () {
+                      final decodedData = await usuariosService
+                          .xloadUsuario(daUsr[infoUsr!].id!);
+                      diverzcoin = decodedData['bolsa'].toString();
+                      var partidas = await PartidasServices().loadPartidas();
+                      if (partidas.isNotEmpty) {
+                        if ((int.parse(diverzcoin!) >=
+                            partidas[index].montototal)) {
+                          if (partidas[index].status == 1) {
+                            partidasService.apartaPartida(
+                                partidasService.partidas[index],
+                                tarjetas,
+                                usrcreador);
+                            //se crea el segundo apartaPartida para apartar en firebase. QS
+                            //TODO: FirebaseEjecución
+                            Future.delayed(const Duration(seconds: 1),
+                                () async {
+                              //TODO: BORRAR ES PRUEBA ESTA CARGA DE refrescaTarjetas
+                              PartidasServices().refrescaTarjetas();
+                              if (partidas[index].status == 2) {
+                                NotificationsService.showSnackbar(
+                                    "Creador terminó partida. Refresca y busca una nueva. O crea una.");
+                              }
+                              if (partidas[index].status == 1) {
+                                partidasService.apartaPartida(
+                                    partidasService.partidas[index],
+                                    tarjetas,
+                                    usrcreador);
+                              }
+                            });
+                            Navigator.pushNamed(context, 'partida');
+                            //inicia validación de bolsa y status en T.real
+                          }
+                          //TODO: DarSeguimiento, inicia validación de bolsa y status en T.real
+                          if (partidas[index].status == 2) {
+                            print("Ya la apartaron, no redirijo");
+                            NotificationsService.showSnackbar(
+                                "Ya te la ganaron! Refresca y busca nueva partida. O crea una.");
+                          }
+                          if (partidas[index].status == 3) {
+                            print("Ya finalizó");
+                            NotificationsService.showSnackbar(
+                                "Ya finalizó! Refresca y busca nueva partida. O crea una.");
+                          }
+                        } else {
+                          NotificationsService.showSnackbar(
+                              "No tienes poder suficiente, realiza una recarga de poder e intenta de nuevo.");
+                        }
+                      } else {
+                        NotificationsService.showSnackbar(
+                            "Sin partida disponible, refresca y elige, o crea una nueva partida.");
                       }
                       /*NotificationsService.showSnackbar(
                           "Otro la hizo, deseas ser el oponente?, envía la notificación al creador!");*/
@@ -272,8 +328,7 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
             return Future.delayed(const Duration(seconds: 1), () {
               setState(() {
                 partidasService.refrescaTarjetas();
-                //partidasService.loadUsuarios();
-                usuariosService.loadUsuarios();
+                partidasService.refrescaUsuarios();
               });
               //Navigator.pushNamed(context, 'pptpartida');
             });
@@ -307,27 +362,50 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
             FloatingActionButton(
               //heroTag: "btnRecargar",
               heroTag: "btnCrearPartida",
-              onPressed: () {
+              onPressed: () async {
                 //bandera = 0;
-                partidasService.selectedPartidas = Ppt(
-                    fechainicio: formatDate(DateTime.now(),
-                        [d, '/', mm, '/', yyyy, ' ', H, ':', m, ':', am]),
-                    id: '', //validar
-                    idPrueba: '', //validar
-                    modojuego: false,
-                    montototal: 1,
-                    oponentes: 1,
-                    status: 1,
-                    usridcreador: usrcreador,
-                    usridoponente: '',
-                    usridwin: '',
-                    fechafin: '',
-                    usrversionapp: 'basica',
-                    respcreador: '',
-                    respoponente: '',
-                    notificar: false);
-                Navigator.pushNamed(context, 'pptpartida');
-                /*showDialog(
+                //1)traigo la info en tiempo real del usr
+                try {
+                  //TODO: INICIA LA CONSULTA A RESUMIR CON LOCAL STORAGE
+                  rrvalue = (await authService.storage.read(key: 'usremail'))!;
+                  var daUsr = await UsuariosService().loadUsuarios();
+                  infoUsr = await usuariosService.obtenerUsuario(rrvalue);
+                  //2)verifico que tenga poder mayor a 1o pesos en bolsa
+                  //Future.delayed(const Duration(seconds: 2), () {
+                  final decodedData =
+                      await usuariosService.xloadUsuario(daUsr[infoUsr!].id!);
+                  diverzcoin = decodedData['bolsa'].toString();
+                  //TERMINA LA CONSULTA A RESUMIR
+
+                  //await authService.storage.read(key: 'poderBolsa');
+                  if (int.parse(diverzcoin!) >= 10) {
+                    partidasService.selectedPartidas = Ppt(
+                        fechainicio: formatDate(DateTime.now(),
+                            [d, '/', mm, '/', yyyy, ' ', H, ':', m, ':', am]),
+                        id: '', //validar
+                        idPrueba: '', //validar
+                        modojuego: false,
+                        montototal: 10,
+                        oponentes: 1,
+                        status: 1,
+                        usridcreador: usrcreador,
+                        usridoponente: '',
+                        usridwin: '',
+                        fechafin: '',
+                        usrversionapp: 'basica',
+                        respcreador: '',
+                        respoponente: '',
+                        notificar: false);
+                    Navigator.pushNamed(context, 'pptpartida');
+                  } else {
+                    //TODO: popup
+                    print(
+                        "aplicar el popup para indicarle que no tiene poder en bolsa");
+                    NotificationsService.showSnackbar(
+                        "Chav@, No tienes suficiente poder para crear una partida, recuerda que el mínimo de poder es de 10.");
+                  }
+                  //});
+                  /*showDialog(
                     context: context,
                     builder: (context) => AlertDialog(
                           backgroundColor: Colors.lightBlue.shade100,
@@ -342,19 +420,24 @@ class _PARTIDASPPTState extends State<PARTIDASPPT> {
                                 child: const Text("Crear e invitar..."))
                           ],
                         ))*/
+                } catch (e) {
+                  print('error en btnCrearPartida. $e');
+                }
               },
               tooltip: 'Agregar',
               child: const Icon(Icons.add_outlined),
             ),
             FloatingActionButton(
               heroTag: "btnRefrescar",
-              onPressed: () {
+              onPressed: () async {
                 //Navigator.push(context, _crearRuta1()),
                 //bandera = 0;
+                //var daUsr = await UsuariosService().loadUsuarios();
                 Future.delayed(const Duration(seconds: 1), () {
                   setState(() {
                     partidasService.refrescaTarjetas();
-                    usuariosService.loadUsuarios();
+                    //daUsr = daUsr;
+                    partidasService.refrescaUsuarios();
                   });
                 });
               },

@@ -25,14 +25,15 @@ class _RegisterScreenState extends State<RegisterScreen> {
               child: Column(
             children: [
               const SizedBox(height: 10),
-              Text('Crear cuenta',
-                  style: Theme.of(context).textTheme.headline4),
+              const Text('Crear cuenta',
+                  style: TextStyle(
+                      color: Color.fromRGBO(0, 38, 76, 1), fontSize: 27)),
               const SizedBox(height: 30),
               ChangeNotifierProvider(
                   create: (_) => LoginFormProvider(), child: _LoginForm())
             ],
           )),
-          const SizedBox(height: 50),
+          const SizedBox(height: 15),
           TextButton(
               onPressed: () => Navigator.pushReplacementNamed(context, 'login'),
               style: ButtonStyle(
@@ -41,9 +42,12 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   shape: MaterialStateProperty.all(const StadiumBorder())),
               child: const Text(
                 '¿Ya tienes una cuenta?',
-                style: TextStyle(fontSize: 18, color: Colors.black87),
+                style: TextStyle(
+                    fontSize: 17,
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold),
               )),
-          const SizedBox(height: 50),
+          const SizedBox(height: 20),
         ],
       ),
     )));
@@ -68,6 +72,7 @@ class _LoginFormState extends State<_LoginForm> {
           TextFormField(
             autocorrect: false,
             keyboardType: TextInputType.emailAddress,
+            style: const TextStyle(color: Colors.white),
             decoration: InputDecorations.authInputDecoration(
                 hintText: 'email@gmail.com',
                 labelText: 'Correo electrónico',
@@ -87,6 +92,7 @@ class _LoginFormState extends State<_LoginForm> {
           TextFormField(
             autocorrect: false,
             obscureText: true,
+            style: const TextStyle(color: Colors.white),
             keyboardType: TextInputType.emailAddress,
             decoration: InputDecorations.authInputDecoration(
                 hintText: '*****',
@@ -102,10 +108,10 @@ class _LoginFormState extends State<_LoginForm> {
           const SizedBox(height: 30),
           MaterialButton(
               shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10)),
-              disabledColor: Colors.grey,
+                  borderRadius: BorderRadius.circular(25)),
+              disabledColor: const Color.fromRGBO(112, 90, 254, 0.5),
               elevation: 0,
-              color: Colors.deepPurple,
+              color: const Color.fromRGBO(29, 27, 47, 1),
               onPressed: loginForm.isLoading
                   ? null
                   : () async {
@@ -132,9 +138,9 @@ class _LoginFormState extends State<_LoginForm> {
                     },
               child: Container(
                   padding:
-                      const EdgeInsets.symmetric(horizontal: 80, vertical: 15),
+                      const EdgeInsets.symmetric(horizontal: 60, vertical: 15),
                   child: Text(
-                    loginForm.isLoading ? 'Espere' : 'Ingresar',
+                    loginForm.isLoading ? 'Espere' : 'Crear',
                     style: const TextStyle(color: Colors.white),
                   )))
         ],

@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:app_game/services/usuarios_service.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
@@ -63,6 +64,7 @@ class AuthService extends ChangeNotifier {
       print(decodedResp['email']);*/
       await storage.write(key: 'token', value: decodedResp['idToken']);
       await storage.write(key: 'usremail', value: decodedResp['email']);
+      var daUsr = await UsuariosService().loadUsuarios();
       return null;
     } else {
       //print(decodedResp);

@@ -23,7 +23,7 @@ class _CardContainerState extends State<CardContainer> {
   }
 
   BoxDecoration _createCardShape() => BoxDecoration(
-          color: Colors.white,
+          color: const Color.fromRGBO(249, 249, 249, 0.6),
           borderRadius: BorderRadius.circular(25),
           boxShadow: const [
             BoxShadow(
